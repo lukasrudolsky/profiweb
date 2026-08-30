@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hover ikony v CTA — Profiweb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue:#3793d1; --blue-hover:#2f83bd; --ink:#17364e; --muted:#66676c;
+    --line:#efefef; --surface:#fafafa; --paper:#fff; --red:#e5484d;
+    --t-base:.26s; --ease:cubic-bezier(.4,0,.2,1);
+  }
+  *,*::before,*::after { box-sizing:border-box; }
+  body {
+    margin:0; padding:48px 32px 120px; background:#fff; color:#000;
+    font-family:Inter,system-ui,sans-serif; font-variation-settings:"opsz" 32;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1 { font-size:28px; font-weight:500; letter-spacing:-.02em; margin:0 0 8px; }
+  .lede { max-width:70ch; margin:0 0 24px; font-size:16px; line-height:1.65; color:var(--muted); }
+
+  .bar { display:flex; gap:10px; margin:0 0 36px; }
+  .ctl {
+    font:inherit; font-size:14px; cursor:pointer; padding:9px 18px; border-radius:22px;
+    border:1px solid var(--line); background:#fff; color:#000;
+    transition:background .2s var(--ease), border-color .2s var(--ease);
+  }
+  .ctl:hover { background:var(--surface); border-color:#e0e0e0; }
+  .ctl[aria-pressed="true"] { background:var(--blue); border-color:var(--blue); color:#fff; }
+
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(370px,1fr)); gap:20px; }
+  .card { border:1px solid var(--line); border-radius:14px; padding:18px 20px 22px; }
+  .card__head { display:flex; align-items:baseline; gap:10px; }
+  .card__no {
+    display:grid; place-items:center; flex:none; width:24px; height:24px;
+    font-size:12px; color:var(--blue); background:#e8f2fa; border-radius:50%;
+  }
+  .card__name { font-size:15px; font-weight:500; letter-spacing:-.01em; }
+  .card__spec { margin-left:auto; font-size:12px; color:var(--muted); }
+  .card__note { font-size:12.5px; color:var(--muted); line-height:1.55; margin:3px 0 16px 34px; }
+
+  /* ---- tlačítko 1:1 podle webu ---------------------------------------- */
+  .btn {
+    display:inline-flex; align-items:center; justify-content:center;
+    height:60px; padding-inline:31px; padding-left:10px; gap:14px;
+    border-radius:45px; background:var(--blue); color:#fff;
+    font:500 20px/normal Inter,system-ui,sans-serif; letter-spacing:-.02em;
+    white-space:nowrap; text-decoration:none; cursor:pointer;
+    transition:background-color .16s ease;
+  }
+  .btn:hover { background:var(--blue-hover); }
+  .badge {
+    position:relative; display:grid; place-items:center; flex:none;
+    width:40px; height:40px; border-radius:50%;
+    background:var(--paper); color:var(--blue);
+  }
+  .ic {
+    position:absolute; inset:0; margin:auto; width:78%; height:78%;
+    fill:none; stroke:currentColor; stroke-width:1.7;
+    stroke-linecap:round; stroke-linejoin:round;
+  }
+  /* druhá ikona čeká schovaná, dokud ji varianta nezavolá */
+  .ic--alt { opacity:0; }
+
+  /* skupina drží srovnání na střed: s klínem je těžiště jinde než bez něj */
+  .cam { transform-box:view-box; transform:translate(.4px,0); transition:transform var(--t-base) var(--ease); }
+  .lens { transform-box:fill-box; transform-origin:center;
+          transition:transform var(--t-base) var(--ease), stroke-width var(--t-base) var(--ease); }
+
+  /* ---- 1 · otočení klínu (to, co je na webu) --------------------------- */
+  .h1x:hover .cam  { transform:translate(3.5px,0); }
+  .h1x:hover .lens { transform:translate(-8.9px,0) rotate(180deg) scale(.8); stroke-width:2.125; }
+
+  /* ---- 2 · prolnutí ---------------------------------------------------- */
+  .h2x .ic { transition:opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease); }
+  .h2x:hover .ic--cam { opacity:0; transform:scale(.8); }
+  .h2x:hover .ic--alt { opacity:1; }
+  .h2x .ic--alt { transform:scale(1.2); }
+
+  /* ---- 3 · klín odjede, trojúhelník naskočí ---------------------------- */
+  .h3x .lens { transition:transform .2s var(--ease), opacity .2s var(--ease); }
+  .h3x .ic--alt { transition:opacity .2s var(--ease) .16s, transform .26s cubic-bezier(.34,1.56,.64,1) .16s; transform:scale(.3); }
+  .h3x:hover .lens { transform:translate(9px,0); opacity:0; }
+  .h3x:hover .cam { transform:translate(3.5px,0); }
+  .h3x:hover .ic--alt { opacity:1; transform:none; }
+
+  /* ---- 4 · překlopení kolečka ------------------------------------------ */
+  .h4x .badge { transform-style:preserve-3d; transition:transform .42s var(--ease); }
+  .h4x .ic { backface-visibility:hidden; }
+  .h4x .ic--alt { opacity:1; transform:rotateY(180deg); }
+  .h4x:hover .badge { transform:rotateY(180deg); }
+
+  /* ---- 5 · kamera → šipka ---------------------------------------------- */
+  .h5x .ic { transition:opacity .2s var(--ease), transform .28s var(--ease); }
+  .h5x:hover .ic--cam { opacity:0; transform:translateX(-8px); }
+  .h5x .ic--alt { transform:translateX(8px); }
+  .h5x:hover .ic--alt { opacity:1; transform:none; }
+
+  /* ---- 6 · kamera → hodiny --------------------------------------------- */
+  .h6x .ic { transition:opacity .22s var(--ease), transform .3s var(--ease); }
+  .h6x:hover .ic--cam { opacity:0; transform:rotate(-25deg) scale(.7); }
+  .h6x .ic--alt { transform:rotate(25deg) scale(.7); }
+  .h6x:hover .ic--alt { opacity:1; transform:none; }
+
+  /* ---- 7 · kamera → fajfka --------------------------------------------- */
+  .h7x .ic { transition:opacity .18s var(--ease), transform .26s cubic-bezier(.34,1.56,.64,1); }
+  .h7x:hover .ic--cam { opacity:0; transform:scale(.6); }
+  .h7x .ic--alt { transform:scale(.6); }
+  .h7x:hover .ic--alt { opacity:1; transform:none; }
+
+  /* ---- 8 · nahrávání ---------------------------------------------------- */
+  .h8x .rec { fill:var(--red); stroke:none; opacity:0; transform-box:fill-box; transform-origin:center;
+              transform:scale(.2); transition:opacity .2s var(--ease), transform .3s cubic-bezier(.34,1.56,.64,1); }
+  .h8x:hover .rec { opacity:1; transform:none; animation:rec-pulse 1.4s ease-in-out .3s infinite; }
+  @keyframes rec-pulse { 0%,100% { opacity:1 } 50% { opacity:.35 } }
+
+  /* ---- 9 · jen přiblížení ----------------------------------------------- */
+  .h9x .ic--cam { transition:transform .3s cubic-bezier(.34,1.56,.64,1); transform-origin:center; }
+  .h9x:hover .ic--cam { transform:scale(1.14) rotate(-5deg); }
+
+  /* ---- 10 · rámeček zmizí, zbyde trojúhelník ---------------------------- */
+  .h10x .camBody { transform-box:fill-box; transform-origin:center;
+                   transition:opacity .22s var(--ease), transform .3s var(--ease); }
+  .h10x:hover .camBody { opacity:0; transform:scale(1.3); }
+  .h10x:hover .cam { transform:translate(3.5px,0); }
+  .h10x:hover .lens { transform:translate(-8.9px,0) rotate(180deg) scale(1.15); stroke-width:1.48; }
+
+  @media (prefers-reduced-motion:reduce) { .card * { transition:none !important; animation:none !important; } }
+</style>
+</head>
+<body>
+
+<h1>Hover ikony v tlačítku hovoru</h1>
+<p class="lede">
+  Deset verzí toho, co se s ikonou stane při najetí. Tlačítko je 1:1 podle webu
+  — stejná výška, stejné kolečko, stejná modrá. <strong>Najeď na kterékoli</strong>,
+  nebo si tlačítkem níž zapni koncový stav u všech naráz. Řekni číslo a nasadím ho.
+</p>
+
+<div class="bar">
+  <button class="ctl" id="freeze" aria-pressed="false">Ukázat všechny po hoveru</button>
+  <button class="ctl" id="slow" aria-pressed="false">Zpomalit 4×</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+/* Kamera: tělo a klín zvlášť, ať jde klínem hýbat samostatně. */
+var CAM = '<svg class="ic ic--cam" viewBox="0 0 24 24" aria-hidden="true"><g class="cam">'
+  + '<rect class="camBody" x="2.4" y="6.4" width="12.2" height="11.2" rx="2.4"/>'
+  + '<path class="lens" d="M20.8 8.4v7.2L14.6 12z"/>'
+  + '</g></svg>';
+
+/* Kamera s červenou tečkou pro variantu „nahrávání“. */
+var CAM_REC = '<svg class="ic ic--cam" viewBox="0 0 24 24" aria-hidden="true"><g class="cam">'
+  + '<rect class="camBody" x="2.4" y="6.4" width="12.2" height="11.2" rx="2.4"/>'
+  + '<path class="lens" d="M20.8 8.4v7.2L14.6 12z"/>'
+  + '<circle class="rec" cx="6.4" cy="10.4" r="1.7"/>'
+  + '</g></svg>';
+
+function alt(inner) { return '<svg class="ic ic--alt" viewBox="0 0 24 24" aria-hidden="true">' + inner + '</svg>'; }
+
+/* Trojúhelník je posunutý 0,3 za geometrický střed — mířící doprava nese
+   hmotu vlevo a na přesném středu vypadá odsunutý. */
+var PLAY_TRI  = alt('<path d="M8.5 7.2 16.4 12 8.5 16.8z"/>');
+var PLAY_BOX  = alt('<rect x="2.9" y="6.4" width="12.2" height="11.2" rx="2.4" transform="translate(3.5)"/>'
+                  + '<path d="M9.9 9.7 14 12l-4.1 2.3z" transform="translate(3.5)"/>');
+var ARROW     = alt('<path d="M4 12h15"/><path d="m13 6 6 6-6 6"/>');
+var CLOCK     = alt('<path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M12 7.4V12l3.2 1.9"/>');
+var CHECK     = alt('<path d="m5 12.4 4.6 4.6L19 7.6"/>');
+
+var V = [
+  { n:"Otočení klínu", spec:"na webu teď", cls:"h1x", ic:CAM,
+    note:"Klín objektivu se otočí o 180° a zajede doprostřed těla. Jedna cesta se hýbe, nic se neprolíná." },
+  { n:"Prolnutí", spec:"fade + scale", cls:"h2x", ic:CAM + PLAY_BOX,
+    note:"Kamera zmizí, play naskočí. Nejjednodušší a nejlevnější — ale je vidět, že jsou to dvě ikony." },
+  { n:"Klín odletí", spec:"sekvence", cls:"h3x", ic:CAM + PLAY_TRI,
+    note:"Objektiv vyjede doprava a teprve pak doskočí trojúhelník. Dvoudobé, všimne si toho i periferní vidění." },
+  { n:"Překlopení kolečka", spec:"rotateY 180°", cls:"h4x", ic:CAM + PLAY_BOX,
+    note:"Otočí se celý bílý kotouč a na rubu je play. Nejnápadnější z celé desítky." },
+  { n:"Kamera → šipka", spec:"prostřídání", cls:"h5x", ic:CAM + ARROW,
+    note:"Nekončí u play, ale u „jdeme dál“. Sedí k tomu, že tlačítko otevírá rezervaci, ne video." },
+  { n:"Kamera → hodiny", spec:"pootočení", cls:"h6x", ic:CAM + CLOCK,
+    note:"Připomene těch patnáct minut. Z celé desítky nejvíc mluví o obsahu, ne o formě." },
+  { n:"Kamera → fajfka", spec:"doskok", cls:"h7x", ic:CAM + CHECK,
+    note:"Slibuje hotovo dřív, než se kliklo. Milé, ale trochu lže — nic se ještě nepotvrdilo." },
+  { n:"Nahrávání", spec:"červená tečka", cls:"h8x", ic:CAM_REC,
+    note:"Ikona zůstane, jen se rozsvítí a tepe rudý bod. Nejjemnější zásah." },
+  { n:"Jen přiblížení", spec:"scale 1,14", cls:"h9x", ic:CAM,
+    note:"Beze změny tvaru, jen se kamera nadechne a nakloní. Když nechceš, aby ikona odváděla pozornost." },
+  { n:"Rámeček zmizí", spec:"zbyde trojúhelník", cls:"h10x", ic:CAM,
+    note:"Tělo se rozpustí a klín se otočí na play přes celé kolečko. Nejčistší konec, ale ztratíš tvar kamery." }
+];
+
+document.getElementById('grid').innerHTML = V.map(function (v, i) {
+  return '<section class="card">'
+    + '<div class="card__head"><span class="card__no">' + (i + 1) + '</span>'
+    + '<span class="card__name">' + v.n + '</span>'
+    + '<span class="card__spec">' + v.spec + '</span></div>'
+    + '<p class="card__note">' + v.note + '</p>'
+    + '<a class="btn ' + v.cls + '" href="#" onclick="return false">'
+    +   '<span class="badge">' + v.ic + '</span>'
+    +   '<span>Rezervovat 15 min hovor</span>'
+    + '</a>'
+    + '</section>';
+}).join('');
+
+/* :hover ve statickém snímku nevyvoláš, tak koncový stav umíme i vynutit —
+   pravidla se zkopírují a :hover se v nich nahradí třídou. */
+var forced = document.createElement('style');
+document.head.appendChild(forced);
+
+var freeze = document.getElementById('freeze');
+freeze.addEventListener('click', function () {
+  var on = freeze.getAttribute('aria-pressed') !== 'true';
+  freeze.setAttribute('aria-pressed', String(on));
+  freeze.textContent = on ? 'Zpět do klidu' : 'Ukázat všechny po hoveru';
+
+  if (!on) { forced.textContent = ''; return; }
+  var out = [];
+  [].forEach.call(document.styleSheets, function (sheet) {
+    var rules;
+    try { rules = sheet.cssRules; } catch (e) { return; }   /* cizí původ */
+    [].forEach.call(rules, function (r) {
+      if (r.selectorText && r.selectorText.indexOf(':hover') > -1
+          && r.selectorText.indexOf('.h') > -1) {
+        out.push(r.cssText.split(':hover').join('.forced'));
+      }
+    });
+  });
+  forced.textContent = out.join('\n');
+  document.querySelectorAll('.btn').forEach(function (b) { b.classList.add('forced'); });
+});
+
+var slow = document.getElementById('slow');
+var slowStyle = document.createElement('style');
+document.head.appendChild(slowStyle);
+slow.addEventListener('click', function () {
+  var on = slow.getAttribute('aria-pressed') !== 'true';
+  slow.setAttribute('aria-pressed', String(on));
+  slow.textContent = on ? 'Zpět na normál' : 'Zpomalit 4×';
+  slowStyle.textContent = on
+    ? '.card *{transition-duration:1.1s!important;transition-delay:0s!important}'
+      + '.card .ic--alt{transition-delay:.6s!important}'
+    : '';
+});
+</script>
+
+</body>
+</html>

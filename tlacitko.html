@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kurzorové tlačítko — Profiweb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue:#3793d1; --blue-dark:#2f83bd; --ink:#17364e; --black:#000;
+    --muted:#66676c; --line:#efefef; --surface:#fafafa; --paper:#fff;
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *,*::before,*::after { box-sizing:border-box; }
+  body {
+    margin:0; padding:48px 32px 120px; background:#fff; color:#000;
+    font-family:Inter,system-ui,sans-serif; font-variation-settings:"opsz" 32;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1 { font-size:28px; font-weight:500; letter-spacing:-.02em; margin:0 0 8px; }
+  .lede { max-width:70ch; margin:0 0 36px; font-size:16px; line-height:1.65; color:var(--muted); }
+
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:20px; }
+  .card { border:1px solid var(--line); border-radius:14px; padding:18px 20px 18px; }
+  .card__head { display:flex; align-items:baseline; gap:10px; }
+  .card__no {
+    display:grid; place-items:center; flex:none; width:24px; height:24px;
+    font-size:12px; color:var(--blue); background:#e8f2fa; border-radius:50%;
+  }
+  .card__name { font-size:15px; font-weight:500; letter-spacing:-.01em; }
+  .card__spec { margin-left:auto; font-size:12px; color:var(--muted); }
+  .card__note { font-size:12.5px; color:var(--muted); line-height:1.55; margin:3px 0 12px 34px; }
+
+  /* klidový vzorek — pilulka bez pohybu, ať jde porovnat i bez najíždění */
+  .rest {
+    display:flex; align-items:center; justify-content:center;
+    padding:16px; margin-bottom:10px; border-radius:9px;
+    background:var(--surface);
+  }
+  .rest .pill { position:static; transform:none; opacity:1; }
+
+  /* scéna — chová se jako mockup na webu: kurzor zmizí a jede za ním pilulka */
+  .stage {
+    position:relative; overflow:hidden; height:190px; border-radius:9px;
+    background:#20301f; cursor:none;
+  }
+  .stage img {
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; object-position:center top; pointer-events:none;
+  }
+  /* na screenshotu je světlo i tma, takže samotný bílý text tu není čitelný */
+  .stage__hint {
+    position:absolute; left:10px; top:10px;
+    padding:4px 10px; border-radius:999px;
+    font-size:11.5px; color:#fff; background:rgba(0,0,0,.55);
+    pointer-events:none; transition:opacity .2s var(--ease);
+  }
+  .stage.is-live .stage__hint { opacity:0; }
+
+  .follow { position:absolute; left:0; top:0; pointer-events:none; transition:transform 90ms ease-out; }
+  .follow .pill {
+    transform:translate(-50%,-50%) scale(.4); opacity:0;
+    transition:transform 180ms cubic-bezier(.2,.8,.3,1), opacity 140ms ease;
+  }
+  .stage.is-live .follow .pill { transform:translate(-50%,-50%) scale(1); opacity:1; }
+
+  /* ---- společný základ pilulky ---------------------------------------- */
+  .pill {
+    display:inline-flex; align-items:center; gap:9px;
+    padding:13px 24px; border-radius:999px;
+    font:500 15px/1 Inter,system-ui,sans-serif; letter-spacing:-.01em;
+    white-space:nowrap;
+  }
+  .pill svg { width:16px; height:16px; flex:none; fill:none; stroke:currentColor;
+              stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* ---- varianty -------------------------------------------------------- */
+  .v1  { background:var(--blue); color:#fff; box-shadow:0 8px 24px rgba(55,147,209,.35); }
+
+  .v2  { padding:10px 18px; font-size:14px; background:var(--blue); color:#fff;
+         box-shadow:0 4px 14px rgba(55,147,209,.28); }
+
+  .v3  { background:var(--blue); color:#fff; box-shadow:0 8px 24px rgba(55,147,209,.35); }
+
+  .v4  { background:var(--ink); color:#fff; box-shadow:0 10px 26px rgba(0,0,0,.32); }
+
+  .v5  { background:#fff; color:var(--blue); box-shadow:0 8px 22px rgba(16,32,48,.22); }
+
+  .v6  { background:rgba(255,255,255,.16); color:#fff; backdrop-filter:blur(14px) saturate(1.4);
+         -webkit-backdrop-filter:blur(14px) saturate(1.4); box-shadow:0 8px 26px rgba(0,0,0,.22); }
+
+  .v7  { background:rgba(255,255,255,.06); color:#fff; border:1.5px solid rgba(255,255,255,.7);
+         backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+
+  .v8  { padding:0; width:56px; height:56px; justify-content:center;
+         background:var(--blue); color:#fff; box-shadow:0 8px 24px rgba(55,147,209,.35); }
+  .v8 svg { width:20px; height:20px; }
+
+  .v9  { padding:6px 20px 6px 6px; background:#fff; color:var(--ink);
+         box-shadow:0 8px 22px rgba(16,32,48,.22); }
+  .v9 .dot { display:grid; place-items:center; flex:none; width:34px; height:34px;
+             border-radius:50%; background:var(--blue); color:#fff; }
+  .v9 .dot svg { width:15px; height:15px; }
+
+  .v10 { border-radius:7px; background:var(--blue); color:#fff;
+         box-shadow:0 8px 24px rgba(55,147,209,.35); }
+
+  /* na světlém klidovém pruhu by bílé a skleněné varianty zmizely */
+  .rest--dark { background:#20301f; }
+</style>
+</head>
+<body>
+
+<h1>Kurzorové tlačítko nad mockupy</h1>
+<p class="lede">
+  Deset verzí té pilulky, co jede za kurzorem přes ukázky webů. Nahoře v každé
+  kartě je klidový vzorek, dole živá scéna — <strong>najeď na ni myší</strong> a
+  chová se přesně jako na webu: zmizí kurzor a pilulka ho nahradí. Nástup je
+  u všech stejný, ať se porovnává jen vzhled. Řekni číslo a nasadím ho.
+</p>
+
+<div class="grid" id="grid"></div>
+
+<script>
+var ARROW  = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>';
+var ARROW_R = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></svg>';
+
+var V = [
+  { n:"Současná",          spec:"modrá · 13/24",     dark:false, html:"Zobrazit projekt" },
+  { n:"Kompaktní",         spec:"modrá · 10/18",     dark:false, html:"Zobrazit projekt",
+    note:"Stejná barva, menší a lehčí — přes screenshot toho tolik nezakryje." },
+  { n:"Se šipkou",         spec:"modrá + ↗",         dark:false, html:"Zobrazit projekt" + ARROW,
+    note:"Šipka do rohu napoví, že to otevře něco jinde." },
+  { n:"Tmavá",             spec:"ink · bílý text",   dark:false, html:"Zobrazit projekt",
+    note:"Nebije se s modrou ve značce a nad zelenými screenshoty drží kontrast." },
+  { n:"Bílá s modrým",     spec:"bílá · modrý text", dark:true,  html:"Zobrazit projekt",
+    note:"Nejvyšší kontrast nad fotkou. Modrá zůstane jen v písmu." },
+  { n:"Skleněná",          spec:"blur 14px",         dark:true,  html:"Zobrazit projekt",
+    note:"Propouští screenshot pod sebou. Vypadá draze, ale hůř se čte." },
+  { n:"Obrysová",          spec:"1,5px linka",       dark:true,  html:"Zobrazit projekt" + ARROW_R,
+    note:"Nejmenší zásah do obrázku. Nad světlým místem screenshotu ale zmizí." },
+  { n:"Jen kolečko",       spec:"56 px · bez textu", dark:false, html:ARROW,
+    note:"Beze slov. Čisté, ale nikdo předem neví, co se stane." },
+  { n:"Kolečko a text",    spec:"dvoudílná",         dark:true,  html:'<span class="dot">' + ARROW + '</span>Zobrazit projekt',
+    note:"Ikona nese pohled, text význam." },
+  { n:"Štítek",            spec:"rádius 7",          dark:false, html:"Zobrazit projekt",
+    note:"Ostřejší tvar. Ladí k rámečku mockupu víc než pilulka." }
+];
+
+document.getElementById('grid').innerHTML = V.map(function (v, i) {
+  var cls = 'pill v' + (i + 1);
+  return '<section class="card">'
+    + '<div class="card__head"><span class="card__no">' + (i + 1) + '</span>'
+    + '<span class="card__name">' + v.n + '</span>'
+    + '<span class="card__spec">' + v.spec + '</span></div>'
+    + '<p class="card__note">' + (v.note || "To, co je na webu teď.") + '</p>'
+    + '<div class="rest' + (v.dark ? ' rest--dark' : '') + '">'
+    +   '<span class="' + cls + '">' + v.html + '</span>'
+    + '</div>'
+    + '<div class="stage" data-stage>'
+    +   '<img src="assets/macbook-bezel.png" alt="" loading="lazy" decoding="async">'
+    +   '<span class="stage__hint">najeď myší</span>'
+    +   '<span class="follow"><span class="' + cls + '">' + v.html + '</span></span>'
+    + '</div>'
+    + '</section>';
+}).join('');
+
+/* Jeden posluchač pro všechny scény: pozici píše jen ta, nad kterou je myš.
+   Vnější prvek nese posun, vnitřní si řídí vlastní nástup — jinak by se
+   obojí přepisovalo v jedné transform vlastnosti. */
+document.querySelectorAll('[data-stage]').forEach(function (stage) {
+  var follow = stage.querySelector('.follow');
+
+  stage.addEventListener('mouseenter', function () { stage.classList.add('is-live'); });
+  stage.addEventListener('mouseleave', function () { stage.classList.remove('is-live'); });
+  stage.addEventListener('mousemove', function (e) {
+    var r = stage.getBoundingClientRect();
+    follow.style.transform = 'translate3d(' + (e.clientX - r.left) + 'px,' + (e.clientY - r.top) + 'px,0)';
+  });
+});
+</script>
+
+</body>
+</html>

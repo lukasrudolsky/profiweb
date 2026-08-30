@@ -1,0 +1,2631 @@
+/* =====================================================================
+   Profiweb.cz — Home
+   Implemented from Figma node 691:11 (frame width 1440).
+   Geometry below mirrors the Figma coordinates; decorative art sits on a
+   centred 1440px track so it bleeds off-screen the way the frame clips it.
+
+   Responsive model
+   ----------------
+   Type, spacing and the mockup marquee are fluid: every clamp() hits its
+   Figma value at exactly 1200px (the container width), so anything at or
+   above 1200px renders pixel-identical to the frame, and everything below
+   scales down continuously instead of jumping at breakpoints. Breakpoints
+   are reserved for real layout changes (nav → drawer, hero art re-anchored
+   below the copy, card grid reflow).
+   ===================================================================== */
+
+/* =====================================================================
+   TOKENS
+   The single source of truth. Rules below consume these and should not
+   introduce raw hex, radii, shadows or durations — if a value is missing
+   here, add it here rather than inlining it.
+
+   Palette names are semantic (what the colour is for), not literal (what
+   it looks like), so a rebrand is a change in this block alone.
+   ===================================================================== */
+:root {
+  /* -- brand ------------------------------------------------------- */
+  --blue:        #3793d1;   /* Figma primary */
+  --blue-hover:  #2f83bd;
+  --blue-tint:   #e8f2fa;   /* selected day, agenda bullets */
+  --blue-tint-2: #cfe6f7;   /* the same tint, one step darker, on hover */
+  --green:       #00ce28;
+
+  /* -- text -------------------------------------------------------- */
+  --ink:         #000000;
+  --text-pill:   #505050;
+  --text-body:   #66676c;
+  --text-lead-2: #6b6d79;
+  --text-nav:    #727272;
+  --text-lead:   #888888;
+  --text-mute:   #9a9ba1;   /* mega labels, placeholders' darker cousin */
+  --text-faint:  #b3b5b8;   /* placeholder */
+  --text-off:    #c4c6c9;   /* disabled day numbers */
+
+  /* -- surfaces + lines -------------------------------------------- */
+  --paper:        #ffffff;
+  --surface:      #fafafa;
+  --surface-2:    #f2f2f2;  /* secondary button hover */
+  --surface-3:    #f0f2f4;  /* skeleton cells */
+  --line:         #e0e0e0;
+  --line-btn:     #e3e3e3;
+  --line-header:  #efefef;
+  --line-soft:    #dcdfe2;  /* today's ring when the day is unavailable */
+  --line-hover:   #cfd3d6;  /* neutral control, hovered */
+  --line-blue:    #cfe3f3;  /* tinted control, resting */
+
+  /* -- status ------------------------------------------------------ */
+  --danger:       #d64545;
+  --danger-ink:   #b53434;
+  --danger-bg:    #fdecec;
+  --warn:         #e0a33a;
+  --warn-ink:     #a5701a;
+  --warn-bg:      #fef3e2;
+  --ok:           #0cab4a;
+  --ok-ink:       #0a7f39;
+  --ok-bg:        #e6f6ec;
+
+  /* -- radii ------------------------------------------------------- */
+  --r-sm:   8px;
+  --r-md:   10px;
+  --r-lg:   11px;
+  --r-xl:   13px;
+  --r-2xl:  22px;
+  --r-pill: 999px;
+
+  /* -- elevation --------------------------------------------------- */
+  --shadow-pop:    0 24px 40px -28px rgba(23, 54, 78, .45);
+  --shadow-panel:  0 28px 48px -30px rgba(23, 54, 78, .5);
+  /* Four layers instead of one. A single blur ends where the Gaussian ends,
+     which under a full-width bar reads as a band with a visible bottom edge;
+     stacking doubling blurs at low alpha ramps the falloff out instead. Each
+     layer is faint on its own; they only add up close to the bar, so the
+     shading starts around the old weight and thins out to nothing. */
+  --shadow-bar:    0 2px 3px -2px rgba(23, 54, 78, .045),
+                   0 6px 9px -5px rgba(23, 54, 78, .045),
+                   0 14px 22px -12px rgba(23, 54, 78, .050),
+                   0 28px 46px -22px rgba(23, 54, 78, .055);
+  --shadow-dialog: 0 40px 90px -30px rgba(23, 54, 78, .38),
+                   0 4px 14px rgba(23, 54, 78, .06);
+  --ring:          0 0 0 3px rgba(55, 147, 209, .16);
+
+  /* -- motion ------------------------------------------------------
+     Three speeds, not eight: fast for colour/hover, base for most state
+     changes, slow for anything that changes layout size. */
+  --t-fast: .16s;
+  --t-base: .26s;
+  --t-slow: .34s;
+  --t-draw: .5s;      /* delší než ostatní: kreslení tahu chce čas na přečtení */
+  --ease:   cubic-bezier(.4, 0, .2, 1);
+
+  --container: 1200px;
+  --gutter: clamp(16px, 2vw, 24px);
+
+  /* Hero is tightened vs the Figma frame (which is very airy). One knob:
+     raise to compress the hero further, set to 0px for pixel-exact Figma.
+     Only applies to the fixed-height desktop hero (>= 1200px). */
+  --hero-tighten: 78px;
+
+  /* Mockup marquee. The pitch is Figma's bezel-to-bezel spacing and doubles
+     as the scale unit: every other laptop measurement is a ratio of it, so
+     the whole band shrinks proportionally with the viewport. Speed is the
+     time to travel exactly one pitch. */
+  --laptop-pitch: clamp(280px, 57.75vw, 693px);
+  --laptop-speed: 18s;
+
+  /* Room the hero art needs under the copy once it is re-anchored (< 1200px):
+     the plate is 587/693 of the pitch, plus breathing space. */
+  --deco-gap: clamp(36px, 5vw, 72px);
+  --deco-h: calc(var(--laptop-pitch) * 0.84704 + var(--deco-gap));
+
+  /* availability dot pulse */
+  --dot-pulse: 2.4s;
+
+  --font: "Inter", "Inter Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* clip, not hidden: hidden makes html/body a scroll container, which kills
+   position:sticky on the header. clip trims the same overflow without it. */
+html { overflow-x: clip; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-variation-settings: "opsz" 32;   /* matches Figma "Inter Display" */
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: break-word;
+  overflow-x: clip;
+}
+
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+ul { margin: 0; padding: 0; list-style: none; }
+p, h1, h2, h3 { margin: 0; }
+
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.container {
+  width: min(var(--container), 100% - (var(--gutter) * 2));
+  margin-inline: auto;
+}
+
+/* ---------------------------------------------------------------- Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: clamp(50px, 5vw, 60px);
+  padding-inline: clamp(22px, 2.583vw, 31px);
+  border-radius: 45px;
+  /* <button> does not inherit the page font — without this the UA's Arial wins
+     on every button-flavoured .btn while the <a> ones stay on Inter. */
+  font-family: inherit;
+  font-size: clamp(16px, 1.667vw, 20px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: normal;
+  white-space: nowrap;
+  transition: background-color var(--t-fast) ease, border-color var(--t-fast) ease, transform var(--t-fast) ease;
+}
+.btn--primary { background: var(--blue); color: var(--paper); }
+.btn--primary:hover { background: var(--blue-hover); }
+.btn--secondary { background: var(--surface); color: var(--text-pill); border: 1px solid var(--line-btn); }
+.btn--secondary:hover { background: var(--surface-2); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: .45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Figma widths, as floors — the label decides once the text outgrows them. */
+/* the header CTA is smaller than a page button so it fits the band */
+/* No min-width: it was 156px against a 129px natural width, so the surplus
+   split into the sides and the real gap came out 36px instead of the 22px
+   declared here. Padding alone sets the width, as on every other button. */
+.btn--nav { height: 44px; font-size: 16px; padding-inline: 22px; }
+/* Figma's 270/234 were kept here as floors, but the secondary's floor sat 6px
+   above its natural width, so its real gap came out 34px next to the
+   primary's 31px. Padding decides now; the primary is unaffected (it was
+   already 271px wide) and the secondary loses those 6px. */
+.btn--hero { max-width: 100%; }
+
+/* Round badge before the label, so the call CTA says "video call" before the
+   text is read. The left padding drops to half the leftover cap height, which
+   keeps the badge optically centred in the pill's round end. */
+.btn--badge {
+  gap: clamp(10px, 1.15vw, 14px);
+  padding-left: clamp(8px, .8vw, 10px);
+}
+.btn__badge {
+  position: relative;   /* the two icons stack here and cross over on hover */
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: clamp(34px, 3.4vw, 40px);
+  height: clamp(34px, 3.4vw, 40px);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--blue);
+}
+/* 78%, not the ~55% that looks right on paper: the camera's ink only fills
+   the middle 77% × 47% of the 24-unit viewBox, so a percentage of the box
+   buys far less drawn icon than it suggests, and the badge read as empty. */
+.btn__badgeIcon {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 78%;
+  height: 78%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: opacity var(--t-fast) var(--ease),
+              transform var(--t-base) var(--ease);
+}
+
+/* On hover the camera slides out to the left and an arrow takes its place from
+   the right — both travelling the same way, so it reads as one handover. The
+   arrow, not a play symbol: the button opens a booking form, it does not play
+   a video, and promising playback would be a small lie. */
+.btn__badgeIcon--go { opacity: 0; transform: translateX(8px); }
+
+.btn--badge:hover .btn__badgeIcon--cam,
+.btn--badge:focus-visible .btn__badgeIcon--cam { opacity: 0; transform: translateX(-8px); }
+.btn--badge:hover .btn__badgeIcon--go,
+.btn--badge:focus-visible .btn__badgeIcon--go { opacity: 1; transform: none; }
+
+/* The camera's ink spans 1.55–21.65 of the 24-unit box, centre 11.6 — half a
+   unit left of the middle. The group carries that correction so the icon sits
+   centred in the badge. */
+.btn__cam {
+  transform-box: view-box;
+  transform: translate(.4px, 0);
+}
+/* .btn__label carries the hover swap; it must not stretch or the staggered
+   characters would be laid out against the padding instead of the text. */
+.btn__label { display: inline-block; }
+
+/* Hover label swap — each character rolls up and its twin rolls in from below,
+   staggered left-to-right. site.js builds the spans; until it runs (or under
+   reduced motion) the button keeps its plain text node, so nothing depends on
+   the enhancement having happened.
+
+   The accessible name comes from .sr-only, never from the animated spans —
+   otherwise assistive tech would spell the label out character by character. */
+/* Booking: month grid waiting on cal.com, and the submit status line. */
+/* skeleton cells carry the loading signal now — no blanket dimming */
+.cal__grid.is-loading { pointer-events: none; }
+
+.booking__error {
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--danger-ink);
+}
+.booking__error.is-pending,
+.booking__error.is-muted { color: var(--text-body); }
+
+.booking__note-action {
+  display: block;
+  margin-top: 8px;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  color: var(--blue);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.booking__note-action:hover { color: var(--blue-hover); }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.btn__swap { display: flex; }
+.btn__char {
+  position: relative;
+  display: block;
+  /* tall enough that Czech diacritics and descenders clear the overflow clip */
+  line-height: 1.5;
+  overflow: hidden;
+}
+.btn__char > span {
+  display: block;
+  transition: transform .44s cubic-bezier(.65, 0, .2, 1);
+  transition-delay: calc(var(--i) * 16ms);
+  will-change: transform;
+}
+.btn__char > span + span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateY(105%);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover .btn__char > span            { transform: translateY(-105%); }
+  .btn:hover .btn__char > span + span     { transform: translateY(0); }
+}
+.btn:focus-visible .btn__char > span        { transform: translateY(-105%); }
+.btn:focus-visible .btn__char > span + span { transform: translateY(0); }
+
+/* ----------------------------------------------------------------- Header */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  /* Figma had 110px, which reads as a lot of empty band on a real screen.
+     Everything else in the header scales off this. */
+  height: clamp(58px, 5.4vw, 76px);
+  background: var(--paper);
+  /* No shadow at rest: at the top of the page the bar is part of the page, so
+     an edge there just reads as a line. It fades in only once content starts
+     passing underneath — see .is-stuck. */
+  box-shadow: 0 0 0 0 rgba(23, 54, 78, 0);
+  transition: box-shadow var(--t-slow) var(--ease);
+}
+.site-header.is-stuck { box-shadow: var(--shadow-bar); }
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 2vw, 24px);
+  height: 100%;
+}
+
+/* Panel open: the bar drops its shadow so the two read as one surface and the
+   panel carries the elevation for both. */
+.site-header.has-mega-open { box-shadow: none; }
+
+.brand { display: flex; align-items: center; gap: clamp(9px, 1.083vw, 13px); }
+.brand__mark { width: clamp(24px, 2.1vw, 29px); height: auto; }
+.brand__name { font-size: clamp(19px, 1.85vw, 23px); letter-spacing: -0.02em; line-height: normal; }
+
+.site-nav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: clamp(18px, 2.6vw, 32px);
+  font-size: clamp(15px, 1.3vw, 17px);
+  line-height: 1.76;
+  letter-spacing: -0.02em;
+  color: var(--text-nav);
+}
+.site-nav a { white-space: nowrap; transition: color var(--t-fast) ease; }
+.site-nav a:hover { color: var(--ink); }
+.site-nav__cta { display: none; }
+
+/* Drawer trigger — only ever visible once the inline nav folds away. */
+.nav-toggle {
+  display: none;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  margin-right: -8px;
+  padding: 0;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.nav-toggle__bars,
+.nav-toggle__bars::before,
+.nav-toggle__bars::after {
+  display: block;
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform var(--t-base) ease, opacity var(--t-fast) ease;
+}
+.nav-toggle__bars { position: relative; }
+.nav-toggle__bars::before,
+.nav-toggle__bars::after { content: ""; position: absolute; left: 0; }
+.nav-toggle__bars::before { top: -7px; }
+.nav-toggle__bars::after  { top: 7px; }
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars { background: transparent; }
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars::before { transform: translateY(7px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars::after  { transform: translateY(-7px) rotate(-45deg); }
+
+/* ------------------------------------------------------- Mega menu (nav) --
+   The panel is a child of its .nav-item, but .nav-item stays `position: static`
+   so the panel resolves its absolute box against .site-header and can span the
+   full container. Below 900px it simply drops to `position: static` and flows
+   inline as an accordion inside the drawer — no DOM moving required. */
+.icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.nav-item { position: static; }
+
+.nav-item__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color var(--t-fast) ease;
+}
+.nav-item__trigger:hover,
+.nav-item__trigger[aria-expanded="true"] { color: var(--ink); }
+
+/* "+" that rotates into "×". Drawn as SVG, not two CSS bars: those were
+   1.6px wide and centred with translate(-50%), so both arms landed on half
+   pixels and each antialiased differently. The sprite also gives it the round
+   caps every other icon on the page has. */
+.nav-item__sign {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  overflow: visible;
+  transition: transform var(--t-base) var(--ease);
+}
+.nav-item__trigger[aria-expanded="true"] .nav-item__sign { transform: rotate(135deg); }
+
+.mega {
+  position: absolute;
+  font-size: 16px;
+  top: 100%;              /* header has no border to clear any more */
+  left: 0;
+  right: 0;
+  z-index: 25;
+  /* full bleed like the bar above it; only the content inside is contained */
+  transform: translateY(-12px);
+  background: var(--paper);
+  border: 0;
+  box-shadow: var(--shadow-panel);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--t-slow) var(--ease),
+              transform var(--t-slow) var(--ease),
+              visibility var(--t-slow);
+}
+.mega.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* surface is full bleed, content stays on the same grid as the bar above */
+.mega__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.55fr;
+  width: min(var(--container), 100% - (var(--gutter) * 2));
+  margin-inline: auto;
+  text-align: left;
+}
+.mega__col { padding: 0 0 22px; }
+.mega__col + .mega__col { border-left: 1px solid var(--line-header); }
+
+/* columns stagger in behind the panel */
+.mega__col {
+  opacity: 0;
+  transform: translateY(7px);
+  transition: opacity var(--t-slow) ease, transform var(--t-slow) ease;
+}
+.mega.is-open .mega__col { opacity: 1; transform: none; }
+.mega.is-open .mega__col:nth-child(2) { transition-delay: .05s; }
+.mega.is-open .mega__col:nth-child(3) { transition-delay: .1s; }
+
+.mega__label {
+  padding: 20px 24px 14px;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  border-bottom: 1px solid var(--line-header);
+}
+
+/* .site-nav a sets nowrap + a border for the drawer; both must be undone here,
+   and it out-specifies a lone class, hence the .site-nav prefix. */
+.site-nav .mega__link {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 16px 24px;
+  white-space: normal;
+  border-bottom: 1px solid var(--line-header);
+  transition: background-color var(--t-fast) ease;
+}
+.site-nav .mega__link:last-child { border-bottom: 0; }
+.site-nav .mega__link:hover { background: var(--surface); }
+
+.mega__icon {
+  flex: none;
+  width: 19px;
+  height: 19px;
+  margin-top: 3px;
+  color: var(--ink);
+}
+.mega__text { display: block; min-width: 0; }
+.mega__title {
+  display: block;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.mega__desc {
+  display: block;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--text-body);
+}
+.mega__link:hover .mega__desc { color: var(--text-pill); }
+
+.mega__col--media { display: flex; flex-direction: column; }
+
+/* -- third column, "Ukázka práce" --
+   This replaced a four-up gallery in which two of the four tiles were
+   card1-bg.jpg and hero-collage.jpg — decorative background gradients, not
+   work. Under a label promising samples they read as filler, and the odd
+   crops left the column ragged. One real screenshot, shown properly. */
+.site-nav .mega__case {
+  display: block;
+  padding: 16px 24px 0;
+  white-space: normal;
+}
+.mega__shot {
+  display: block;
+  overflow: hidden;
+  /* 16/9 rather than 16/10: the shot is the tallest thing in the panel, and
+     every pixel it adds is empty space under the two link columns. */
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line-header);
+  border-radius: 7px;
+  background: var(--surface);
+}
+.mega__shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;   /* a full-page shot reads from its header */
+  transition: transform var(--t-slow) var(--ease);
+}
+.mega__case:hover .mega__shot img { transform: scale(1.03); }
+.mega__caption { display: block; padding-top: 12px; }
+.mega__caseTitle {
+  display: block;
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.mega__caseDesc {
+  display: block;
+  margin-top: 1px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--text-body);
+}
+
+/* -- third column, numbered steps and plain facts --
+   Same rhythm as .mega__link, but neither is a link: nothing to click here,
+   so they must not look clickable. */
+.mega__steps,
+.mega__facts {
+  margin: 0;
+  padding: 4px 24px 0;
+  list-style: none;
+  counter-reset: none;
+}
+.mega__steps li,
+.mega__facts li {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 12px 0;
+}
+.mega__stepNo {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 21px;
+  height: 21px;
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--blue);
+  background: var(--blue-tint);
+  border-radius: 50%;
+}
+
+/* -- panel footer --
+   The columns used to just stop, leaving the panel open at the bottom with
+   no way out of it. Spans the full grid so the column rules end above it. */
+.mega__foot {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 15px 24px;
+  border-top: 1px solid var(--line-header);
+  opacity: 0;
+  transform: translateY(7px);
+  transition: opacity var(--t-slow) ease, transform var(--t-slow) ease;
+}
+.mega.is-open .mega__foot { opacity: 1; transform: none; transition-delay: .15s; }
+.mega__footText {
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--text-body);
+}
+.site-nav .mega__footLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-left: auto;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: var(--blue);
+}
+.mega__footArrow {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  transition: transform var(--t-fast) var(--ease);
+}
+.site-nav .mega__footLink:hover .mega__footArrow { transform: translateX(3px); }
+
+/* ------------------------------------------------------------------- Hero */
+.hero {
+  position: relative;
+  height: calc(1235px - var(--hero-tighten));   /* Figma y 109 -> 1344 */
+  isolation: isolate;
+}
+
+.hero__gradient {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(1137px - var(--hero-tighten));
+  z-index: 0;
+  background: linear-gradient(
+    180deg,
+    rgb(255, 255, 255) 22.691%,
+    rgb(251, 253, 255) 61.346%,
+    rgb(204, 219, 229) 80.222%,
+    rgb(220, 238, 250) 100%
+  );
+}
+
+/* centred 1440 design track for the decorative art */
+.hero__deco {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1440px;
+  height: calc(1235px - var(--hero-tighten));
+  margin-left: -720px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* -- rotated collage band (Figma 737:1625 / 737:1623) --
+   Bottom-aligned to the hero: at 1200px+ that reproduces Figma's y 294. -- */
+.collage {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: max(calc(var(--laptop-pitch) * 2.08081), 100vw);
+  height: calc(var(--laptop-pitch) * 1.51515);
+  transform: translateX(-50%);
+  overflow: hidden;
+}
+/* Figma 920:39 "Rectangle" — the iridescent wash, now driven by
+   hero-gradient.js. Only the box is ours: the texture already has Figma's
+   transform baked in (180° flip, 100.03% x 252.68% scale, bottom 723px crop),
+   so no rotation or inner sizing here — applying it again would double it.
+   Ratios are against the 1050 band so it tracks the hero as it scales.
+   position must stay non-static: the injected canvas positions against it. */
+.collage__wash {
+  position: absolute;
+  left: 0;
+  top: 31.143%;              /* 327 / 1050 */
+  width: 100%;
+  height: 68.857%;           /* 723 / 1050 */
+}
+
+/* ---- animated holographic surface (assets/js/hero-gradient.js) ----
+   The host keeps its own size and position; these rules only lay out what the
+   script injects into it. */
+[data-hero-gradient] {
+  overflow: hidden;
+  isolation: isolate;
+}
+[data-hero-gradient] > canvas,
+[data-hero-gradient] > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* the static export holds the frame until the shader draws */
+[data-hero-gradient] > img {
+  object-fit: cover;
+  transition: opacity var(--t-base) ease;
+}
+[data-hero-gradient][data-gl="on"] > img { opacity: 0; }
+
+/* -- MacBook mockups (Figma 781:13 / 781:22 / 781:27), as an endless marquee --
+   Figma spaces the three bezels at x -233 / 458 / 1151, i.e. a 693px pitch with
+   the middle one centred. Bezel k sits at 50% - k*pitch - 262.5/693*pitch; the
+   band leads with three pitches so it still bleeds in on ultra-wide screens,
+   and drifts by exactly one pitch — since every unit is identical, the loop is
+   seamless with no jump. Every length is a ratio of the pitch, so the whole
+   band scales with the viewport. */
+.laptop-band {
+  position: absolute;
+  bottom: calc(var(--laptop-pitch) * 0.03752);
+  left: calc(50% - var(--laptop-pitch) * 3.37879);
+  display: flex;
+  will-change: transform;
+  animation: laptop-drift var(--laptop-speed) linear infinite;
+}
+@keyframes laptop-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(calc(-1 * var(--laptop-pitch)), 0, 0); }
+}
+
+.laptop {
+  position: relative;
+  flex: none;
+  width: var(--laptop-pitch);
+  height: calc(var(--laptop-pitch) * 0.84704);
+}
+.laptop__plate {
+  position: absolute;
+  left: calc(var(--laptop-pitch) * -0.17605);   /* plate sits 122/693 left of the bezel */
+  top: 0;
+  width: calc(var(--laptop-pitch) * 1.10967);
+  height: calc(var(--laptop-pitch) * 0.84704);
+  max-width: none;
+}
+.laptop__bezel {
+  position: absolute;
+  left: 0;
+  top: calc(var(--laptop-pitch) * 0.16883);     /* Figma bezel 848 vs plate box 792, minus the 61px bleed */
+  width: calc(var(--laptop-pitch) * 0.75758);
+  height: calc(var(--laptop-pitch) * 0.50938);
+  border: max(2px, calc(var(--laptop-pitch) * 0.00577)) solid var(--ink);
+  border-radius: calc(var(--laptop-pitch) * 0.01299);
+  overflow: hidden;
+}
+.laptop__bezel > img {
+  position: absolute;
+  left: -0.13%;
+  top: -0.12%;
+  width: 100.14%;
+  height: 209.25%;
+  max-width: none;
+}
+
+/* -- "Zobrazit projekt" cursor over the mockups --
+   .hero__deco is pointer-events:none, so only the bezel (the visible screen)
+   opts back in. There the native cursor is hidden and a pill follows the
+   pointer instead. The pill is fixed and lives at the end of <body>, so the
+   drifting band never carries it along; JS only writes the outer transform,
+   the inner element owns the show/hide animation. */
+.laptop__bezel {
+  pointer-events: auto;
+  cursor: none;
+}
+
+.mock-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 90;
+  pointer-events: none;
+  transform: translate3d(-100px, -100px, 0);
+  transition: transform 90ms ease-out;
+}
+.mock-cursor__pill {
+  display: block;
+  padding: 13px 24px;
+  border-radius: var(--r-pill);
+  background: var(--blue);
+  color: var(--paper);
+  font: 500 15px/1 var(--font);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(55, 147, 209, 0.35);
+  transform: translate(-50%, -50%) scale(0.4);
+  opacity: 0;
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.3, 1), opacity 140ms ease;
+}
+.mock-cursor.is-visible .mock-cursor__pill {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .laptop-band { animation: none; }
+  .mock-cursor,
+  .mock-cursor__pill { transition: none; }
+  .availability__dot::after { animation: none; }
+  /* the arrow still replaces the camera, it just gets there at once */
+  .btn__badgeIcon { transition: none; }
+}
+
+/* -- hero copy -- */
+.hero__content {
+  position: relative;
+  z-index: 2;
+  padding-top: clamp(30px, 4.667vw, 56px);       /* Figma y 189, tightened */
+  text-align: center;
+}
+
+/* Centring wrapper stays block-level so no strut leading creeps in below. */
+.availability {
+  display: flex;
+  justify-content: center;
+}
+
+/* Bare dot + sentence, as in Figma. The border came off at request; the fill
+   and the shadow went with it, because the backdrop here is plain white body
+   — a white chip on white left nothing but a stray 1px smudge of shadow.
+   The vertical padding stays so nothing below it shifts. */
+.availability__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 0;
+  font-size: clamp(14px, 1.25vw, 16px);
+  line-height: 1.5;
+  letter-spacing: -0.002em;
+  color: var(--text-pill);
+}
+
+/* The dot is drawn in CSS rather than using the Figma export: that SVG bakes a
+   ~54px blurred halo around a 14px circle, which at 1:1 reads as a smudge with
+   no clean edge. A solid core plus a hairline ring stays crisp at any size. */
+.availability__dot {
+  position: relative;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(0, 206, 40, .16);
+}
+/* halo expanding out of the dot — spread, not scale, so it stays hairline-even */
+.availability__dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: dot-ping var(--dot-pulse) cubic-bezier(0, 0, .2, 1) infinite;
+}
+
+@keyframes dot-ping {
+  0%       { box-shadow: 0 0 0 0 rgba(0, 206, 40, .45); }
+  70%      { box-shadow: 0 0 0 9px rgba(0, 206, 40, 0); }
+  100%     { box-shadow: 0 0 0 0 rgba(0, 206, 40, 0); }
+}
+
+.hero__title {
+  margin-top: clamp(14px, 2vw, 24px);        /* Figma y 258, tightened */
+  font-size: clamp(28px, 4.667vw, 56px);
+  font-weight: 500;
+  line-height: 1.375;                        /* Figma 77/56 */
+  letter-spacing: -0.026em;
+  text-wrap: balance;
+}
+
+.hero__lead {
+  max-width: 790px;
+  margin: clamp(14px, 2vw, 24px) auto 0;     /* Figma y 446, tightened */
+  font-size: clamp(16px, 1.667vw, 20px);
+  line-height: 1.76;
+  letter-spacing: -0.002em;
+  color: var(--text-lead);
+  text-wrap: pretty;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(12px, 1.75vw, 21px);
+  margin-top: clamp(24px, 3vw, 36px);        /* Figma y 569, tightened */
+}
+
+.perks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(14px, 4.167vw, 50px);
+  margin-top: clamp(24px, 3vw, 36px);        /* Figma y 683, tightened */
+}
+.perks li {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 12px);
+  font-size: clamp(15px, 1.667vw, 20px);
+  line-height: 1.76;
+  letter-spacing: -0.002em;
+  color: var(--blue);
+  white-space: nowrap;
+}
+/* One icon per perk instead of three identical ticks. Smaller than the old
+   29px check — a line glyph at that size competes with the label.
+   Bolt / shield / message: speed, certainty, the enquiry that arrives. These
+   are inline rather than <use> because the draw-on below has to address each
+   stroke, and CSS cannot reach inside a sprite's shadow tree. */
+.perks__icon {
+  flex: none;
+  width: clamp(17px, 1.833vw, 22px);
+  height: clamp(17px, 1.833vw, 22px);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Each icon draws itself once the row scrolls in. pathLength="1" on every
+   path normalises the strokes to one length, so a single keyframe takes the
+   same time over the bolt and over the bubble — no measuring in JS.
+
+   The strokes are hidden by .is-armed, which only site.js adds: without JS,
+   without IntersectionObserver, or with reduced motion asked for, the row
+   is simply drawn from the start and nothing here applies. */
+@keyframes perk-draw { from { stroke-dashoffset: 1 } to { stroke-dashoffset: 0 } }
+
+.perks.is-armed path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.perks.is-drawn path { animation: perk-draw var(--t-draw) var(--ease) both; }
+.perks.is-drawn li:nth-child(2) path { animation-delay: .11s; }
+.perks.is-drawn li:nth-child(3) path { animation-delay: .22s; }
+
+/* --------------------------------------------------------------- Problems */
+.problems {
+  padding-top: clamp(48px, 6.417vw, 77px);
+  padding-bottom: clamp(64px, 10vw, 120px);
+  text-align: center;
+}
+
+.eyebrow {
+  font-size: clamp(14px, 1.5vw, 18px);
+  line-height: 1.62;
+  letter-spacing: -0.02em;
+  color: var(--blue);
+}
+.section-title {
+  margin-top: clamp(10px, 1.33vw, 16px);        /* Figma y 1481, staženo */
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.section-lead {
+  margin-top: clamp(10px, 1.5vw, 18px);         /* Figma y 1575, staženo */
+  font-size: clamp(16px, 1.667vw, 20px);
+  line-height: 1.76;
+  letter-spacing: -0.02em;
+  color: var(--text-lead-2);
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------------ Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: clamp(16px, 2vw, 24px);
+  margin-top: clamp(32px, 4.817vw, 57.8px);     /* Figma y 1668 */
+  text-align: left;
+}
+
+.card { display: flex; flex-direction: column; }
+
+.card__media {
+  position: relative;
+  aspect-ratio: 384 / 240;   /* Figma 384x240 */
+  overflow: hidden;
+  container-type: inline-size;   /* lets the badge scale with the card */
+}
+.card__art { position: absolute; inset: 0; overflow: hidden; }
+.card__art-flat { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* blurred blobs — placed by their Figma centre so they scale with the card */
+.blob {
+  position: absolute;
+  max-width: none;
+  transform: translate(-50%, -50%);
+}
+.blob--1 { left: 84.015%; top: 54.744%;  width: 143.030%; height: 239.488%; }
+.blob--2 { left: 2.088%;  top: 59.534%;  width: 143.030%; height: 239.488%;
+           transform: translate(-50%, -50%) rotate(-55deg); }
+.blob--3 { left: 44.171%; top: 57.244%;  width: 143.030%; height: 239.488%; }
+.blob--4 { left: 42.839%; top: 101.250%; width: 142.969%; height: 257.500%; }
+
+.card__wash { position: absolute; inset: 0; overflow: hidden; transform: scaleX(-1); }
+.card__wash img {
+  position: absolute;
+  left: 0;
+  top: -54.31%;
+  width: 100%;
+  height: 154.23%;
+  max-width: none;
+}
+
+/* browser mockup (Figma 780:9) */
+.browser {
+  position: absolute;
+  left: 4.948%;            /* 19 / 384 */
+  top: 24.583%;            /* 59 / 240 */
+  width: 90.365%;          /* 347 / 384 */
+  height: 79.583%;         /* 191 / 240 */
+  background: var(--paper);
+  border: 2px solid rgba(255, 255, 255, 0.36);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+.browser__shot {
+  position: absolute;
+  left: 2.017%;            /* 7 / 347 */
+  top: 3.141%;             /* 6 / 191 */
+  width: 95.965%;          /* 333 / 347 */
+  height: 94.241%;         /* 180 / 191 */
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.browser__shot img {
+  position: absolute;
+  left: 0;
+  top: -0.74%;
+  width: 100%;
+  height: 100.93%;
+  max-width: none;
+}
+
+/* floating badge (Figma 782:77) — px values are the 384px-wide reference card,
+   the cqw values keep it proportional at any card width. */
+.stat-badge {
+  position: absolute;
+  left: 32.031%;           /* 123 / 384 */
+  top: 13.750%;            /* 33 / 240 */
+  width: 138px;
+  width: 35.938cqw;
+  height: 64px;
+  height: 16.667cqw;
+  background: var(--paper);
+  border: 2px solid rgba(255, 255, 255, 0.36);
+  border-radius: var(--r-md);
+  box-shadow: 0 0 154.7px 0 rgba(0, 0, 0, 0.35);
+}
+.stat-badge__ring   { position: absolute; left: 19.565%; top: 14.063%;
+                      width: 18.841%; height: 40.625%; }
+.stat-badge__avatar { position: absolute; left: 21.014%; top: 17.188%;
+                      width: 15.942%; height: 34.375%;
+                      border-radius: 50%; object-fit: cover; }
+.stat-badge__title  { position: absolute; left: 43.478%; top: 20.313%;
+                      font-size: 10px; font-size: 2.604cqw;
+                      line-height: 1.76; letter-spacing: -0.02em; white-space: nowrap; }
+.stat-badge__meta   { position: absolute; left: 19.565%; top: 65.625%;
+                      font-size: 8px; font-size: 2.083cqw;
+                      font-weight: 300; line-height: 1.76;
+                      letter-spacing: -0.02em; color: var(--text-body); white-space: nowrap; }
+
+.card__body {
+  flex: 1;
+  min-height: 209px;
+  padding: clamp(24px, 3.583vw, 43px) clamp(18px, 2.167vw, 26px) clamp(20px, 2.167vw, 26px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0 0 var(--r-xl) var(--r-xl);
+}
+.card__title {
+  font-size: clamp(22px, 2.333vw, 28px);
+  font-weight: 400;
+  line-height: 1.76;
+  letter-spacing: -0.02em;
+}
+.card__text {
+  max-width: 333px;
+  margin-top: clamp(14px, 2.227vw, 26.72px);     /* Figma y 2027 */
+  font-size: clamp(15px, 1.333vw, 16px);
+  line-height: 1.76;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+  text-wrap: pretty;
+}
+
+/* ===================================================================== */
+/* Layout breakpoints — only where the structure itself has to change.   */
+/* ===================================================================== */
+
+/* Below the design width the hero art no longer has a fixed frame to sit in,
+   so it is re-anchored under the copy: the hero grows with its text and the
+   art occupies the reserved strip at the bottom. */
+@media (max-width: 1199.98px) {
+  .hero {
+    height: auto;
+    padding-bottom: var(--deco-h);
+  }
+  .hero__gradient { height: 100%; }
+  .hero__deco {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--deco-h);
+    margin-left: 0;
+  }
+}
+
+/* Inline nav folds into a drawer. */
+@media (max-width: 900px) {
+  .nav-toggle { display: grid; }
+  .btn--nav { display: none; }
+
+  .site-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    flex: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 4px var(--gutter) 24px;
+    font-size: 18px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line-header);
+    box-shadow: var(--shadow-pop);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity var(--t-base) ease, transform var(--t-base) ease, visibility var(--t-base);
+  }
+  .site-nav.is-open { opacity: 1; visibility: visible; transform: none; }
+
+  .site-nav a {
+    padding: 15px 2px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line-header);
+  }
+  .site-nav__cta {
+    display: inline-flex;
+    width: 100%;
+    margin-top: 20px;
+    border-bottom: 0;
+    color: var(--paper);
+  }
+  .site-nav__cta:hover { color: var(--paper); }
+
+
+  /* Mega panels stop overlaying and become inline accordions in the drawer.
+     grid-template-rows 0fr -> 1fr animates to the content's natural height. */
+  .site-nav { max-height: calc(100dvh - 100%); overflow-y: auto; overscroll-behavior: contain; }
+
+  .nav-item { border-bottom: 1px solid var(--line-header); }
+  .nav-item__trigger {
+    justify-content: space-between;
+    width: 100%;
+    padding: 15px 2px;
+    color: var(--ink);
+  }
+  .nav-item__sign { order: 2; }
+
+  .mega {
+    position: static;
+    display: grid;
+    grid-template-rows: 0fr;
+    width: auto;
+    transform: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    transition: grid-template-rows var(--t-slow) var(--ease);
+  }
+  .mega.is-open { grid-template-rows: 1fr; transform: none; }
+  .mega__inner {
+    display: block;
+    min-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity var(--t-base) ease;
+  }
+  .mega.is-open .mega__inner { opacity: 1; transition-delay: .08s; }
+
+  .mega__col { padding: 0; transform: none; opacity: 1; transition: none; }
+  .mega__col + .mega__col { border-left: 0; }
+  /* The steps and the facts are content and stay; only the screenshot goes,
+     since a 1.5MB full-page render inside a drawer earns nothing here. */
+  .mega__col--case { display: none; }
+  .mega__steps, .mega__facts { padding: 0; }
+  .mega__steps li, .mega__facts li { padding: 11px 2px; }
+
+  .mega__label { padding: 14px 2px 8px; border-bottom: 0; }
+  .site-nav .mega__link { padding: 11px 2px; border-bottom: 0; }
+  .site-nav .mega__link:hover { background: none; }
+
+  .mega__foot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 14px 2px 4px;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .site-nav .mega__footLink { margin-left: 0; }
+}
+
+/* One-column card at phone widths, capped so it keeps the Figma proportions. */
+@media (max-width: 559.98px) {
+  .cards { max-width: 420px; margin-inline: auto; }
+  .card__body { min-height: 0; }
+  .hero__actions { flex-direction: column; align-items: center; }
+  .hero__actions .btn--hero { width: 100%; max-width: 320px; min-width: 0; }
+  .perks { gap: 12px 24px; }
+}
+
+/* Phones in landscape: the art strip would eat the whole screen. */
+@media (max-height: 520px) and (orientation: landscape) and (max-width: 1199.98px) {
+  :root { --laptop-pitch: clamp(240px, 34vw, 420px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-nav { transition: none; }
+  .nav-toggle__bars,
+  .nav-toggle__bars::before,
+  .nav-toggle__bars::after { transition: none; }
+  .mega,
+  .mega__inner,
+  .mega__col,
+  .nav-item__sign { transition: none; }
+}
+
+
+/* =====================================================================
+   Booking modal — opens from the hero CTA "Rezervovat 15 min hovor".
+   Reuses the page tokens (blue / surface / line, Inter) so it reads as
+   part of the site; the page behind is blurred via backdrop-filter.
+   ===================================================================== */
+
+.booking,
+.audit {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.booking[hidden],
+.audit[hidden] { display: none; }
+
+.booking__backdrop,
+.audit__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(214, 229, 240, 0.55);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  backdrop-filter: blur(18px) saturate(120%);
+  opacity: 0;
+  transition: opacity var(--t-slow) ease;
+}
+.booking.is-open .booking__backdrop,
+.audit.is-open .audit__backdrop { opacity: 1; }
+
+.booking__dialog,
+.audit__dialog {
+  position: relative;
+  width: min(1010px, 100%);
+  min-width: 0;
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  background: var(--paper);
+  border: 1px solid var(--line-header);
+  border-radius: var(--r-2xl);
+  box-shadow: 0 40px 90px -30px rgba(23, 54, 78, 0.38),
+              0 4px 14px rgba(23, 54, 78, 0.06);
+  opacity: 0;
+  transform: translateY(14px) scale(.985);
+  transition: opacity var(--t-slow) ease, transform var(--t-slow) cubic-bezier(.2, .8, .3, 1);
+}
+.booking.is-open .booking__dialog,
+.audit.is-open .audit__dialog { opacity: 1; transform: none; }
+
+.booking__close,
+.audit__close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--text-pill);
+  background: var(--surface);
+  border: 1px solid var(--line-btn);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color var(--t-fast) ease, color var(--t-fast) ease;
+}
+.booking__close:hover,
+.audit__close:hover { background: var(--line-header); color: var(--ink); }
+
+.booking__step,
+.audit__step { display: none; }
+.booking__step.is-active,
+.audit__step.is-active { display: block; }
+
+.booking__layout {
+  display: grid;
+  grid-template-columns: 306px 1fr 240px;
+  min-height: 486px;
+}
+.booking__layout--form { grid-template-columns: 306px 1fr 296px; }
+
+/* ----------------------------------------------------- Calendar tease
+   The month is shown from the first screen, dimmed and out of reach, so the
+   form reads as the way to it rather than as a wall in front of it. It is
+   decoration: aria-hidden in the markup, and nothing here is clickable.
+
+   The dates carry no availability — every cell looks the same on purpose.
+   Marking some free would be a claim we have not asked cal.com about yet. */
+.booking__tease {
+  position: relative;
+  padding: 34px 24px;
+  border-left: 1px solid var(--line-header);
+  background: var(--surface);
+  border-radius: 0 var(--r-2xl) var(--r-2xl) 0;
+}
+/* The blur lives on the inner layer, not on this box, so the message can be a
+   child and centre itself on the calendar's real height instead of a pixel
+   guess that a taller month would slide out from under. */
+.booking__teaseCal {
+  position: relative;
+  user-select: none;
+  pointer-events: none;
+}
+/* Blurred enough to read as out of reach, not so much that it stops reading
+   as a calendar — that is the whole job of the panel. */
+.booking__teaseInner {
+  filter: blur(1.1px);
+  opacity: .62;
+}
+.booking__tease .cal__month {
+  text-align: center;
+  white-space: nowrap;   /* "Prosinec 2026" must not wrap and shift the grid */
+}
+.booking__tease .cal__weekdays { margin-top: 16px; font-size: 12px; }
+/* Six rows always, padded — the height is then the same in every month, and
+   nothing below it moves. Also the shape survives JS never running. */
+.booking__tease .cal__grid {
+  gap: 5px;
+  grid-template-rows: repeat(6, 30px);
+  min-height: 205px;
+}
+.booking__tease .cal__day {
+  display: grid;
+  place-items: center;
+  min-height: 30px;
+  font-size: 12.5px;
+  color: var(--text-off);
+  background: transparent;
+  border: 1px solid var(--line-soft);
+  border-radius: 9px;
+}
+
+/* the message sits above the blur, unblurred, so it stays the readable thing */
+.booking__teaseMsg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 14px 16px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--text-pill);
+  background: var(--paper);
+  border: 1px solid var(--line-header);
+  border-radius: var(--r-md);
+  box-shadow: 0 10px 24px -14px rgba(23, 54, 78, .3);
+}
+
+
+/* ------------------------------------------------------------- Aside */
+.booking__aside {
+  padding: 34px 30px;
+  background: var(--surface);
+  border-right: 1px solid var(--line-header);
+  border-radius: var(--r-2xl) 0 0 var(--r-2xl);
+}
+
+.booking__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  letter-spacing: -0.44px;
+}
+
+.booking__title {
+  margin-top: 26px;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.28;
+  letter-spacing: -0.7px;
+}
+.booking__subtitle {
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 1.62;
+  letter-spacing: -0.32px;
+  color: var(--text-body);
+}
+
+.booking__meta {
+  display: grid;
+  gap: 14px;
+  margin-top: 26px;
+}
+.booking__meta li {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.32px;
+  color: var(--text-pill);
+}
+.booking__meta li[hidden] { display: none; }
+.booking__meta svg {
+  flex: none;
+  width: 19px;
+  height: 19px;
+  margin-top: 2px;
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.booking__meta-sum { font-weight: 500; color: var(--ink); }
+
+.booking__note {
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: -0.28px;
+  color: var(--text-lead);
+}
+
+/* Fills the otherwise empty column on step 1 and sets expectations for the
+   call — the moment people hesitate is right before handing over an email. */
+.booking__agenda {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line-header);
+}
+.booking__agenda-title {
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.28px;
+  color: var(--ink);
+}
+.booking__agenda ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: agenda;
+}
+.booking__agenda li {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.55;
+  letter-spacing: -0.28px;
+  color: var(--text-body);
+  counter-increment: agenda;
+}
+.booking__agenda li::before {
+  content: counter(agenda);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  font-size: 11px;
+  color: var(--blue);
+  background: var(--blue-tint);
+  border-radius: 50%;
+}
+
+.booking__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  font: inherit;
+  font-size: 15px;
+  letter-spacing: -0.3px;
+  color: var(--blue);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.booking__back:hover { color: var(--blue-hover); }
+/* it now sits above the brand lockup, which needs room to breathe */
+.booking__back + .booking__brand { margin-top: 18px; }
+
+/* ---------------------------------------------------------- Calendar */
+.booking__calendar { padding: 34px 28px; }
+
+.cal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cal__month {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.36px;
+}
+.cal__nav {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: var(--text-pill);
+  background: var(--paper);
+  border: 1px solid var(--line-btn);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color var(--t-fast) ease, color var(--t-fast) ease, opacity var(--t-fast) ease;
+}
+.cal__nav:hover:not(:disabled) { background: var(--surface); color: var(--ink); }
+.cal__nav:disabled { opacity: .35; cursor: not-allowed; }
+
+.cal__weekdays,
+.cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.cal__weekdays {
+  margin-top: 22px;
+  font-size: 13px;
+  letter-spacing: -0.26px;
+  color: var(--text-lead);
+  text-align: center;
+}
+.cal__grid { margin-top: 8px; }
+
+.cal__day {
+  position: relative;
+  aspect-ratio: 1;
+  min-height: 42px;
+  padding: 0;
+  font: inherit;
+  font-size: 16px;
+  letter-spacing: -0.32px;
+  color: var(--text-pill);
+  background: var(--surface);
+  border: 1px solid transparent;
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: background-color var(--t-fast) ease, color var(--t-fast) ease, border-color var(--t-fast) ease, transform var(--t-fast) ease;
+}
+/* A bookable day has to read as a button. Previously free days were var(--surface)
+   and blocked ones transparent — near-identical, so on a month with one
+   opening nobody could tell where to click. */
+.cal__day:not(:disabled) {
+  color: var(--blue);
+  font-weight: 500;
+  background: var(--blue-tint);
+  cursor: pointer;
+}
+.cal__day:not(:disabled):hover {
+  background: var(--blue-tint-2);
+  transform: translateY(-1px);
+}
+.cal__day.is-selected {
+  color: var(--paper);
+  background: var(--blue);
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
+.cal__day.is-today { border-color: var(--blue); }
+.cal__day:disabled {
+  color: var(--text-off);
+  background: transparent;
+  cursor: default;
+  transform: none;
+}
+/* today's ring must not out-shout an actually bookable day */
+.cal__day:disabled.is-today { border-color: var(--line-soft); }
+.cal__day:disabled:hover { background: transparent; color: var(--text-off); }
+.cal__day--pad { visibility: hidden; }
+
+/* placeholder cells while availability loads — clearly not clickable */
+.cal__day--skeleton {
+  background: var(--surface-3);
+  border-color: transparent;
+  animation: cal-shimmer 1.2s ease-in-out infinite;
+}
+.cal__day--skeleton.cal__day--pad { animation: none; }
+@keyframes cal-shimmer {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: .5; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cal__day--skeleton { animation: none; }
+}
+
+/* free-slot marker */
+.cal__day::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--blue);
+  opacity: 0;
+  transition: opacity var(--t-fast) ease;
+}
+.cal__day:not(:disabled)::after { opacity: .5; }
+.cal__day.is-selected::after { background: var(--paper); opacity: 1; }
+
+/* ------------------------------------------------------------- Slots */
+.booking__slots {
+  display: flex;
+  flex-direction: column;
+  padding: 34px 24px 24px;
+  border-left: 1px solid var(--line-header);
+}
+.slots__day {
+  padding-right: 44px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.3px;
+}
+.slots__list {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  margin-top: 18px;
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+.slots__empty {
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: -0.28px;
+  color: var(--text-lead);
+}
+
+.slot {
+  height: 44px;
+  padding: 0;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.32px;
+  color: var(--blue);
+  background: var(--paper);
+  border: 1px solid var(--line-blue);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: background-color var(--t-fast) ease, color var(--t-fast) ease, border-color var(--t-fast) ease;
+}
+.slot:hover,
+.slot.is-selected { background: var(--blue); border-color: var(--blue); color: var(--paper); }
+
+/* -------------------------------------------------------------- Form */
+.booking__form { padding: 34px 30px; }
+
+.field { margin-bottom: 18px; }
+.field label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 15px;
+  letter-spacing: -0.3px;
+  color: var(--text-pill);
+}
+.field label i { font-style: normal; color: var(--blue); }
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 13px 15px;
+  font: inherit;
+  font-size: 16px;
+  letter-spacing: -0.32px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-btn);
+  border-radius: var(--r-lg);
+  resize: vertical;
+  transition: border-color var(--t-fast) ease, box-shadow var(--t-fast) ease, background-color var(--t-fast) ease;
+}
+.field input::placeholder,
+.field textarea::placeholder { color: var(--text-faint); }
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  background: var(--paper);
+  border-color: var(--blue);
+  box-shadow: var(--ring);
+}
+.field__err {
+  display: none;
+  margin-top: 6px;
+  font-size: 13px;
+  letter-spacing: -0.26px;
+  color: var(--danger);
+}
+.field.has-error input,
+.field.has-error textarea { border-color: var(--danger); background: var(--paper); }
+.field.has-error .field__err { display: block; }
+
+/* Budget picker — tile radios; the group label is provided by the
+   fieldset legend that wraps it. */
+.field--budget { min-width: 0; margin: 0 0 18px; padding: 0; border: 0; }
+.field--budget legend {
+  padding: 0;
+  margin-bottom: 7px;
+  font-size: 15px;
+  letter-spacing: -0.3px;
+  color: var(--text-pill);
+}
+.field--budget legend i { font-style: normal; color: var(--blue); }
+.field--budget.has-error .budget__opt span { border-color: var(--danger); }
+.field--budget.has-error .field__err { display: block; }
+.budget { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.budget__opt { position: relative; display: block; margin: 0; }
+/* Cover the whole tile rather than collapsing to 0x0 — a zero-sized input is
+   invisible to hit-testing, so only the label was ever clickable. */
+.budget__opt input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.budget__opt span {
+  display: block;
+  padding: 12px 14px;
+  font-size: 15px;
+  letter-spacing: -0.3px;
+  text-align: center;
+  color: var(--text-pill);
+  background: var(--surface);
+  border: 1px solid var(--line-btn);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: border-color var(--t-fast) ease, background-color var(--t-fast) ease, color var(--t-fast) ease;
+}
+.budget__opt:hover span { border-color: var(--line-hover); }
+.budget__opt input:checked + span {
+  color: var(--paper);
+  background: var(--blue);
+  border-color: var(--blue);
+}
+.budget__opt input:focus-visible + span {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* Shown when the chosen range is below the minimum project size. */
+.budget__note {
+  margin-top: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  letter-spacing: -0.28px;
+  color: var(--text-body);
+  background: var(--surface);
+  border: 1px solid var(--line-btn);
+  border-radius: var(--r-lg);
+}
+.budget__note a { color: var(--blue); text-decoration: underline; }
+
+@media (max-width: 420px) {
+  .budget { grid-template-columns: 1fr; }
+}
+
+
+/* --------------------------------------------------------- Phone field
+   A native <select> carries the dial code — keyboard, screen reader and
+   mobile pickers all work as they should — and is laid over the flag and
+   caret at zero opacity, which are only there to be looked at. */
+.tel {
+  display: flex;
+  gap: 8px;
+}
+.tel__cc { position: relative; flex: none; }
+.tel__btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 100%;
+  padding: 0 10px 0 12px;
+  font: inherit;
+  color: var(--text-pill);
+  background: var(--surface);
+  border: 1px solid var(--line-btn);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: border-color var(--t-fast) ease, background-color var(--t-fast) ease;
+}
+.tel__btn:hover { background: var(--surface-2); }
+.tel__btn[aria-expanded="true"] { border-color: var(--blue); }
+/* Noto Color Emoji has to be named explicitly — Inter has no flag glyphs and
+   would fall back to the two regional-indicator letters, which is what the
+   pair renders as until the font lands. That fallback is also the graceful
+   state: "CZ" instead of the Czech flag, never an empty box. */
+.tel__flag,
+.cc__flag {
+  font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+}
+.tel__flag { font-size: 17px; line-height: 1; }
+.tel__code { font-size: 15px; letter-spacing: -0.01em; }
+.tel__caret {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: var(--text-lead);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tel input { flex: 1; min-width: 0; }
+.field.has-error .tel__btn { border-color: var(--danger); }
+
+/* ------------------------------------------------------ country picker */
+.cc {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 296px;
+  max-width: 78vw;
+  padding: 8px;
+  background: var(--paper);
+  border: 1px solid var(--line-header);
+  border-radius: var(--r-md);
+  box-shadow: 0 18px 40px -18px rgba(23, 54, 78, .35),
+              0 2px 8px rgba(23, 54, 78, .06);
+}
+.cc__searchwrap { position: relative; }
+.cc__searchicon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--text-lead);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+/* Two classes deep on purpose: ".field input" is (0,1,1) and would otherwise
+   win, putting back the 15px padding of a page field and dropping the text
+   straight under the magnifier. */
+.cc .cc__search {
+  width: 100%;
+  padding: 9px 12px 9px 34px;
+  font: inherit;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line-btn);
+  border-radius: 8px;
+}
+.cc .cc__search:focus { outline: none; border-color: var(--blue); }
+.cc .cc__search::placeholder { color: var(--text-lead); }
+
+.cc__list {
+  margin: 6px 0 0;
+  padding: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  list-style: none;
+  overscroll-behavior: contain;   /* scrolling the list must not scroll the modal */
+}
+.cc__opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink);
+  border-radius: 7px;
+  cursor: pointer;
+}
+.cc__opt.is-active { background: var(--surface); }
+.cc__opt[aria-selected="true"] { color: var(--blue); }
+.cc__flag { flex: none; font-size: 16px; line-height: 1; }
+.cc__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cc__dial { flex: none; color: var(--text-lead); }
+.cc__opt[aria-selected="true"] .cc__dial { color: var(--blue); }
+.cc__empty { margin: 10px 10px 6px; font-size: 13.5px; color: var(--text-lead); }
+
+.field.has-error .tel__btn { border-color: var(--danger); }
+
+
+/* --------------------------------------------------------- Form halves
+   Seven fields stacked in one 346px column read as a wall. The form is cut
+   in two — contact, then project — and only this middle column swaps: the
+   aside and the calendar tease stay put, so the dialog keeps its height and
+   nothing around it jumps. */
+.booking__pane { display: none; }
+.booking__pane.is-active {
+  display: block;
+  animation: pane-in var(--t-base) var(--ease) both;
+}
+@keyframes pane-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.booking__progress {
+  margin: 0 0 16px;
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-lead);
+}
+.booking__progress b { font-weight: 500; color: var(--text-pill); }
+
+/* Same control as the step-level back link, one notch quieter — it moves
+   between halves of a form, not between screens. */
+.booking__back--pane { margin: -2px 0 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .booking__pane.is-active { animation: none; }
+}
+
+.booking__submit {
+  width: 100%;
+  height: 54px;
+  font-size: 18px;
+  margin-top: 6px;
+  border: 0;
+  cursor: pointer;
+}
+/* Confirm sits directly under the time list — the primary action belongs
+   where the eye already is, not in a column the user last touched two
+   clicks ago. margin-top:auto pins it to the bottom of the flex column. */
+.booking__confirm {
+  width: 100%;
+  height: 48px;
+  flex: none;
+  margin-top: 14px;
+  font-size: 15px;
+  border: 0;
+  cursor: pointer;
+}
+/* <b> defaults to 700, which we never load — that would render faux bold.
+   500 is the heaviest weight actually in the font file. */
+[data-done-email] { font-weight: 500; }
+
+.booking__slots .booking__legal {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+/* nothing to confirm until a time is picked */
+.booking__slots .booking__confirm,
+.booking__slots .booking__legal { display: none; }
+.booking__slots.has-choice .booking__confirm { display: inline-flex; }
+.booking__slots.has-choice .booking__legal { display: block; }
+
+.booking__legal {
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: -0.26px;
+  color: var(--text-lead);
+  text-align: center;
+}
+
+/* ------------------------------------------------------ Confirmation */
+.booking__done {
+  max-width: 430px;
+  margin-inline: auto;
+  padding: 62px 30px 54px;
+  text-align: center;
+}
+.booking__check {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 22px;
+  color: var(--paper);
+  background: var(--blue);
+  border-radius: 50%;
+  box-shadow: 0 0 0 8px rgba(55, 147, 209, .12);
+}
+.booking__done .booking__subtitle { margin-top: 12px; }
+
+.booking__recap {
+  margin: 26px 0 28px;
+  padding: 6px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  text-align: left;
+}
+.booking__recap > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.booking__recap > div:last-child { border-bottom: 0; }
+.booking__recap dt {
+  font-size: 15px;
+  letter-spacing: -0.3px;
+  color: var(--text-lead);
+}
+.booking__recap dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  text-align: right;
+}
+
+body.booking-open,
+body.audit-open { overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  .booking__backdrop,
+  .booking__dialog,
+  .audit__backdrop,
+  .audit__dialog { transition: none; }
+}
+
+/* --------------------------------------------- Booking, small screens */
+@media (max-width: 960px) {
+  .booking,
+  .audit { padding: 0; align-items: stretch; }
+  .booking__dialog,
+  .audit__dialog {
+    width: 100%;
+    max-height: 100vh;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: 0;
+  }
+  .booking__layout,
+  .booking__layout--form { grid-template-columns: 1fr; min-height: 0; }
+  /* stacked under the form it would just be a blurred block in the way */
+  .booking__tease { display: none; }
+  .booking__aside {
+    border-right: 0;
+    border-bottom: 1px solid var(--line-header);
+    border-radius: 0;
+    padding: 26px 22px;
+  }
+  .booking__note { display: none; }
+  .booking__calendar { padding: 26px 22px; }
+  .booking__slots {
+    border-left: 0;
+    border-top: 1px solid var(--line-header);
+    padding: 22px;
+  }
+  .slots__list {
+    grid-template-columns: repeat(auto-fill, minmax(94px, 1fr));
+    max-height: none;
+  }
+  .booking__form { padding: 26px 22px 34px; }
+  .booking__done { padding: 48px 22px 40px; }
+}
+
+@media (max-width: 520px) {
+  .booking__title { font-size: 24px; }
+  .cal__day { min-height: 38px; font-size: 15px; }
+}
+
+/* Smallest phones: the 7-column grid, not the copy, sets the modal floor —
+   tighten its gutters and cell gaps so the dialog still fits 320px. */
+@media (max-width: 400px) {
+  .booking__aside,
+  .booking__calendar,
+  .booking__slots,
+  .booking__form { padding-left: 16px; padding-right: 16px; }
+  .cal__weekdays,
+  .cal__grid { gap: 4px; }
+  .cal__day { min-height: 32px; border-radius: var(--r-sm); }
+  .cal__day::after { bottom: 4px; }
+  .slots__list { grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); }
+  .booking__done { padding-left: 16px; padding-right: 16px; }
+  .booking__recap { padding-inline: 14px; }
+}
+
+/* =====================================================================
+   Website audit modal — shares the overlay, dialog chrome, .field and
+   .btn styling with the booking modal; everything below is the report.
+   ===================================================================== */
+
+.audit__dialog { width: min(760px, 100%); }
+
+.audit__step { padding: clamp(28px, 4vw, 44px) clamp(20px, 3.4vw, 40px); }
+
+.audit__head { max-width: 540px; }
+
+.audit__badge {
+  display: inline-block;
+  padding: 5px 12px;
+  font-size: 13px;
+  letter-spacing: -0.02em;
+  color: var(--blue);
+  background: var(--blue-tint);
+  border-radius: 40px;
+}
+.audit__title {
+  margin-top: 14px;
+  font-size: clamp(24px, 3vw, 30px);
+  font-weight: 500;
+  line-height: 1.26;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.audit__lead {
+  margin-top: 12px;
+  font-size: clamp(15px, 1.5vw, 17px);
+  line-height: 1.62;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------- Form */
+.audit__form { margin-top: 26px; }
+.audit__form .field { margin-bottom: 14px; }
+.audit__form input { font-size: 17px; }
+
+.seg {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--line-btn);
+  border-radius: 12px;
+}
+.seg__opt {
+  padding: 9px 18px;
+  font: inherit;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  color: var(--text-pill);
+  background: none;
+  border: 0;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background-color var(--t-fast) ease, color var(--t-fast) ease;
+}
+.seg__opt:hover { color: var(--ink); }
+.seg__opt.is-active { color: var(--paper); background: var(--blue); }
+
+.audit__submit {
+  width: 100%;
+  height: 56px;
+  margin-top: 18px;
+  font-size: 18px;
+  border: 0;
+  cursor: pointer;
+}
+
+.audit__what {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px 24px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.audit__what li { display: grid; gap: 3px; }
+.audit__what b {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.audit__what span {
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  color: var(--text-lead);
+}
+
+.audit__legal {
+  margin-top: 20px;
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+  color: var(--text-lead);
+}
+.audit__legal b { font-weight: 500; color: var(--text-pill); }
+.audit__legal a { color: var(--blue); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ---------------------------------------------------- Running / error */
+.audit__running {
+  max-width: 440px;
+  margin-inline: auto;
+  padding: clamp(24px, 4vw, 48px) 0;
+  text-align: center;
+}
+.audit__running .audit__title { margin-top: 22px; }
+
+.audit__spinner {
+  display: block;
+  width: 46px;
+  height: 46px;
+  margin: 0 auto;
+  border: 3px solid var(--blue-tint);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: audit-spin 1s linear infinite;
+}
+@keyframes audit-spin { to { transform: rotate(360deg); } }
+
+.audit__warn {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto;
+  color: var(--warn-ink);
+  background: var(--warn-bg);
+  border-radius: 50%;
+}
+
+.audit__url {
+  margin-top: 10px;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  color: var(--blue);
+  word-break: break-all;
+}
+.audit__status {
+  margin-top: 16px;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+  text-wrap: pretty;
+}
+
+.audit__bar {
+  height: 6px;
+  margin-top: 18px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line-btn);
+  border-radius: 40px;
+}
+.audit__bar span {
+  display: block;
+  width: 8%;
+  height: 100%;
+  background: var(--blue);
+  border-radius: 40px;
+  transition: width 1.6s var(--ease);
+}
+
+.audit__hint {
+  margin-top: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+  color: var(--text-lead);
+  text-wrap: pretty;
+}
+.audit__cancel {
+  margin-top: 20px;
+  padding: 8px 4px;
+  font: inherit;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  color: var(--text-lead);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.audit__cancel:hover { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .audit__spinner { animation-duration: 2.4s; }
+  .audit__bar span { transition: none; }
+}
+
+/* ------------------------------------------------------------ Report */
+.report__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-right: 44px;      /* clears the close button */
+}
+.report__head .audit__title { margin-top: 0; word-break: break-word; }
+.report__meta {
+  margin-top: 6px;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+  color: var(--text-lead);
+}
+.report__shot {
+  flex: none;
+  width: 92px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  line-height: 0;
+  background: var(--surface);
+}
+.report__shot img { width: 100%; }
+.report__shot img[hidden] { display: none; }
+
+/* -- category rings -- */
+.scores {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 26px;
+}
+.score {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 16px 4px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+}
+.score svg { width: 60px; height: 60px; transform: rotate(-90deg); }
+.score__track { fill: none; stroke: var(--line-soft); stroke-width: 6; }
+.score__value {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dasharray .8s var(--ease);
+}
+.score__num {
+  position: absolute;
+  top: 38px;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.score__label {
+  font-size: 13px;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+  text-align: center;
+}
+.score--good { color: var(--ok); }
+.score--ok   { color: var(--warn); }
+.score--bad  { color: var(--danger); }
+.score--na   { color: var(--text-off); }
+
+/* -- blocks -- */
+.report__block { margin-top: 30px; }
+.report__h3 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.report__note {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+  color: var(--text-lead);
+  text-wrap: pretty;
+}
+
+/* -- vitals -- */
+.vitals {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+.vital {
+  padding: 14px 15px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: var(--r-lg);
+}
+.vital--good { border-left-color: var(--ok); }
+.vital--ok   { border-left-color: var(--warn); }
+.vital--bad  { border-left-color: var(--danger); }
+.vital__name {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text-pill);
+}
+.vital__value {
+  margin-top: 4px;
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.vital__note {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: var(--text-lead);
+}
+.vital__chip {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 9px;
+  font-size: 11px;
+  letter-spacing: -0.01em;
+  border-radius: 30px;
+  background: var(--line-header);
+  color: var(--text-body);
+}
+.vital--good .vital__chip { background: var(--ok-bg); color: var(--ok-ink); }
+.vital--ok   .vital__chip { background: var(--warn-bg); color: var(--warn-ink); }
+.vital--bad  .vital__chip { background: var(--danger-bg); color: var(--danger-ink); }
+
+/* -- findings -- */
+.findings { display: grid; gap: 8px; margin-top: 14px; }
+.finding {
+  position: relative;
+  padding: 14px 130px 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+.finding__title {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+}
+.finding__text {
+  margin-top: 5px;
+  font-size: 13px;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  color: var(--text-lead);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.finding__save {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  padding: 4px 10px;
+  font-size: 12px;
+  letter-spacing: -0.01em;
+  color: var(--danger-ink);
+  background: var(--danger-bg);
+  border-radius: 30px;
+  white-space: nowrap;
+}
+.findings--flat .finding { padding: 12px 16px; }
+.finding__tag {
+  display: inline-block;
+  margin-bottom: 5px;
+  padding: 3px 9px;
+  font-size: 11px;
+  letter-spacing: -0.01em;
+  color: var(--blue);
+  background: var(--blue-tint);
+  border-radius: 30px;
+}
+
+.report__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 30px;
+}
+.report__cta .btn { flex: 1 1 220px; border: 0; cursor: pointer; }
+.report__cta .btn--secondary { border: 1px solid var(--line-btn); }
+
+/* ------------------------------------------------- Audit, small screens */
+@media (max-width: 620px) {
+  .scores { grid-template-columns: repeat(2, 1fr); }
+  .report__shot { width: 68px; }
+  .finding { padding: 14px 16px; }
+  .finding__save { position: static; display: inline-block; margin-top: 8px; }
+  .report__cta .btn { flex: 1 1 100%; }
+  .audit__what { margin-top: 22px; padding-top: 20px; }
+}
+
+@media (max-width: 400px) {
+  .audit__step { padding-left: 16px; padding-right: 16px; }
+  .report__head { padding-right: 40px; }
+  .seg { width: 100%; }
+  .seg__opt { flex: 1; padding-inline: 10px; }
+}
+
+/* supporting lab metrics under the three headline vitals */
+.metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.metric {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 13px;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  color: var(--text-body);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 30px;
+}
+.metric b {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.metric--good b { color: var(--ok-ink); }
+.metric--ok   b { color: var(--warn-ink); }
+.metric--bad  b { color: var(--danger-ink); }
+
+@media (max-width: 520px) {
+  .vitals { grid-template-columns: 1fr; }
+  .vital { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 2px 12px; }
+  .vital__name { grid-column: 1; }
+  .vital__value { grid-column: 2; grid-row: 1 / span 2; align-self: center; text-align: right; }
+  .vital__note { grid-column: 1; }
+  .vital__chip { grid-column: 1 / -1; justify-self: start; }
+}
+
+/* The report can be long — keep the close button pinned to the top of the
+   dialog viewport. A zero-height sticky wrapper does that without taking part
+   in the layout. */
+.audit__closewrap {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  height: 0;
+}

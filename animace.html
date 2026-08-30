@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animace ikon — Profiweb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue:#3793d1; --ink:#000; --muted:#66676c; --line:#efefef; --surface:#fafafa;
+    --ease:cubic-bezier(.22,.61,.36,1); --back:cubic-bezier(.34,1.56,.64,1);
+  }
+  *,*::before,*::after { box-sizing:border-box; }
+  body {
+    margin:0; padding:48px 32px 120px; background:#fff; color:var(--ink);
+    font-family:Inter,system-ui,sans-serif; font-variation-settings:"opsz" 32;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1 { font-size:28px; font-weight:500; letter-spacing:-.02em; margin:0 0 8px; }
+  .lede { max-width:70ch; margin:0 0 24px; font-size:16px; line-height:1.65; color:var(--muted); }
+
+  .bar { display:flex; gap:10px; margin:0 0 36px; }
+  .btn {
+    font:inherit; font-size:14px; cursor:pointer; padding:9px 18px; border-radius:22px;
+    border:1px solid var(--line); background:#fff; color:var(--ink);
+    transition:background .2s var(--ease), border-color .2s var(--ease);
+  }
+  .btn:hover { background:var(--surface); border-color:#e0e0e0; }
+  .btn--primary { background:var(--blue); border-color:var(--blue); color:#fff; }
+  .btn--primary:hover { background:#2f83bd; border-color:#2f83bd; }
+
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(430px,1fr)); gap:20px; }
+  .v { border:1px solid var(--line); border-radius:14px; padding:20px 22px 16px; }
+  .v__head { display:flex; align-items:baseline; gap:10px; }
+  .v__no {
+    display:grid; place-items:center; flex:none; width:24px; height:24px;
+    font-size:12px; color:var(--blue); background:#e8f2fa; border-radius:50%;
+  }
+  .v__name { font-size:15px; font-weight:500; letter-spacing:-.01em; }
+  .v__tag { margin-left:auto; font-size:12px; color:var(--muted); }
+  .v__note { font-size:12.5px; color:var(--muted); line-height:1.55; margin:4px 0 0 34px; }
+
+  .stage {
+    margin:16px 0 12px; padding:22px 18px; background:var(--surface);
+    border-radius:10px; min-height:76px; display:flex; align-items:center;
+  }
+  /* přesně ten řádek výhod, co je na webu — stejná velikost i rozestupy */
+  .perks { display:flex; flex-wrap:wrap; gap:14px 30px; margin:0; padding:0; list-style:none; }
+  .perks li { display:flex; align-items:center; gap:9px; font-size:15px; color:var(--blue); white-space:nowrap; }
+  .perks svg {
+    flex:none; width:22px; height:22px; fill:none; stroke:currentColor;
+    stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .v footer { display:flex; align-items:center; gap:12px; min-height:38px; }
+  .v footer .hint { font-size:12.5px; color:var(--muted); }
+
+  /* pathLength="1" srovná všechny stopy na stejnou délku, takže jeden keyframe
+     nakreslí blesk i bublinu stejně dlouho bez měření v JS */
+  .perks path { stroke-dasharray:1; stroke-dashoffset:0; }
+  @keyframes draw { from { stroke-dashoffset:1 } to { stroke-dashoffset:0 } }
+  @keyframes pop { from { transform:scale(.4); opacity:0 } to { transform:scale(1); opacity:1 } }
+
+  /* 1 — kresba linky */
+  [data-v="1"].play path { animation:draw .5s var(--ease) both; }
+  [data-v="1"].play li:nth-child(2) path { animation-delay:.11s }
+  [data-v="1"].play li:nth-child(3) path { animation-delay:.22s }
+
+  /* 2 — vyskočení */
+  [data-v="2"].play svg { animation:pop .45s var(--back) both; }
+  [data-v="2"].play li:nth-child(2) svg { animation-delay:.09s }
+  [data-v="2"].play li:nth-child(3) svg { animation-delay:.18s }
+
+  /* 3 — zdola nahoru, i s textem */
+  @keyframes rise { from { transform:translateY(10px); opacity:0 } to { transform:none; opacity:1 } }
+  [data-v="3"].play li { animation:rise .5s var(--ease) both; }
+  [data-v="3"].play li:nth-child(2) { animation-delay:.08s }
+  [data-v="3"].play li:nth-child(3) { animation-delay:.16s }
+
+  /* 4 — každá po svém: blesk blikne, štítu se dokreslí fajfka, do bubliny se napíšou řádky */
+  @keyframes flash {
+    0% { transform:scale(.7); opacity:0 }
+    45% { transform:scale(1.18); opacity:1 }
+    72% { transform:scale(.96) }
+    100% { transform:scale(1); opacity:1 }
+  }
+  [data-v="4"].play li:nth-child(1) svg { animation:flash .55s var(--back) both; }
+  [data-v="4"].play li:nth-child(2) [data-p="0"] { animation:draw .45s var(--ease) both; animation-delay:.12s }
+  [data-v="4"].play li:nth-child(2) [data-p="1"] { animation:draw .3s var(--ease) both; animation-delay:.5s }
+  [data-v="4"].play li:nth-child(3) svg { animation:pop .4s var(--back) both; animation-delay:.28s }
+  [data-v="4"].play li:nth-child(3) [data-p="1"] { animation:draw .22s linear both; animation-delay:.66s }
+  [data-v="4"].play li:nth-child(3) [data-p="2"] { animation:draw .18s linear both; animation-delay:.86s }
+
+  /* 5 — puls na hover */
+  [data-v="5"] svg { transition:transform .28s var(--back); }
+  [data-v="5"] li:hover svg { transform:scale(1.18); }
+
+  /* 6 — šťouch na hover, každá jinak */
+  [data-v="6"] svg { transition:transform .3s var(--back); }
+  [data-v="6"] li:nth-child(1):hover svg { transform:rotate(-10deg) scale(1.1); }
+  [data-v="6"] li:nth-child(2):hover svg { transform:translateY(-3px) scale(1.06); }
+  @keyframes wiggle { 0%,100% { transform:none } 30% { transform:rotate(6deg) } 65% { transform:rotate(-5deg) } }
+  [data-v="6"] li:nth-child(3):hover svg { animation:wiggle .45s var(--ease); }
+
+  /* 7 — překlopení */
+  @keyframes flip {
+    from { transform:perspective(300px) rotateY(-88deg); opacity:0 }
+    to { transform:perspective(300px) rotateY(0); opacity:1 }
+  }
+  [data-v="7"].play svg { animation:flip .5s var(--ease) both; }
+  [data-v="7"].play li:nth-child(2) svg { animation-delay:.1s }
+  [data-v="7"].play li:nth-child(3) svg { animation-delay:.2s }
+
+  /* 8 — kresba a doskok */
+  @keyframes settle { from { transform:scale(.93) } to { transform:scale(1) } }
+  [data-v="8"].play path { animation:draw .45s var(--ease) both; }
+  [data-v="8"].play svg { animation:settle .35s var(--back) both; animation-delay:.45s }
+  [data-v="8"].play li:nth-child(2) path { animation-delay:.1s }
+  [data-v="8"].play li:nth-child(2) svg { animation-delay:.55s }
+  [data-v="8"].play li:nth-child(3) path { animation-delay:.2s }
+  [data-v="8"].play li:nth-child(3) svg { animation-delay:.65s }
+
+  @media (prefers-reduced-motion:reduce) {
+    .perks li, .perks svg, .perks path { animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Animace řádku výhod</h1>
+<p class="lede">
+  Osm verzí na finální trojici blesk / štít / zpráva. Každá scéna je přesně ten
+  řádek, co je na webu — stejná velikost, stejné rozestupy, stejná modrá. Na
+  webu by animace naběhla jednou, až se hero dostane do viewportu. Tady si ji
+  přehraj tlačítkem; verze <strong>5</strong> a <strong>6</strong> se spouštějí
+  najetím myší. Řekni číslo a nasadím ji.
+</p>
+
+<div class="bar">
+  <button class="btn btn--primary" id="all">Přehrát všechny</button>
+  <button class="btn" id="slow">Zpomalit 3×</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+var LABELS = ["Spuštěno za 2 týdny", "Pevná cena předem", "Zaměřeno na poptávky"];
+
+/* Cesty po jedné, aby šla animovat každá zvlášť — bez toho nejde odškrtnout
+   štít až po jeho dokreslení ani napsat řádky v bublině po sobě. */
+var ICONS = [
+  ['M13 2 4 14h7l-1 8 9-12h-7z'],
+  ['M12 3 4 6v6c0 5 3.4 7.6 8 9 4.6-1.4 8-4 8-9V6z', 'm9 12 2 2 4-4'],
+  ['M4 4.5h16a1.6 1.6 0 0 1 1.6 1.6v8.8a1.6 1.6 0 0 1-1.6 1.6h-8.6L7 21v-4.5H4a1.6 1.6 0 0 1-1.6-1.6V6.1A1.6 1.6 0 0 1 4 4.5z',
+   'M6.5 8.5h11', 'M6.5 12h7']
+];
+
+var VERSIONS = [
+  { n:"Kresba linky", tag:"0,7 s", hover:false,
+    note:"Ikony se nakreslí tahem, jedna po druhé. Nejvíc „ručně dělané“." },
+  { n:"Vyskočení", tag:"0,6 s", hover:false,
+    note:"Nafouknou se z nuly s lehkým přeskočením. Nejrychleji čitelné." },
+  { n:"Zdola nahoru", tag:"0,7 s", hover:false,
+    note:"Nastoupí celá položka i s textem. Nejklidnější, sedne k nástupu zbytku hera." },
+  { n:"Každá po svém", tag:"1,05 s", hover:false,
+    note:"Blesk blikne, štítu se dokreslí fajfka, do bubliny se napíšou řádky. Ikony pak něco říkají, ale je to nejdelší." },
+  { n:"Puls na hover", tag:"trvalé", hover:true,
+    note:"Žádný nástup, jen reakce na myš. Najeď na položku." },
+  { n:"Šťouch na hover", tag:"trvalé", hover:true,
+    note:"Jako 5, ale každá reaguje jinak — blesk se nakloní, štít povyskočí, bublina zavrtí. Najeď na položku." },
+  { n:"Překlopení", tag:"0,7 s", hover:false,
+    note:"Otočení kolem svislé osy. Nápadné — na tři ikony vedle sebe možná až moc." },
+  { n:"Kresba a doskok", tag:"1,0 s", hover:false,
+    note:"Verze 1 plus jemné dosednutí na konci. Nejdotaženější." }
+];
+
+function row() {
+  return '<ul class="perks">' + LABELS.map(function (label, i) {
+    return '<li><svg viewBox="0 0 24 24" aria-hidden="true">'
+      + ICONS[i].map(function (d, p) {
+          return '<path data-p="' + p + '" pathLength="1" d="' + d + '"/>';
+        }).join('')
+      + '</svg><span>' + label + '</span></li>';
+  }).join('') + '</ul>';
+}
+
+document.getElementById('grid').innerHTML = VERSIONS.map(function (v, i) {
+  return '<section class="v" data-v="' + (i + 1) + '">'
+    + '<div class="v__head"><span class="v__no">' + (i + 1) + '</span>'
+    + '<span class="v__name">' + v.n + '</span>'
+    + '<span class="v__tag">' + v.tag + '</span></div>'
+    + '<p class="v__note">' + v.note + '</p>'
+    + '<div class="stage">' + row() + '</div>'
+    + '<footer>'
+    + (v.hover ? '<span class="hint">spouští se najetím myší</span>'
+               : '<button class="btn" data-play>Přehrát</button>')
+    + '</footer></section>';
+}).join('');
+
+/* Třídu je nutné sundat, vynutit reflow a nasadit zpět — jinak prohlížeč
+   animaci nerestartuje, protože se hodnota vlastnosti nezměnila. */
+function play(sec) {
+  if (!sec.querySelector('[data-play]')) return;
+  sec.classList.remove('play');
+  void sec.offsetWidth;
+  sec.classList.add('play');
+}
+
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('[data-play]');
+  if (b) play(b.closest('.v'));
+});
+
+document.getElementById('all').addEventListener('click', function () {
+  document.querySelectorAll('.v').forEach(play);
+});
+
+var slowStyle = document.createElement('style');
+document.head.appendChild(slowStyle);
+var slow = false;
+
+document.getElementById('slow').addEventListener('click', function () {
+  slow = !slow;
+  slowStyle.textContent = slow
+    ? '.v.play li,.v.play svg,.v.play path{animation-duration:1.5s!important}'
+      + '[data-v="5"] svg,[data-v="6"] svg{transition-duration:.85s!important}'
+      + '[data-v="6"] li:nth-child(3):hover svg{animation-duration:1.35s!important}'
+    : '';
+  this.textContent = slow ? 'Zpět na normální rychlost' : 'Zpomalit 3×';
+  document.querySelectorAll('.v').forEach(play);
+});
+
+/* první průchod hned po načtení, ať je co vidět */
+document.querySelectorAll('.v').forEach(play);
+</script>
+
+</body>
+</html>

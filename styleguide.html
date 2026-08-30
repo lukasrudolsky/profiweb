@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profiweb — design systém</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styleguide.css">
+</head>
+<body class="sg">
+
+<header class="sg__masthead">
+  <div class="sg__wrap">
+    <a class="brand" href="index.html">
+      <img class="brand__mark" src="assets/logo.svg" alt="" width="37" height="33">
+      <span class="brand__name">Profiweb</span>
+    </a>
+    <p class="sg__lede">
+      Design systém. Každá hodnota níže je token z <code>:root</code> ve
+      <code>styles.css</code> — v pravidlech není jediný natvrdo psaný hex,
+      poloměr ani délka přechodu. Chybí-li hodnota, patří sem, ne do pravidla.
+    </p>
+    <p class="sg__back"><a href="index.html">← zpět na web</a></p>
+  </div>
+</header>
+
+<main class="sg__wrap">
+
+  <!-- ============================================================ Barvy -->
+  <section class="sg__section">
+    <h2 class="sg__h2">Barvy</h2>
+
+    <h3 class="sg__h3">Značka</h3>
+    <div class="sg__swatches" data-swatches="--blue,--blue-hover,--blue-tint,--blue-tint-2,--green"></div>
+
+    <h3 class="sg__h3">Text</h3>
+    <div class="sg__swatches" data-swatches="--ink,--text-pill,--text-body,--text-lead-2,--text-nav,--text-lead,--text-mute,--text-faint,--text-off"></div>
+
+    <h3 class="sg__h3">Plochy a linky</h3>
+    <div class="sg__swatches" data-swatches="--paper,--surface,--surface-2,--surface-3,--line,--line-btn,--line-header,--line-soft,--line-hover,--line-blue"></div>
+
+    <h3 class="sg__h3">Stavy</h3>
+    <div class="sg__swatches" data-swatches="--danger,--danger-ink,--danger-bg,--warn,--warn-ink,--warn-bg,--ok,--ok-ink,--ok-bg"></div>
+  </section>
+
+  <!-- ========================================================== Poloměry -->
+  <section class="sg__section">
+    <h2 class="sg__h2">Poloměry</h2>
+    <div class="sg__radii" data-radii="--r-sm,--r-md,--r-lg,--r-xl,--r-2xl,--r-pill"></div>
+  </section>
+
+  <!-- ============================================================ Stíny -->
+  <section class="sg__section">
+    <h2 class="sg__h2">Elevace</h2>
+    <div class="sg__shadows">
+      <div><span style="box-shadow: var(--shadow-pop)"></span><code>--shadow-pop</code><em>drawer</em></div>
+      <div><span style="box-shadow: var(--shadow-panel)"></span><code>--shadow-panel</code><em>mega menu</em></div>
+      <div><span style="box-shadow: var(--shadow-dialog)"></span><code>--shadow-dialog</code><em>modal</em></div>
+      <div><span style="box-shadow: var(--ring)"></span><code>--ring</code><em>focus</em></div>
+    </div>
+  </section>
+
+  <!-- ============================================================= Pohyb -->
+  <section class="sg__section">
+    <h2 class="sg__h2">Pohyb</h2>
+    <p class="sg__note">Tři rychlosti místo osmi. <code>--t-fast</code> pro barvy
+      a hover, <code>--t-base</code> pro změny stavu, <code>--t-slow</code> pro
+      cokoliv, co mění rozměr. Křivka je vždy <code>--ease</code>.</p>
+    <div class="sg__motion">
+      <div><span class="sg__bar" style="transition-duration: var(--t-fast)"></span><code>--t-fast</code></div>
+      <div><span class="sg__bar" style="transition-duration: var(--t-base)"></span><code>--t-base</code></div>
+      <div><span class="sg__bar" style="transition-duration: var(--t-slow)"></span><code>--t-slow</code></div>
+    </div>
+    <p class="sg__note">Najeďte myší na proužky.</p>
+  </section>
+
+  <!-- ========================================================== Typografie -->
+  <section class="sg__section">
+    <h2 class="sg__h2">Typografie</h2>
+    <p class="sg__note">Inter s <code>opsz 32</code>, což odpovídá řezu
+      Inter&nbsp;Display z Figmy. Nadpisy jsou fluidní přes <code>clamp()</code> —
+      svoji hodnotu z Figmy trefí přesně na 1200&nbsp;px.</p>
+    <div class="sg__type">
+      <p class="hero__title">Váš produkt je špička</p>
+      <p class="section-title">Poznáváte se v tom?</p>
+      <p class="eyebrow">CO SLYŠÍME NEJČASTĚJI</p>
+      <p class="card__title">Web neprodává</p>
+      <p class="card__text">Máte skvělou službu, ale web to neumí říct tak, aby to zákazník pochopil a chtěl.</p>
+    </div>
+  </section>
+
+  <!-- ========================================================== Tlačítka -->
+  <section class="sg__section">
+    <h2 class="sg__h2">Tlačítka</h2>
+    <p class="sg__note">Popisky se na hover přeskládají po znacích. Efekt staví
+      <code>site.js</code> až za běhu — bez JS zůstane obyčejné tlačítko.</p>
+    <div class="sg__row">
+      <a class="btn btn--primary" href="#">Rezervovat hovor</a>
+      <a class="btn btn--secondary" href="#">Audit webu zdarma</a>
+      <button class="btn btn--primary" disabled>Nedostupné</button>
+    </div>
+  </section>
+
+  <!-- =========================================================== Formulář -->
+  <section class="sg__section">
+    <h2 class="sg__h2">Formulářová pole</h2>
+    <div class="sg__form">
+      <div class="field">
+        <label for="sg-a">Jméno a příjmení <i>*</i></label>
+        <input id="sg-a" type="text" placeholder="Jan Novák">
+      </div>
+      <div class="field has-error">
+        <label for="sg-b">E-mail <i>*</i></label>
+        <input id="sg-b" type="email" value="petr@">
+        <p class="field__err">Zadejte platnou e-mailovou adresu.</p>
+      </div>
+      <fieldset class="field field--budget">
+        <legend>Orientační rozpočet <i>*</i></legend>
+        <div class="budget">
+          <label class="budget__opt"><input type="radio" name="sg-budget"><span>do 20 000 Kč</span></label>
+          <label class="budget__opt"><input type="radio" name="sg-budget" checked><span>nad 100 000 Kč</span></label>
+        </div>
+      </fieldset>
+    </div>
+  </section>
+
+  <!-- ========================================================== Kalendář -->
+  <section class="sg__section">
+    <h2 class="sg__h2">Kalendář</h2>
+    <p class="sg__note">Volný den musí být na první pohled jiný než zavřený —
+      dokud byly obě varianty skoro bílé, nešlo poznat, kam kliknout.</p>
+    <div class="sg__cal">
+      <div class="cal__grid">
+        <button class="cal__day" type="button">1</button>
+        <button class="cal__day is-today" type="button">2</button>
+        <button class="cal__day is-selected" type="button">3</button>
+        <button class="cal__day" type="button" disabled>4</button>
+        <button class="cal__day is-today" type="button" disabled>5</button>
+        <span class="cal__day cal__day--skeleton"></span>
+        <span class="cal__day cal__day--skeleton"></span>
+      </div>
+      <ul class="sg__legend">
+        <li>volný</li><li>dnes</li><li>vybraný</li><li>obsazený</li><li>dnes, obsazený</li><li colspan="2">načítání</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================= Stavy -->
+  <section class="sg__section">
+    <h2 class="sg__h2">Stavové hlášky</h2>
+    <p class="booking__error">Termíny se nepodařilo načíst: User not found</p>
+    <p class="booking__error is-muted">V tomto měsíci nejsou volné termíny.
+      <button class="booking__note-action" type="button">Zobrazit další měsíc</button></p>
+    <p class="booking__error is-pending">Rezervuji termín…</p>
+  </section>
+
+  <!-- ============================================================ Ikony -->
+  <section class="sg__section">
+    <h2 class="sg__h2">Ikony</h2>
+    <p class="sg__note">Jeden sprite, tah 1,6&nbsp;px, <code>currentColor</code>.
+      Kreslené pro mega menu — nejsou z Figmy, ta je neobsahovala.</p>
+    <div class="sg__icons" data-icons></div>
+  </section>
+
+</main>
+
+<script src="styleguide.js" defer></script>
+<script src="site.js" defer></script>
+</body>
+</html>

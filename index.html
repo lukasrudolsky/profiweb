@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profiweb — Váš produkt nebo služba je špička. Ukazuje to váš web?</title>
+<meta name="description" content="Navrhneme a vytvoříme web, který jasně ukáže hodnotu vaší firmy, získá důvěru zákazníků a pomůže proměnit návštěvníky v poptávky. Hotovo za 14 dní.">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="preload" as="image" href="assets/img/hero-gradient.webp">
+
+<!-- Klíč k Google PageSpeed Insights API pro "Audit webu zdarma".
+     Zdarma na console.cloud.google.com (PageSpeed Insights API → Create API key).
+     Bez klíče Google audit odmítne. Omezte klíč na svoji doménu (HTTP referrer). -->
+<meta name="psi-api-key" content="">
+</head>
+<body>
+
+<svg class="icon-sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-browser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M6.5 6.5h.01M9 6.5h.01"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h2.5l2.4 11.2a1.6 1.6 0 0 0 1.6 1.3h9.1a1.6 1.6 0 0 0 1.6-1.3L21 7H5.3"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 19a10 10 0 1 1 17.2 0"/><path d="m12 14 4-4"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.7 9.7 0 0 1 6.7 2.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.7 9.7 0 0 1-6.7-2.7L3 16"/><path d="M3 21v-5h5"/></symbol>
+  <symbol id="i-wrench" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z"/></symbol>
+  <symbol id="i-factory" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M3 21V10l6 4V10l6 4V6l6 4v11"/><path d="M9 21v-4h3v4"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9.5a3 3 0 0 1 5.8 1c0 2-2.9 2.6-2.9 4"/><path d="M12 17.5h.01"/></symbol>
+  <symbol id="i-layout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 2v8M2 6h8"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></symbol>
+  <symbol id="i-shapes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11.4 3.3a.7.7 0 0 1 1.2 0L16.3 9a.7.7 0 0 1-.6 1.1H8.3A.7.7 0 0 1 7.7 9z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/></symbol>
+</svg>
+
+<!-- ============================ Header ============================ -->
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand" href="#">
+      <img class="brand__mark" src="assets/logo.svg" alt="" width="37" height="33">
+      <span class="brand__name">Profiweb</span>
+    </a>
+
+    <button class="nav-toggle" type="button" id="nav-toggle"
+            aria-controls="site-nav" aria-expanded="false" aria-label="Otevřít menu">
+      <span class="nav-toggle__bars" aria-hidden="true"></span>
+    </button>
+
+    <nav class="site-nav" id="site-nav" aria-label="Hlavní navigace">
+      <div class="nav-item nav-item--mega">
+        <button class="nav-item__trigger" type="button" aria-expanded="false" aria-controls="mega-sluzby">
+          <svg class="nav-item__sign" aria-hidden="true"><use href="#i-plus"></use></svg>Služby
+        </button>
+        <div class="mega" id="mega-sluzby" data-mega>
+          <div class="mega__inner">
+            <div class="mega__col">
+              <p class="mega__label">Co stavíme</p>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-browser"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Firemní web</span>
+                  <span class="mega__desc">Vysvětlí vaši službu a získá důvěru.</span>
+                </span>
+              </a>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-target"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Landing page</span>
+                  <span class="mega__desc">Jedna stránka s jediným cílem: poptávka.</span>
+                </span>
+              </a>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cart"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">E-shop na míru</span>
+                  <span class="mega__desc">Prodej bez zbytečných kroků v košíku.</span>
+                </span>
+              </a>
+            </div>
+            <div class="mega__col">
+              <p class="mega__label">Co k tomu patří</p>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pen"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Copywriting</span>
+                  <span class="mega__desc">Texty, kterým zákazník rozumí napoprvé.</span>
+                </span>
+              </a>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gauge"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">SEO a výkon</span>
+                  <span class="mega__desc">Aby vás našli a stránka naskočila hned.</span>
+                </span>
+              </a>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-refresh"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Správa a rozvoj</span>
+                  <span class="mega__desc">Po spuštění vás v tom nenecháme.</span>
+                </span>
+              </a>
+            </div>
+            <div class="mega__col mega__col--media mega__col--case">
+              <p class="mega__label">Ukázka práce</p>
+              <a class="mega__case" href="#">
+                <span class="mega__shot">
+                  <img src="assets/macbook-bezel.png" alt="Web GreenService — péče o zahrady" loading="lazy" decoding="async">
+                </span>
+                <span class="mega__caption">
+                  <span class="mega__caseTitle">GreenService — péče o zahrady</span>
+                  <span class="mega__caseDesc">Landing page s kalkulačkou ceny a poptávkovým formulářem.</span>
+                </span>
+              </a>
+            </div>
+            <div class="mega__foot">
+              <span class="mega__footText">Nevíte, kudy začít? Projdeme to na patnáct minut.</span>
+              <a class="mega__footLink" href="#booking">Rezervovat hovor<svg class="mega__footArrow" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-item nav-item--mega">
+        <button class="nav-item__trigger" type="button" aria-expanded="false" aria-controls="mega-reseni">
+          <svg class="nav-item__sign" aria-hidden="true"><use href="#i-plus"></use></svg>Řešení
+        </button>
+        <div class="mega" id="mega-reseni" data-mega>
+          <div class="mega__inner">
+            <div class="mega__col">
+              <p class="mega__label">Podle oboru</p>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wrench"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Služby a řemesla</span>
+                  <span class="mega__desc">Plný kalendář místo rozdaných letáků.</span>
+                </span>
+              </a>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-heart"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Kliniky a ordinace</span>
+                  <span class="mega__desc">Pacient vám věří dřív, než dorazí.</span>
+                </span>
+              </a>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-factory"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">B2B a výroba</span>
+                  <span class="mega__desc">Složitou výrobu vysvětlíme srozumitelně.</span>
+                </span>
+              </a>
+            </div>
+            <div class="mega__col">
+              <p class="mega__label">Podle cíle</p>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-trend"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Více poptávek</span>
+                  <span class="mega__desc">Celý web vede k jedinému kroku.</span>
+                </span>
+              </a>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-shield"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Vyšší důvěra</span>
+                  <span class="mega__desc">Reference, čísla a konkrétní jména.</span>
+                </span>
+              </a>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-zap"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Rychlejší web</span>
+                  <span class="mega__desc">Načtení do jedné sekundy, i na mobilu.</span>
+                </span>
+              </a>
+            </div>
+            <div class="mega__col mega__col--media">
+              <p class="mega__label">Jak to probíhá</p>
+              <ol class="mega__steps">
+                <li>
+                  <span class="mega__stepNo">1</span>
+                  <span class="mega__text">
+                    <span class="mega__title">Konzultace</span>
+                    <span class="mega__desc">Patnáct minut o tom, co má web přinést.</span>
+                  </span>
+                </li>
+                <li>
+                  <span class="mega__stepNo">2</span>
+                  <span class="mega__text">
+                    <span class="mega__title">Návrh a texty</span>
+                    <span class="mega__desc">Uvidíte hotovou stránku dřív, než se začne kódovat.</span>
+                  </span>
+                </li>
+                <li>
+                  <span class="mega__stepNo">3</span>
+                  <span class="mega__text">
+                    <span class="mega__title">Spuštění a měření</span>
+                    <span class="mega__desc">Do dvou týdnů online. Pak sledujeme, kolik chodí poptávek.</span>
+                  </span>
+                </li>
+              </ol>
+            </div>
+            <div class="mega__foot">
+              <span class="mega__footText">Nevíte, kudy začít? Projdeme to na patnáct minut.</span>
+              <a class="mega__footLink" href="#booking">Rezervovat hovor<svg class="mega__footArrow" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a href="#">Reference</a>
+      <a href="#">Ceník</a>
+      <div class="nav-item nav-item--mega">
+        <button class="nav-item__trigger" type="button" aria-expanded="false" aria-controls="mega-proc">
+          <svg class="nav-item__sign" aria-hidden="true"><use href="#i-plus"></use></svg>Proč my
+        </button>
+        <div class="mega" id="mega-proc" data-mega>
+          <div class="mega__inner">
+            <div class="mega__col">
+              <p class="mega__label">Profiweb</p>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-users"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">O nás</span>
+                  <span class="mega__desc">Kdo vaše weby doopravdy staví.</span>
+                </span>
+              </a>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sparkle"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Kariéra</span>
+                  <span class="mega__desc">Hledáme posily do týmu.</span>
+                </span>
+              </a>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-help"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Časté dotazy</span>
+                  <span class="mega__desc">Ceny, rozsah i termíny na rovinu.</span>
+                </span>
+              </a>
+            </div>
+            <div class="mega__col">
+              <p class="mega__label">Otevřené pozice</p>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-layout"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Product designer</span>
+                  <span class="mega__desc">Navrhujte weby, které prodávají.</span>
+                </span>
+              </a>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-code"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Frontend vývojář</span>
+                  <span class="mega__desc">Převeďte návrh do rychlého kódu.</span>
+                </span>
+              </a>
+              <a class="mega__link" href="#">
+                <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-shapes"></use></svg>
+                <span class="mega__text">
+                  <span class="mega__title">Brand designer</span>
+                  <span class="mega__desc">Tvořte identity a vizuální styl.</span>
+                </span>
+              </a>
+            </div>
+            <div class="mega__col mega__col--media">
+              <p class="mega__label">Na čem si zakládáme</p>
+              <ul class="mega__facts">
+                <li>
+                  <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-shield"></use></svg>
+                  <span class="mega__text">
+                    <span class="mega__title">Pevná cena předem</span>
+                    <span class="mega__desc">Rozpočet se v průběhu nemění.</span>
+                  </span>
+                </li>
+                <li>
+                  <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-zap"></use></svg>
+                  <span class="mega__text">
+                    <span class="mega__title">Spuštění do 14 dní</span>
+                    <span class="mega__desc">Termín platí, ne „někdy na podzim“.</span>
+                  </span>
+                </li>
+                <li>
+                  <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-users"></use></svg>
+                  <span class="mega__text">
+                    <span class="mega__title">Jeden kontakt</span>
+                    <span class="mega__desc">Mluvíte s tím, kdo web staví.</span>
+                  </span>
+                </li>
+              </ul>
+            </div>
+            <div class="mega__foot">
+              <span class="mega__footText">Nevíte, kudy začít? Projdeme to na patnáct minut.</span>
+              <a class="mega__footLink" href="#booking">Rezervovat hovor<svg class="mega__footArrow" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a href="#">Články</a>
+      <a class="btn btn--primary site-nav__cta" href="#">Začít projekt</a>
+    </nav>
+
+    <a class="btn btn--primary btn--nav" href="#">Začít projekt</a>
+  </div>
+</header>
+
+<!-- ============================= Hero ============================= -->
+<section class="hero">
+  <div class="hero__gradient" aria-hidden="true"></div>
+
+  <!-- decorative 1440-wide track: collage band + laptop mockups -->
+  <div class="hero__deco" aria-hidden="true">
+    <div class="collage">
+      <!-- hero-gradient.js injects the <img> fallback and the <canvas> itself -->
+      <div class="collage__wash"
+           data-hero-gradient
+           data-src="assets/img/hero-gradient.webp"></div>
+    </div>
+
+    <!-- Every unit is identical, so translating the track by exactly one pitch
+         loops seamlessly. Nine units with a three-pitch lead cover viewports up
+         to ~4600px at the full pitch, and far wider once the pitch shrinks. -->
+    <div class="laptop-band">
+      <div class="laptop"><img class="laptop__plate" src="assets/laptop-screen.png" alt="" width="769" height="587" decoding="async"><div class="laptop__bezel"><img src="assets/macbook-bezel.png" alt="" decoding="async"></div></div>
+      <div class="laptop"><img class="laptop__plate" src="assets/laptop-screen.png" alt="" width="769" height="587" decoding="async"><div class="laptop__bezel"><img src="assets/macbook-bezel.png" alt="" decoding="async"></div></div>
+      <div class="laptop"><img class="laptop__plate" src="assets/laptop-screen.png" alt="" width="769" height="587" decoding="async"><div class="laptop__bezel"><img src="assets/macbook-bezel.png" alt="" decoding="async"></div></div>
+      <div class="laptop"><img class="laptop__plate" src="assets/laptop-screen.png" alt="" width="769" height="587" decoding="async"><div class="laptop__bezel"><img src="assets/macbook-bezel.png" alt="" decoding="async"></div></div>
+      <div class="laptop"><img class="laptop__plate" src="assets/laptop-screen.png" alt="" width="769" height="587" decoding="async"><div class="laptop__bezel"><img src="assets/macbook-bezel.png" alt="" decoding="async"></div></div>
+      <div class="laptop"><img class="laptop__plate" src="assets/laptop-screen.png" alt="" width="769" height="587" decoding="async"><div class="laptop__bezel"><img src="assets/macbook-bezel.png" alt="" decoding="async"></div></div>
+      <div class="laptop"><img class="laptop__plate" src="assets/laptop-screen.png" alt="" width="769" height="587" decoding="async"><div class="laptop__bezel"><img src="assets/macbook-bezel.png" alt="" decoding="async"></div></div>
+      <div class="laptop"><img class="laptop__plate" src="assets/laptop-screen.png" alt="" width="769" height="587" decoding="async"><div class="laptop__bezel"><img src="assets/macbook-bezel.png" alt="" decoding="async"></div></div>
+      <div class="laptop"><img class="laptop__plate" src="assets/laptop-screen.png" alt="" width="769" height="587" decoding="async"><div class="laptop__bezel"><img src="assets/macbook-bezel.png" alt="" decoding="async"></div></div>
+    </div>
+  </div>
+
+  <div class="container hero__content">
+    <p class="availability">
+      <span class="availability__pill">
+        <span class="availability__dot" aria-hidden="true"></span>
+        <span>2 místa dostupná na červenec</span>
+      </span>
+    </p>
+
+    <h1 class="hero__title">Váš produkt nebo služba je špička.<br>Ukazuje to váš web?</h1>
+
+    <p class="hero__lead">Navrhneme a vytvoříme web, který jasně ukáže hodnotu vaší firmy, získá důvěru zákazníků a pomůže proměnit návštěvníky v poptávky. Hotovo za 14 dní, ne za měsíce.</p>
+
+    <div class="hero__actions">
+      <a class="btn btn--primary btn--hero btn--badge" href="#booking" data-booking-open><span class="btn__badge"><svg class="btn__badgeIcon btn__badgeIcon--cam" viewBox="0 0 24 24" aria-hidden="true"><g class="btn__cam"><rect class="btn__camBody" x="2.4" y="6.4" width="12.2" height="11.2" rx="2.4"/><path class="btn__camLens" d="M20.8 8.4v7.2L14.6 12z"/></g></svg><svg class="btn__badgeIcon btn__badgeIcon--go" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15"/><path d="m13.5 6 6 6-6 6"/></svg></span><span class="btn__label">Rezervovat 15 min hovor</span></a>
+      <a class="btn btn--secondary btn--hero" href="#reference">Jak web může vypadat?</a>
+    </div>
+
+    <ul class="perks">
+      <li><svg class="perks__icon" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Spuštěno za 2 týdny</span></li>
+      <li><svg class="perks__icon" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M12 3 4 6v6c0 5 3.4 7.6 8 9 4.6-1.4 8-4 8-9V6z"/><path pathLength="1" d="m9 12 2 2 4-4"/></svg><span>Pevná cena předem</span></li>
+      <li><svg class="perks__icon" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M4 4.5h16a1.6 1.6 0 0 1 1.6 1.6v8.8a1.6 1.6 0 0 1-1.6 1.6h-8.6L7 21v-4.5H4a1.6 1.6 0 0 1-1.6-1.6V6.1A1.6 1.6 0 0 1 4 4.5z"/><path pathLength="1" d="M6.5 8.5h11"/><path pathLength="1" d="M6.5 12h7"/></svg><span>Zaměřeno na poptávky</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- =========================== Problems =========================== -->
+<section class="problems">
+  <div class="container">
+    <p class="eyebrow">CO SLYŠÍME NEJČASTĚJI</p>
+    <h2 class="section-title">Poznáváte se v tom?</h2>
+    <p class="section-lead">Web vám dnes postaví kdekdo. Málokdo ale tak, aby vaši práci skutečně prodal.</p>
+
+    <ul class="cards">
+      <li class="card">
+        <div class="card__media">
+          <div class="card__art" aria-hidden="true">
+            <img class="blob blob--3" src="assets/blob-3.svg" alt="" loading="lazy" decoding="async">
+            <img class="blob blob--2" src="assets/blob-2.svg" alt="" loading="lazy" decoding="async">
+            <img class="blob blob--1" src="assets/blob-1.svg" alt="" loading="lazy" decoding="async">
+            <img class="blob blob--4" src="assets/blob-4.svg" alt="" loading="lazy" decoding="async">
+            <div class="card__wash"><img src="assets/card1-bg.jpg" alt="" loading="lazy" decoding="async"></div>
+          </div>
+          <div class="browser">
+            <div class="browser__shot"><img src="assets/card1-screen.jpg" alt="Kalendář s rezervovanými hovory" loading="lazy" decoding="async"></div>
+          </div>
+          <div class="stat-badge">
+            <img class="stat-badge__ring" src="assets/badge-ring.svg" alt="" width="26" height="26" loading="lazy" decoding="async">
+            <img class="stat-badge__avatar" src="assets/badge-avatar.png" alt="" width="22" height="22" loading="lazy" decoding="async">
+            <p class="stat-badge__title">Tento měsíc</p>
+            <p class="stat-badge__meta">Nové poptávky z webu: 0</p>
+          </div>
+        </div>
+        <div class="card__body">
+          <h3 class="card__title">Web neprodává</h3>
+          <p class="card__text">Máte skvělou službu, ale web to neumí říct tak, aby to zákazník pochopil a chtěl.</p>
+        </div>
+      </li>
+
+      <li class="card">
+        <div class="card__media">
+          <img class="card__art-flat" src="assets/card-bg-frame.svg" alt="" aria-hidden="true" loading="lazy" decoding="async">
+          <div class="browser">
+            <div class="browser__shot"><img src="assets/card23-screen.jpg" alt="Kalendář bez rezervací" loading="lazy" decoding="async"></div>
+          </div>
+        </div>
+        <div class="card__body">
+          <h3 class="card__title">Web neprodává</h3>
+          <p class="card__text">Máte skvělou službu, ale web to neumí říct tak, aby to zákazník pochopil a chtěl.</p>
+        </div>
+      </li>
+
+      <li class="card">
+        <div class="card__media">
+          <img class="card__art-flat" src="assets/card-bg-frame.svg" alt="" aria-hidden="true" loading="lazy" decoding="async">
+          <div class="browser">
+            <div class="browser__shot"><img src="assets/card23-screen.jpg" alt="Kalendář bez rezervací" loading="lazy" decoding="async"></div>
+          </div>
+        </div>
+        <div class="card__body">
+          <h3 class="card__title">Web neprodává</h3>
+          <p class="card__text">Máte skvělou službu, ale web to neumí říct tak, aby to zákazník pochopil a chtěl.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ====================== Booking modal (15 min) ====================== -->
+<div class="booking" id="booking" hidden>
+  <div class="booking__backdrop" data-booking-close></div>
+
+  <div class="booking__dialog" role="dialog" aria-modal="true" aria-labelledby="booking-title">
+    <button class="booking__close" type="button" data-booking-close aria-label="Zavřít rezervaci">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+
+    <!-- ---------- Step 1: details ---------- -->
+    <div class="booking__step is-active" data-step="form">
+      <div class="booking__layout booking__layout--form">
+        <aside class="booking__aside">
+          <h2 class="booking__title">Úvodní hovor</h2>
+          <ul class="booking__meta">
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>
+              <span>15 minut</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="M15 10.5l6-3.5v10l-6-3.5"/></svg>
+              <span>Odkaz na hovor pošleme e-mailem</span>
+            </li>
+          </ul>
+
+          <div class="booking__agenda">
+            <p class="booking__agenda-title">Co na hovoru probereme</p>
+            <ol>
+              <li>Kde váš web ztrácí poptávky.</li>
+              <li>Co by šlo zlepšit jako první.</li>
+              <li>Kolik by to stálo a jak dlouho trvalo.</li>
+            </ol>
+          </div>
+
+          <p class="booking__note">Zdarma a bez závazků. Termín můžete kdykoli zrušit.</p>
+        </aside>
+
+        <form class="booking__form" data-booking-form novalidate>
+          <p class="booking__progress" data-progress>Krok <b data-progress-now>1</b> ze 2</p>
+
+          <div class="booking__pane is-active" data-pane="kontakt">
+            <div class="field">
+            <label for="bk-phone">Telefon <i>*</i></label>
+            <div class="tel">
+            <div class="tel__cc" data-cc>
+            <button class="tel__btn" type="button" data-cc-btn
+            aria-haspopup="listbox" aria-expanded="false" aria-label="Předvolba země">
+            <span class="tel__flag" data-cc-flag aria-hidden="true"></span>
+            <span class="tel__code" data-cc-code>+420</span>
+            <svg class="tel__caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+            </button>
+            <input type="hidden" id="bk-cc" data-tel-code value="+420">
+
+            <div class="cc" data-cc-panel hidden>
+            <div class="cc__searchwrap">
+            <svg class="cc__searchicon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            <input id="bk-cc-search" class="cc__search" type="text" data-cc-search autocomplete="off" spellcheck="false"
+            placeholder="Hledat zemi nebo předvolbu" aria-label="Hledat zemi nebo předvolbu">
+            </div>
+            <ul class="cc__list" role="listbox" aria-label="Předvolby zemí" data-cc-list></ul>
+            <p class="cc__empty" data-cc-empty hidden>Žádná země neodpovídá.</p>
+            </div>
+            </div>
+            <input id="bk-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="777 123 456" required>
+            </div>
+            <p class="field__err" data-err-for="phone">Zadejte prosím platné telefonní číslo.</p>
+            </div>
+
+            <div class="field">
+            <label for="bk-name">Jméno a příjmení <i>*</i></label>
+            <input id="bk-name" name="name" type="text" autocomplete="name" required>
+            <p class="field__err" data-err-for="name">Vyplňte prosím své jméno.</p>
+            </div>
+
+            <div class="field">
+              <label for="bk-email">E-mail <i>*</i></label>
+              <input id="bk-email" name="email" type="email" autocomplete="email" required>
+              <p class="field__err" data-err-for="email">Zadejte platnou e-mailovou adresu.</p>
+            </div>
+
+            <button class="btn btn--primary booking__submit" type="button" data-pane-next>Pokračovat</button>
+          </div>
+
+          <div class="booking__pane" data-pane="projekt">
+            <button class="booking__back booking__back--pane" type="button" data-pane-back>
+              <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Zpět na kontakt
+            </button>
+
+            <div class="field">
+              <label for="bk-web">Web firmy</label>
+              <input id="bk-web" name="web" type="text" inputmode="url" placeholder="vasefirma.cz">
+            </div>
+
+            <fieldset class="field field--budget">
+            <legend>Orientační rozpočet <i>*</i></legend>
+            <div class="budget">
+            <label class="budget__opt">
+            <input type="radio" name="budget" value="do 20 000 Kč" data-budget-low>
+            <span>do 20 000 Kč</span>
+            </label>
+            <label class="budget__opt">
+            <input type="radio" name="budget" value="20 000 – 50 000 Kč">
+            <span>20 000 – 50 000 Kč</span>
+            </label>
+            <label class="budget__opt">
+            <input type="radio" name="budget" value="50 000 – 100 000 Kč">
+            <span>50 000 – 100 000 Kč</span>
+            </label>
+            <label class="budget__opt">
+            <input type="radio" name="budget" value="nad 100 000 Kč">
+            <span>nad 100 000 Kč</span>
+            </label>
+            </div>
+            <p class="field__err" data-err-for="budget">Vyberte prosím orientační rozpočet.</p>
+            <p class="budget__note" data-budget-note hidden></p>
+            </fieldset>
+
+            <div class="field">
+              <label for="bk-note">Co chcete probrat?</label>
+              <textarea id="bk-note" name="note" rows="2" placeholder="Pár vět o vašem projektu…"></textarea>
+            </div>
+
+            <button class="btn btn--primary booking__submit" type="submit">Pokračovat na termíny</button>
+          </div>
+        </form>
+
+        <div class="booking__tease" aria-hidden="true">
+          <div class="booking__teaseCal">
+            <div class="booking__teaseInner">
+              <p class="cal__month" data-tease-month>&nbsp;</p>
+              <div class="cal__weekdays">
+                <span>Po</span><span>Út</span><span>St</span><span>Čt</span><span>Pá</span><span>So</span><span>Ne</span>
+              </div>
+              <div class="cal__grid" data-tease-grid></div>
+            </div>
+            <p class="booking__teaseMsg">Nejdřív vyplňte formulář,<br>pak vyberete termín.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="booking__step" data-step="pick">
+      <div class="booking__layout">
+        <aside class="booking__aside">
+          <button class="booking__back" type="button" data-booking-back>
+            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Zpět na údaje
+          </button>
+          <div class="booking__brand">
+            <img src="assets/logo.svg" alt="" width="30" height="27">
+            <span>Profiweb</span>
+          </div>
+          <h2 class="booking__title" id="booking-title">Úvodní hovor</h2>
+          <p class="booking__subtitle">Nezávazně projdeme váš web, cíle a co by šlo zlepšit.</p>
+
+          <ul class="booking__meta">
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>
+              <span>15 minut</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="M15 10.5l6-3.5v10l-6-3.5"/></svg>
+              <span>Google Meet</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.5 12h17M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg>
+              <span data-tz>Evropa/Praha</span>
+            </li>
+            <li class="booking__meta-sum" data-summary hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3.5v3M16 3.5v3"/></svg>
+              <span data-summary-text></span>
+            </li>
+          </ul>
+
+
+          <p class="booking__note">Zdarma a bez závazků. Termín můžete kdykoli zrušit.</p>
+        </aside>
+
+        <section class="booking__calendar" aria-label="Výběr data">
+          <header class="cal__head">
+            <button class="cal__nav" type="button" data-cal-prev aria-label="Předchozí měsíc">
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <p class="cal__month" data-cal-month aria-live="polite"></p>
+            <button class="cal__nav" type="button" data-cal-next aria-label="Následující měsíc">
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </header>
+
+          <div class="cal__weekdays" aria-hidden="true">
+            <span>Po</span><span>Út</span><span>St</span><span>Čt</span><span>Pá</span><span>So</span><span>Ne</span>
+          </div>
+
+          <div class="cal__grid" data-cal-grid role="grid"></div>
+        </section>
+
+        <section class="booking__slots" aria-label="Výběr času">
+          <p class="slots__day" data-slots-day>Vyberte den</p>
+          <div class="slots__list" data-slots-list>
+            <p class="slots__empty">Vlevo vyberte den, ke kterému zobrazíme volné časy.</p>
+          </div>
+          <button class="btn btn--primary booking__confirm" type="button" data-booking-confirm disabled>Potvrdit rezervaci</button>
+          <p class="booking__legal">Odesláním souhlasíte se zpracováním údajů.</p>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- ---------- Step 2: pick a date + time ---------- -->
+
+    <!-- ---------- Step 3: confirmation ---------- -->
+    <div class="booking__step" data-step="done">
+      <div class="booking__done">
+        <span class="booking__check" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="30" height="30"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h2 class="booking__title">Termín je rezervovaný</h2>
+        <p class="booking__subtitle">Potvrzení i odkaz na hovor jsme poslali na <b data-done-email></b>.</p>
+
+        <dl class="booking__recap">
+          <div><dt>Kdy</dt><dd data-summary-text></dd></div>
+          <div><dt>Délka</dt><dd>15 minut</dd></div>
+          <div><dt>Kde</dt><dd>Google Meet</dd></div>
+        </dl>
+
+        <button class="btn btn--primary booking__submit" type="button" data-booking-close>Hotovo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ======================= Website audit modal ======================= -->
+<div class="audit" id="audit" hidden>
+  <div class="audit__backdrop" data-audit-close></div>
+
+  <div class="audit__dialog" role="dialog" aria-modal="true" aria-labelledby="audit-title" tabindex="-1">
+    <div class="audit__closewrap">
+      <button class="audit__close" type="button" data-audit-close aria-label="Zavřít audit">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    </div>
+
+    <!-- ---------- Step 1: the URL ---------- -->
+    <div class="audit__step is-active" data-astep="start">
+      <div class="audit__head">
+        <p class="audit__badge">Zdarma · bez registrace</p>
+        <h2 class="audit__title" id="audit-title">Audit webu zdarma</h2>
+        <p class="audit__lead">Zadejte adresu a my na ní spustíme skutečné měření přes Google Lighthouse — rychlost, Core Web Vitals, SEO i přístupnost. Výsledek máte za půl minuty.</p>
+      </div>
+
+      <form class="audit__form" data-audit-form novalidate>
+        <div class="field">
+          <label for="au-url">Adresa webu</label>
+          <input id="au-url" name="url" type="text" inputmode="url" autocomplete="url"
+                 placeholder="vasefirma.cz" spellcheck="false" required>
+          <p class="field__err" data-err-for="url">Zadejte prosím platnou adresu, např. vasefirma.cz</p>
+        </div>
+
+        <div class="seg" role="group" aria-label="Zařízení pro měření">
+          <button class="seg__opt is-active" type="button" data-strategy="mobile" aria-pressed="true">Mobil</button>
+          <button class="seg__opt" type="button" data-strategy="desktop" aria-pressed="false">Počítač</button>
+        </div>
+
+        <button class="btn btn--primary audit__submit" type="submit">Spustit audit</button>
+      </form>
+
+      <ul class="audit__what">
+        <li><b>Rychlost</b><span>Jak dlouho čeká návštěvník na obsah</span></li>
+        <li><b>Core Web Vitals</b><span>Metriky, které Google používá pro hodnocení</span></li>
+        <li><b>SEO</b><span>Co brání vyhledávačům web správně přečíst</span></li>
+        <li><b>Přístupnost</b><span>Bariéry pro čtečky obrazovky a ovládání klávesnicí</span></li>
+      </ul>
+
+      <p class="audit__legal">Měří <b>Google PageSpeed Insights</b> (Lighthouse). Adresu nikam neukládáme.</p>
+    </div>
+
+    <!-- ---------- Step 2: measuring ---------- -->
+    <div class="audit__step" data-astep="run">
+      <div class="audit__running">
+        <span class="audit__spinner" aria-hidden="true"></span>
+        <h2 class="audit__title">Měříme váš web</h2>
+        <p class="audit__url" data-run-url></p>
+        <p class="audit__status" data-run-status role="status" aria-live="polite">Připojujeme se k webu…</p>
+        <div class="audit__bar" aria-hidden="true"><span data-run-bar></span></div>
+        <p class="audit__hint">Lighthouse načítá stránku na pomalém připojení, aby změřil reálnou zkušenost. Obvykle to trvá 20–40 sekund.</p>
+        <button class="audit__cancel" type="button" data-audit-cancel>Zrušit měření</button>
+      </div>
+    </div>
+
+    <!-- ---------- Step 3: the report ---------- -->
+    <div class="audit__step" data-astep="result">
+      <div class="report">
+        <header class="report__head">
+          <div>
+            <h2 class="audit__title" data-r-host></h2>
+            <p class="report__meta" data-r-meta></p>
+          </div>
+          <div class="report__shot"><img alt="Náhled testované stránky" data-r-shot hidden></div>
+        </header>
+
+        <ul class="scores" data-r-scores></ul>
+
+        <section class="report__block">
+          <h3 class="report__h3">Core Web Vitals</h3>
+          <p class="report__note" data-r-cwv-note></p>
+          <ul class="vitals" data-r-vitals></ul>
+          <ul class="metrics" data-r-metrics></ul>
+        </section>
+
+        <section class="report__block" data-r-opps-block hidden>
+          <h3 class="report__h3">Co web nejvíc zpomaluje</h3>
+          <ul class="findings" data-r-opps></ul>
+        </section>
+
+        <section class="report__block" data-r-issues-block hidden>
+          <h3 class="report__h3">Co je potřeba opravit</h3>
+          <ul class="findings findings--flat" data-r-issues></ul>
+        </section>
+
+        <div class="report__cta">
+          <a class="btn btn--primary" href="#booking" data-booking-open data-audit-close>Probrat výsledky na 15 min hovoru</a>
+          <button class="btn btn--secondary" type="button" data-audit-again>Otestovat jiný web</button>
+        </div>
+        <p class="audit__legal">Zdroj dat: <a data-r-full href="#" target="_blank" rel="noopener">plný report na PageSpeed Insights</a> · Lighthouse od Googlu</p>
+      </div>
+    </div>
+
+    <!-- ---------- Error ---------- -->
+    <div class="audit__step" data-astep="error">
+      <div class="audit__running">
+        <span class="audit__warn" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26"><path d="M12 8v5M12 16.5v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        </span>
+        <h2 class="audit__title">Audit se nepodařilo dokončit</h2>
+        <p class="audit__status" data-err-msg role="status"></p>
+        <div class="report__cta">
+          <button class="btn btn--primary" type="button" data-audit-retry>Zkusit znovu</button>
+          <a class="btn btn--secondary" href="#booking" data-booking-open data-audit-close>Domluvit 15 min hovor</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/hero-gradient.js" defer></script>
+<script src="site.js" defer></script>
+<script src="booking.js" defer></script>
+<script src="assets/js/country-codes.js" defer></script>
+<script src="audit.js" defer></script>
+</body>
+</html>

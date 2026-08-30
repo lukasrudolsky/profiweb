@@ -1,0 +1,177 @@
+/* =====================================================================
+   Style guide chrome only. Every specimen on the page is styled by
+   styles.css — nothing here restyles a component, or the guide would
+   stop telling the truth about the site.
+   ===================================================================== */
+.sg { background: var(--paper); }
+
+.sg__wrap {
+  width: min(var(--container), 100% - (var(--gutter) * 2));
+  margin-inline: auto;
+}
+
+.sg__masthead {
+  padding: 48px 0 40px;
+  border-bottom: 1px solid var(--line-header);
+}
+.sg__lede {
+  max-width: 62ch;
+  margin-top: 22px;
+  font-size: 17px;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  color: var(--text-body);
+}
+.sg__back { margin-top: 14px; font-size: 15px; }
+.sg__back a { color: var(--blue); }
+.sg__back a:hover { color: var(--blue-hover); }
+
+.sg__section {
+  padding: 44px 0;
+  border-bottom: 1px solid var(--line-header);
+}
+.sg__h2 {
+  margin-bottom: 6px;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.sg__h3 {
+  margin: 26px 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+.sg__note {
+  max-width: 62ch;
+  margin: 10px 0 20px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-body);
+}
+.sg code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+.sg em { font-style: normal; color: var(--text-lead); }
+
+/* swatches */
+.sg__swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+}
+.sg__swatch { margin: 0; }
+.sg__chip {
+  display: block;
+  height: 62px;
+  border: 1px solid var(--line-header);
+  border-radius: var(--r-md);
+}
+.sg__swatch figcaption,
+.sg__radius figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+  font-size: 12.5px;
+}
+
+/* radii */
+.sg__radii {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+}
+.sg__radius { margin: 0; }
+.sg__radius span {
+  display: block;
+  height: 76px;
+  background: var(--blue-tint);
+  border: 1px solid var(--line-blue);
+}
+
+/* shadows */
+.sg__shadows {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 26px;
+  padding: 10px 6px 6px;
+}
+.sg__shadows > div { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; }
+.sg__shadows span {
+  height: 76px;
+  background: var(--paper);
+  border-radius: var(--r-lg);
+}
+
+/* motion */
+.sg__motion { display: grid; gap: 14px; max-width: 420px; }
+.sg__motion > div { display: flex; align-items: center; gap: 14px; }
+.sg__bar {
+  display: block;
+  width: 60px;
+  height: 12px;
+  background: var(--blue);
+  border-radius: var(--r-pill);
+  transition-property: width;
+  transition-timing-function: var(--ease);
+}
+.sg__motion > div:hover .sg__bar { width: 260px; }
+
+/* type specimens */
+.sg__type { display: grid; gap: 18px; }
+.sg__type p { margin: 0; }
+
+.sg__row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.sg__form { max-width: 460px; }
+
+/* calendar */
+.sg__cal { max-width: 420px; }
+.sg__cal .cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.sg__legend {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 10.5px;
+  line-height: 1.3;
+  color: var(--text-mute);
+  text-align: center;
+}
+
+/* icons */
+.sg__icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 14px;
+}
+.sg__icon {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  margin: 0;
+  padding: 16px 8px;
+  background: var(--surface);
+  border-radius: var(--r-md);
+}
+.sg__icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--ink);
+}
+.sg__icon figcaption { font-size: 11.5px; color: var(--text-body); }
+
+.sg .booking__error { max-width: 62ch; }
