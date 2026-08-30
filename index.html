@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
-<link rel="preload" as="image" href="assets/img/hero-gradient.webp">
+<link rel="preload" as="image" href="assets/img/hero-bg.webp" fetchpriority="high">
 
 <!-- Klíč k Google PageSpeed Insights API pro "Audit webu zdarma".
      Zdarma na console.cloud.google.com (PageSpeed Insights API → Create API key).
@@ -320,10 +320,9 @@
   <!-- decorative 1440-wide track: collage band + laptop mockups -->
   <div class="hero__deco" aria-hidden="true">
     <div class="collage">
-      <!-- hero-gradient.js injects the <img> fallback and the <canvas> itself -->
-      <div class="collage__wash"
-           data-hero-gradient
-           data-src="assets/img/hero-gradient.webp"></div>
+      <div class="collage__wash">
+        <img src="assets/img/hero-bg.webp" alt="" width="1440" height="760" fetchpriority="high" decoding="async">
+      </div>
     </div>
 
     <!-- Every unit is identical, so translating the track by exactly one pitch
@@ -776,7 +775,6 @@
   </div>
 </div>
 
-<script src="assets/js/hero-gradient.js" defer></script>
 <script src="site.js" defer></script>
 <script src="booking.js" defer></script>
 <script src="assets/js/country-codes.js" defer></script>

@@ -705,41 +705,25 @@ p, h1, h2, h3 { margin: 0; }
   transform: translateX(-50%);
   overflow: hidden;
 }
-/* Figma 920:39 "Rectangle" — the iridescent wash, now driven by
-   hero-gradient.js. Only the box is ours: the texture already has Figma's
-   transform baked in (180° flip, 100.03% x 252.68% scale, bottom 723px crop),
-   so no rotation or inner sizing here — applying it again would double it.
-   Ratios are against the 1050 band so it tracks the hero as it scales.
-   position must stay non-static: the injected canvas positions against it. */
+/* Figma 920:39 "Rectangle" — the wash behind the hero. Was a WebGL shader
+   drifting over a texture; it is a still image now, at request. The box keeps
+   the Figma ratios so it tracks the hero as it scales, and the picture is
+   covered into it rather than stretched — the source is 1440x760 and the box
+   is wider than that on most screens. */
 .collage__wash {
   position: absolute;
   left: 0;
   top: 31.143%;              /* 327 / 1050 */
   width: 100%;
   height: 68.857%;           /* 723 / 1050 */
-}
-
-/* ---- animated holographic surface (assets/js/hero-gradient.js) ----
-   The host keeps its own size and position; these rules only lay out what the
-   script injects into it. */
-[data-hero-gradient] {
   overflow: hidden;
-  isolation: isolate;
 }
-[data-hero-gradient] > canvas,
-[data-hero-gradient] > img {
-  position: absolute;
-  inset: 0;
+.collage__wash img {
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
-}
-/* the static export holds the frame until the shader draws */
-[data-hero-gradient] > img {
   object-fit: cover;
-  transition: opacity var(--t-base) ease;
 }
-[data-hero-gradient][data-gl="on"] > img { opacity: 0; }
 
 /* -- MacBook mockups (Figma 781:13 / 781:22 / 781:27), as an endless marquee --
    Figma spaces the three bezels at x -233 / 458 / 1151, i.e. a 693px pitch with
