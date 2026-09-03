@@ -127,7 +127,7 @@
 <h1>Rámečky mockupu</h1>
 <p class="lede">
   Deset verzí toho rámečku kolem screenshotu, vedle sebe a se stejným obrázkem
-  uvnitř. Šedá deska pod ním i její stín jsou zapečené v <code>laptop-screen.png</code> —
+  uvnitř. Šedá deska pod ním i její stín jsou zapečené v <code>dashboard-app-screenshot.png</code> —
   v CSS se dá měnit jen ten rámeček, tak měním jen ten. Tlačítkem si desku
   můžeš odklidit a porovnat samotné rámečky. Řekni číslo a nasadím ho.
 </p>
@@ -159,8 +159,8 @@ document.getElementById('grid').innerHTML = FRAMES.map(function (f, i) {
     + '<span class="card__spec">' + f.spec + '</span></div>'
     + '<p class="card__note">' + f.note + '</p>'
     + '<div class="unit">'
-    + '<img class="unit__plate" src="assets/laptop-screen.png" alt="" decoding="async">'
-    + '<div class="bezel"><img src="assets/macbook-bezel.png" alt="" decoding="async"></div>'
+    + '<img class="unit__plate" src="../assets/images/dashboard-app-screenshot.png" alt="" decoding="async">'
+    + '<div class="bezel"><img src="../assets/images/web-greenservice-pece-o-zahrady.png" alt="" decoding="async"></div>'
     + '</div></section>';
 }).join('');
 

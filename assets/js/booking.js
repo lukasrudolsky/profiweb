@@ -527,8 +527,16 @@
       /* A hidden pane must leave the tab order too, not just the screen. */
       if (on) p.removeAttribute('inert'); else p.setAttribute('inert', '');
     });
+    var step = name === 'projekt' ? 2 : 1;
     var now = root.querySelector('[data-progress-now]');
-    if (now) now.textContent = name === 'projekt' ? '2' : '1';
+    if (now) now.textContent = String(step);
+    var bar = root.querySelector('[data-progress-bar]');
+    var fill = root.querySelector('[data-progress-fill]');
+    if (bar && fill) {
+      var pct = Math.round((step / 2) * 100);
+      fill.style.width = pct + '%';
+      bar.setAttribute('aria-valuenow', String(pct));
+    }
     if (dialog) dialog.scrollTop = 0;
   }
 

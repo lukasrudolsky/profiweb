@@ -44,6 +44,7 @@
 
   /* -- surfaces + lines -------------------------------------------- */
   --paper:        #ffffff;
+  --menu-bg:      #f7f7f7;  /* header bar, mega panels, mobile drawer */
   --surface:      #fafafa;
   --surface-2:    #f2f2f2;  /* secondary button hover */
   --surface-3:    #f0f2f4;  /* skeleton cells */
@@ -194,6 +195,7 @@ p, h1, h2, h3 { margin: 0; }
    split into the sides and the real gap came out 36px instead of the 22px
    declared here. Padding alone sets the width, as on every other button. */
 .btn--nav { height: 44px; font-size: 16px; padding-inline: 22px; }
+
 /* Figma's 270/234 were kept here as floors, but the secondary's floor sat 6px
    above its natural width, so its real gap came out 34px next to the
    primary's 31px. Padding decides now; the primary is unaffected (it was
@@ -335,12 +337,16 @@ p, h1, h2, h3 { margin: 0; }
 /* ----------------------------------------------------------------- Header */
 .site-header {
   position: sticky;
-  top: 0;
+  top: 12px;
   z-index: 30;
+  /* Floating bar: same width as the page content, offset from the very top. */
+  width: min(var(--container), 100% - (var(--gutter) * 2));
+  margin: 12px auto 0;
   /* Figma had 110px, which reads as a lot of empty band on a real screen.
      Everything else in the header scales off this. */
   height: clamp(58px, 5.4vw, 76px);
-  background: var(--paper);
+  background: var(--menu-bg);
+  border-radius: 16px;
   /* No shadow at rest: at the top of the page the bar is part of the page, so
      an edge there just reads as a line. It fades in only once content starts
      passing underneath — see .is-stuck. */
@@ -460,8 +466,9 @@ p, h1, h2, h3 { margin: 0; }
   z-index: 25;
   /* full bleed like the bar above it; only the content inside is contained */
   transform: translateY(-12px);
-  background: var(--paper);
+  background: var(--menu-bg);
   border: 0;
+  border-radius: 16px;
   box-shadow: var(--shadow-panel);
   opacity: 0;
   visibility: hidden;
@@ -548,9 +555,10 @@ p, h1, h2, h3 { margin: 0; }
 
 /* -- third column, "Ukázka práce" --
    This replaced a four-up gallery in which two of the four tiles were
-   card1-bg.jpg and hero-collage.jpg — decorative background gradients, not
-   work. Under a label promising samples they read as filler, and the odd
-   crops left the column ragged. One real screenshot, shown properly. */
+   prism-wash-blue.jpg and prism-wash-dark.jpg — decorative background
+   gradients, not work. Under a label promising samples they read as filler,
+   and the odd crops left the column ragged. One real screenshot, shown
+   properly. */
 .site-nav .mega__case {
   display: block;
   padding: 16px 24px 0;
@@ -666,6 +674,10 @@ p, h1, h2, h3 { margin: 0; }
   position: relative;
   height: calc(1235px - var(--hero-tighten));   /* Figma y 109 -> 1344 */
   isolation: isolate;
+  padding-bottom: 120px;   /* room for the arced laptop row's dipped edge cards, see .laptop-band-arc in site.js */
+}
+@media (max-width: 767px) {
+  .hero { padding-bottom: 40px; }
 }
 
 .hero__gradient {
@@ -706,16 +718,16 @@ p, h1, h2, h3 { margin: 0; }
   overflow: hidden;
 }
 /* Figma 920:39 "Rectangle" — the wash behind the hero. Was a WebGL shader
-   drifting over a texture; it is a still image now, at request. The box keeps
-   the Figma ratios so it tracks the hero as it scales, and the picture is
-   covered into it rather than stretched — the source is 1440x760 and the box
-   is wider than that on most screens. */
+   drifting over a texture; it is a still image now, at request. The box spans
+   the full viewport width (no side letterboxing) but is dropped down from the
+   top of the collage, so the copy above always sits on plain white/gradient
+   instead of the photo. */
 .collage__wash {
   position: absolute;
   left: 0;
-  top: 31.143%;              /* 327 / 1050 */
+  top: 31.143%;              /* 327 / 1050 — keeps the photo clear of the copy */
+  bottom: 0;
   width: 100%;
-  height: 68.857%;           /* 723 / 1050 */
   overflow: hidden;
 }
 .collage__wash img {
@@ -737,6 +749,7 @@ p, h1, h2, h3 { margin: 0; }
   bottom: calc(var(--laptop-pitch) * 0.03752);
   left: calc(50% - var(--laptop-pitch) * 3.37879);
   display: flex;
+  pointer-events: auto;   /* re-opt into hover so JS can scrub/pause the drift */
   will-change: transform;
   animation: laptop-drift var(--laptop-speed) linear infinite;
 }
@@ -750,6 +763,8 @@ p, h1, h2, h3 { margin: 0; }
   flex: none;
   width: var(--laptop-pitch);
   height: calc(var(--laptop-pitch) * 0.84704);
+  transform-origin: center bottom;
+  will-change: transform;
 }
 .laptop__plate {
   position: absolute;
@@ -821,7 +836,6 @@ p, h1, h2, h3 { margin: 0; }
   .laptop-band { animation: none; }
   .mock-cursor,
   .mock-cursor__pill { transition: none; }
-  .availability__dot::after { animation: none; }
   /* the arrow still replaces the camera, it just gets there at once */
   .btn__badgeIcon { transition: none; }
 }
@@ -840,53 +854,44 @@ p, h1, h2, h3 { margin: 0; }
   justify-content: center;
 }
 
-/* Bare dot + sentence, as in Figma. The border came off at request; the fill
-   and the shadow went with it, because the backdrop here is plain white body
-   — a white chip on white left nothing but a stray 1px smudge of shadow.
-   The vertical padding stays so nothing below it shifts. */
+/* Two-tone badge: an outlined capsule (no fill, matching the site's other
+   bare-line pills/buttons) holding a small "good"-status tag chip flush
+   against a sentence. The tag reuses --ok / --ok-bg — the same "good" status
+   colour already used on the audit vitals chips elsewhere on the page — and
+   the outer capsule's type scale matches the original Figma hero pill. */
 .availability__pill {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 7px 0;
-  font-size: clamp(14px, 1.25vw, 16px);
-  line-height: 1.5;
-  letter-spacing: -0.002em;
+  gap: 7px;
+  background: transparent;
+  border: 1px solid var(--line-btn);
+  border-radius: var(--r-pill);
+  padding: 5px 15px 5px 5px;
+  font-size: 14.5px;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: -0.006em;
   color: var(--text-pill);
 }
 
-/* The dot is drawn in CSS rather than using the Figma export: that SVG bakes a
-   ~54px blurred halo around a 14px circle, which at 1:1 reads as a smudge with
-   no clean edge. A solid core plus a hairline ring stays crisp at any size. */
-.availability__dot {
-  position: relative;
+.availability__tag {
   flex: none;
-  width: 9px;
-  height: 9px;
-  background: var(--green);
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(0, 206, 40, .16);
-}
-/* halo expanding out of the dot — spread, not scale, so it stays hairline-even */
-.availability__dot::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  animation: dot-ping var(--dot-pulse) cubic-bezier(0, 0, .2, 1) infinite;
-}
-
-@keyframes dot-ping {
-  0%       { box-shadow: 0 0 0 0 rgba(0, 206, 40, .45); }
-  70%      { box-shadow: 0 0 0 9px rgba(0, 206, 40, 0); }
-  100%     { box-shadow: 0 0 0 0 rgba(0, 206, 40, 0); }
+  display: inline-block;
+  background: var(--ok-bg);
+  color: var(--ok-ink);
+  border-radius: var(--r-pill);
+  padding: 4px 11px;
+  line-height: 1.4;
+  font-weight: 600;
+  font-size: 14.5px;
+  letter-spacing: -0.006em;
 }
 
 .hero__title {
   margin-top: clamp(14px, 2vw, 24px);        /* Figma y 258, tightened */
   font-size: clamp(28px, 4.667vw, 56px);
   font-weight: 500;
-  line-height: 1.375;                        /* Figma 77/56 */
+  line-height: 1.08;
   letter-spacing: -0.026em;
   text-wrap: balance;
 }
@@ -1150,8 +1155,9 @@ p, h1, h2, h3 { margin: 0; }
     gap: 0;
     padding: 4px var(--gutter) 24px;
     font-size: 18px;
-    background: var(--paper);
+    background: var(--menu-bg);
     border-bottom: 1px solid var(--line-header);
+    border-radius: 0 0 16px 16px;
     box-shadow: var(--shadow-pop);
     opacity: 0;
     visibility: hidden;
@@ -1360,17 +1366,17 @@ p, h1, h2, h3 { margin: 0; }
   background: var(--surface);
   border-radius: 0 var(--r-2xl) var(--r-2xl) 0;
 }
-/* The blur lives on the inner layer, not on this box, so the message can be a
-   child and centre itself on the calendar's real height instead of a pixel
-   guess that a taller month would slide out from under. */
 .booking__teaseCal {
   position: relative;
   user-select: none;
   pointer-events: none;
 }
 /* Blurred enough to read as out of reach, not so much that it stops reading
-   as a calendar — that is the whole job of the panel. */
-.booking__teaseInner {
+   as a calendar — that is the whole job of the panel. Applied per-element
+   (month / weekdays / grid) rather than to a shared wrapper, so the message
+   — centred on the whole card, not a child of any of them — never inherits
+   the blur meant for the calendar underneath it. */
+.booking__teaseBlur {
   filter: blur(1.1px);
   opacity: .62;
 }
@@ -1404,22 +1410,42 @@ p, h1, h2, h3 { margin: 0; }
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  margin: 0;
-  padding: 14px 16px;
-  font-size: 13.5px;
-  line-height: 1.5;
-  letter-spacing: -0.01em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 18px 16px;
   text-align: center;
-  color: var(--text-pill);
   background: var(--paper);
   border: 1px solid var(--line-header);
-  border-radius: var(--r-md);
-  box-shadow: 0 10px 24px -14px rgba(23, 54, 78, .3);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-pop);
+}
+.booking__teaseMsg p {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--text-pill);
+}
+.booking__teaseIcon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 
 /* ------------------------------------------------------------- Aside */
 .booking__aside {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* the column is taller than its content once the form grows past two panes */
   padding: 34px 30px;
   background: var(--surface);
   border-right: 1px solid var(--line-header);
@@ -1434,6 +1460,33 @@ p, h1, h2, h3 { margin: 0; }
   letter-spacing: -0.44px;
 }
 
+.booking__host {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+.booking__host-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+.booking__host-name {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  color: var(--text-body);
+}
+
 .booking__title {
   margin-top: 26px;
   font-size: 28px;
@@ -1441,6 +1494,7 @@ p, h1, h2, h3 { margin: 0; }
   line-height: 1.28;
   letter-spacing: -0.7px;
 }
+.booking__host + .booking__subtitle { margin-top: 14px; }
 .booking__subtitle {
   margin-top: 12px;
   font-size: 16px;
@@ -1452,7 +1506,7 @@ p, h1, h2, h3 { margin: 0; }
 .booking__meta {
   display: grid;
   gap: 14px;
-  margin-top: 26px;
+  margin-top: 22px;
 }
 .booking__meta li {
   display: flex;
@@ -1976,13 +2030,31 @@ p, h1, h2, h3 { margin: 0; }
 }
 
 .booking__progress {
-  margin: 0 0 16px;
+  margin: 0 0 10px;
   font-size: 12px;
   letter-spacing: .06em;
   text-transform: uppercase;
   color: var(--text-lead);
 }
 .booking__progress b { font-weight: 500; color: var(--text-pill); }
+
+.booking__progressBar {
+  margin: 0 0 20px;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--line);
+  overflow: hidden;
+}
+.booking__progressFill {
+  height: 100%;
+  width: 50%;
+  border-radius: var(--r-pill);
+  background: var(--blue);
+  transition: width var(--t-base) var(--ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  .booking__progressFill { transition: none; }
+}
 
 /* Same control as the step-level back link, one notch quieter — it moves
    between halves of a form, not between screens. */

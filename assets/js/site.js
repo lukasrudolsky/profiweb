@@ -215,6 +215,8 @@
   var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
   if (!fine.matches) return;
 
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   var screens = document.querySelectorAll('.laptop__bezel');
   if (!screens.length) return;
 
@@ -262,6 +264,82 @@
   window.addEventListener('scroll', hide, { passive: true });
   window.addEventListener('blur', hide);
   document.addEventListener('mouseleave', hide);
+
+  /* Grab-and-drag: the CSS keyframe hands off to JS, which otherwise just
+     replays the same steady drift. Press and hold anywhere on the band and
+     it tracks the pointer 1:1 — drag right to pull earlier projects back
+     into view, drag left to push further ahead. move/up listen on the
+     window (not the band) so the drag keeps tracking even once the cursor
+     leaves the strip. Release and it eases back into the ambient drift
+     from wherever it was left. Hovering an actual laptop (without
+     dragging) freezes it outright, so the "Zobrazit projekt" pill has
+     something still to point at. */
+  var band = document.querySelector('.laptop-band');
+  if (band && !reduceMotion) {
+    var pitch = band.firstElementChild ? band.firstElementChild.getBoundingClientRect().width : 693;
+    var baseSpeed = pitch / 18;   /* matches the original 18s-per-pitch drift */
+    var pos = 0;
+    var vel = -baseSpeed;
+    var overLaptop = false;
+    var dragging = false;
+    var dragStartX = 0;
+    var dragStartPos = 0;
+    var last = null;
+
+    band.style.animation = 'none';
+    band.style.cursor = 'grab';
+    band.style.touchAction = 'pan-y';
+
+    function wrap(p) {
+      return pitch > 0 ? ((p % pitch) + pitch) % pitch - pitch : p; /* keep in (-pitch, 0] */
+    }
+
+    /* Plain mouse events, not Pointer Events: this whole feature is already
+       gated to fine-pointer/hover devices above, so there is no touch/pen
+       case to unify, and move/up are tracked on the window so the drag
+       keeps following the cursor even once it leaves the band's box. */
+    band.addEventListener('mousedown', function (e) {
+      if (e.button !== 0) return;
+      dragging = true;
+      dragStartX = e.clientX;
+      dragStartPos = pos;
+      band.style.cursor = 'grabbing';
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', function (e) {
+      if (!dragging) return;
+      pos = wrap(dragStartPos + (e.clientX - dragStartX));
+    });
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      band.style.cursor = 'grab';
+    }
+    window.addEventListener('mouseup', endDrag);
+    window.addEventListener('blur', endDrag);
+
+    [].forEach.call(screens, function (screen) {
+      screen.addEventListener('mouseenter', function () { overLaptop = true; });
+      screen.addEventListener('mouseleave', function () { overLaptop = false; });
+    });
+
+    function tick(now) {
+      if (last === null) last = now;
+      var dt = Math.min(now - last, 50) / 1000;
+      last = now;
+
+      if (!dragging) {
+        var targetVel = overLaptop ? 0 : -baseSpeed;
+        /* Exponential ease toward the target velocity — frame-rate independent. */
+        vel += (targetVel - vel) * (1 - Math.exp(-dt * 8));
+        pos = wrap(pos + vel * dt);
+      }
+
+      band.style.transform = 'translate3d(' + pos.toFixed(2) + 'px, 0, 0)';
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
 })();
 
 /* =====================================================================
@@ -290,3 +368,4 @@
 
   io.observe(perks);
 })();
+
