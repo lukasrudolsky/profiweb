@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hover ikony v CTA — Profiweb</title>
+<title>Hover ikony v CTA - Profiweb</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap" rel="stylesheet">
@@ -135,8 +135,8 @@
 
 <h1>Hover ikony v tlačítku hovoru</h1>
 <p class="lede">
-  Deset verzí toho, co se s ikonou stane při najetí. Tlačítko je 1:1 podle webu
-  — stejná výška, stejné kolečko, stejná modrá. <strong>Najeď na kterékoli</strong>,
+  Deset verzí toho, co se s ikonou stane při najetí. Tlačítko je 1:1 podle webu,
+  stejná výška, stejné kolečko, stejná modrá. <strong>Najeď na kterékoli</strong>,
   nebo si tlačítkem níž zapni koncový stav u všech naráz. Řekni číslo a nasadím ho.
 </p>
 
@@ -163,7 +163,7 @@ var CAM_REC = '<svg class="ic ic--cam" viewBox="0 0 24 24" aria-hidden="true"><g
 
 function alt(inner) { return '<svg class="ic ic--alt" viewBox="0 0 24 24" aria-hidden="true">' + inner + '</svg>'; }
 
-/* Trojúhelník je posunutý 0,3 za geometrický střed — mířící doprava nese
+/* Trojúhelník je posunutý 0,3 za geometrický střed, mířící doprava nese
    hmotu vlevo a na přesném středu vypadá odsunutý. */
 var PLAY_TRI  = alt('<path d="M8.5 7.2 16.4 12 8.5 16.8z"/>');
 var PLAY_BOX  = alt('<rect x="2.9" y="6.4" width="12.2" height="11.2" rx="2.4" transform="translate(3.5)"/>'
@@ -176,7 +176,7 @@ var V = [
   { n:"Otočení klínu", spec:"na webu teď", cls:"h1x", ic:CAM,
     note:"Klín objektivu se otočí o 180° a zajede doprostřed těla. Jedna cesta se hýbe, nic se neprolíná." },
   { n:"Prolnutí", spec:"fade + scale", cls:"h2x", ic:CAM + PLAY_BOX,
-    note:"Kamera zmizí, play naskočí. Nejjednodušší a nejlevnější — ale je vidět, že jsou to dvě ikony." },
+    note:"Kamera zmizí, play naskočí. Nejjednodušší a nejlevnější, ale je vidět, že jsou to dvě ikony." },
   { n:"Klín odletí", spec:"sekvence", cls:"h3x", ic:CAM + PLAY_TRI,
     note:"Objektiv vyjede doprava a teprve pak doskočí trojúhelník. Dvoudobé, všimne si toho i periferní vidění." },
   { n:"Překlopení kolečka", spec:"rotateY 180°", cls:"h4x", ic:CAM + PLAY_BOX,
@@ -186,7 +186,7 @@ var V = [
   { n:"Kamera → hodiny", spec:"pootočení", cls:"h6x", ic:CAM + CLOCK,
     note:"Připomene těch patnáct minut. Z celé desítky nejvíc mluví o obsahu, ne o formě." },
   { n:"Kamera → fajfka", spec:"doskok", cls:"h7x", ic:CAM + CHECK,
-    note:"Slibuje hotovo dřív, než se kliklo. Milé, ale trochu lže — nic se ještě nepotvrdilo." },
+    note:"Slibuje hotovo dřív, než se kliklo. Milé, ale trochu lže, nic se ještě nepotvrdilo." },
   { n:"Nahrávání", spec:"červená tečka", cls:"h8x", ic:CAM_REC,
     note:"Ikona zůstane, jen se rozsvítí a tepe rudý bod. Nejjemnější zásah." },
   { n:"Jen přiblížení", spec:"scale 1,14", cls:"h9x", ic:CAM,
@@ -208,7 +208,7 @@ document.getElementById('grid').innerHTML = V.map(function (v, i) {
     + '</section>';
 }).join('');
 
-/* :hover ve statickém snímku nevyvoláš, tak koncový stav umíme i vynutit —
+/* :hover ve statickém snímku nevyvoláš, tak koncový stav umíme i vynutit,
    pravidla se zkopírují a :hover se v nich nahradí třídou. */
 var forced = document.createElement('style');
 document.head.appendChild(forced);

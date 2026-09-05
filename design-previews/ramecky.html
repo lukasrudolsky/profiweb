@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rámečky mockupu — Profiweb</title>
+<title>Rámečky mockupu - Profiweb</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap" rel="stylesheet">
@@ -48,7 +48,7 @@
   .unit { position:relative; }
   .unit__plate { display:block; width:100%; height:auto; }
   /* Změřeno z PNG: zapečená tmavá lišta leží na 16,25 / 19,59 / 67,23 / 54,68 %.
-     Web má box na 19,93 % shora, tedy o 0,34 % níž — pod černou linkou to není
+     Web má box na 19,93 % shora, tedy o 0,34 % níž, pod černou linkou to není
      vidět, ale u variant bez linky ta tmavá hrana prosvítá. Tady je box o kus
      přetažený, aby lištu spolehlivě zakryl a porovnání bylo poctivé. */
   .bezel {
@@ -67,19 +67,19 @@
 
   /* ---- varianty ------------------------------------------------------ */
 
-  /* 2 — tenká linka */
+  /* 2 - tenká linka */
   [data-f="2"] .bezel { border-width:1px; border-radius:10px; }
 
-  /* 3 — bez rámečku, jen hrana */
+  /* 3 - bez rámečku, jen hrana */
   [data-f="3"] .bezel { border:0; border-radius:12px; }
 
-  /* 4 — měkký stín, větší rádius */
+  /* 4 - měkký stín, větší rádius */
   [data-f="4"] .bezel {
     border:0; border-radius:16px;
     box-shadow:0 2px 6px rgba(16,32,48,.10), 0 14px 30px -10px rgba(16,32,48,.22);
   }
 
-  /* 5 — tmavá lišta prohlížeče */
+  /* 5 - tmavá lišta prohlížeče */
   [data-f="5"] .bezel { border-width:2px; border-radius:10px; --shot-top:26px; }
   [data-f="5"] .bezel::before {
     content:""; position:absolute; left:0; right:0; top:0; height:26px;
@@ -91,7 +91,7 @@
     box-shadow:11px 0 0 #febc2e, 22px 0 0 #28c840;
   }
 
-  /* 6 — světlá lišta prohlížeče */
+  /* 6 - světlá lišta prohlížeče */
   [data-f="6"] .bezel { border:1px solid #dcdfe3; border-radius:10px; --shot-top:26px; }
   [data-f="6"] .bezel::before {
     content:""; position:absolute; left:0; right:0; top:0; height:26px; z-index:2;
@@ -103,19 +103,19 @@
     box-shadow:11px 0 0 #dfe3e8, 22px 0 0 #dfe3e8;
   }
 
-  /* 7 — bílá pasparta */
+  /* 7 - bílá pasparta */
   [data-f="7"] .bezel {
     border:9px solid #fff; border-radius:12px;
     box-shadow:0 1px 2px rgba(16,32,48,.10), 0 18px 34px -12px rgba(16,32,48,.28);
   }
 
-  /* 8 — modrý akcent */
+  /* 8 - modrý akcent */
   [data-f="8"] .bezel { border-width:2px; border-color:var(--blue); border-radius:10px; }
 
-  /* 9 — silná černá, jako opravdové zařízení */
+  /* 9 - silná černá, jako opravdové zařízení */
   [data-f="9"] .bezel { border-width:8px; border-radius:15px; }
 
-  /* 10 — tmavá linka s vnitřním prosvětlením */
+  /* 10 - tmavá linka s vnitřním prosvětlením */
   [data-f="10"] .bezel {
     border:1.5px solid #17364e; border-radius:11px;
     box-shadow:inset 0 0 0 1px rgba(255,255,255,.55), 0 10px 24px -12px rgba(23,54,78,.45);
@@ -127,7 +127,7 @@
 <h1>Rámečky mockupu</h1>
 <p class="lede">
   Deset verzí toho rámečku kolem screenshotu, vedle sebe a se stejným obrázkem
-  uvnitř. Šedá deska pod ním i její stín jsou zapečené v <code>dashboard-app-screenshot.png</code> —
+  uvnitř. Šedá deska pod ním i její stín jsou zapečené v <code>dashboard-app-screenshot.png</code>,
   v CSS se dá měnit jen ten rámeček, tak měním jen ten. Tlačítkem si desku
   můžeš odklidit a porovnat samotné rámečky. Řekni číslo a nasadím ho.
 </p>
@@ -141,13 +141,13 @@
 <script>
 var FRAMES = [
   { n:"Současný",             spec:"3px černá · r 9",        note:"To, co je na webu teď." },
-  { n:"Tenká linka",          spec:"1px černá · r 10",       note:"Stejný nápad, jen decentnější — screenshot dostane víc prostoru." },
+  { n:"Tenká linka",          spec:"1px černá · r 10",       note:"Stejný nápad, jen decentnější, screenshot dostane víc prostoru." },
   { n:"Bez rámečku",          spec:"bez linky · r 12",       note:"Jen zaoblený výřez. Nejčistší, ale mockup přestane vypadat jako obrazovka." },
   { n:"Měkký stín",           spec:"bez linky · r 16 · stín", note:"Místo linky drží tvar stín. Vypadá to, že screenshot leží nad deskou." },
   { n:"Tmavá lišta",          spec:"2px · lišta 26px",       note:"Přiznaný prohlížeč. Nejjasněji říká „tohle je web“, ale ukrojí kus screenshotu." },
-  { n:"Světlá lišta",         spec:"1px · lišta 26px",       note:"Jako 5, ale ladí ke světlému webu — šedé tečky místo barevných." },
+  { n:"Světlá lišta",         spec:"1px · lišta 26px",       note:"Jako 5, ale ladí ke světlému webu, šedé tečky místo barevných." },
   { n:"Bílá pasparta",        spec:"9px bílá · r 12 · stín", note:"Bílý rám jako u fotky. Odděluje screenshot od šedé desky." },
-  { n:"Modrý akcent",         spec:"2px modrá · r 10",       note:"Rámeček v barvě značky. Nápadné — a modrá se pak bije s modrou v obsahu." },
+  { n:"Modrý akcent",         spec:"2px modrá · r 10",       note:"Rámeček v barvě značky. Nápadné, a modrá se pak bije s modrou v obsahu." },
   { n:"Silná černá",          spec:"8px černá · r 15",       note:"Vypadá to jako opravdové zařízení, ne jako výřez." },
   { n:"Tmavá s prosvětlením", spec:"1,5px · vnitřní linka",  note:"Tenká tmavě modrá linka a světlá linka zevnitř. Nejjemnější z „rámečkových“." }
 ];

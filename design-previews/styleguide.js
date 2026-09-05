@@ -1,5 +1,5 @@
 /* =====================================================================
-   Style guide — renders swatches and specimens straight from the live
+   Style guide: renders swatches and specimens straight from the live
    token values, so this page can never drift from styles.css. Read the
    computed :root rather than hard-coding a copy of the palette.
    ===================================================================== */
@@ -41,7 +41,7 @@
     });
   });
 
-  /* Icons — pulled from the sprite the site already ships ------------ */
+  /* Icons - pulled from the sprite the site already ships ------------ */
   var iconHost = document.querySelector('[data-icons]');
   if (iconHost) {
     fetch('index.html')
@@ -63,7 +63,7 @@
         });
       })
       .catch(function () {
-        iconHost.textContent = 'Sprite se nepodařilo načíst — otevřete přes http, ne file://.';
+        iconHost.textContent = 'Sprite se nepodařilo načíst, otevřete přes http, ne file://.';
       });
   }
 })();

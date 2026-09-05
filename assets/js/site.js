@@ -1,5 +1,5 @@
 /* =====================================================================
-   Site chrome — the header nav drawer used below 900px.
+   Site chrome - the header nav drawer used below 900px.
    The drawer is CSS-driven; this only flips the state and keeps the
    trigger's ARIA in sync.
    ===================================================================== */
@@ -43,28 +43,7 @@
 })();
 
 /* =====================================================================
-   Sticky header shadow. A 1px sentinel above the bar tells us when the page
-   has scrolled past the top — cheaper and smoother than a scroll listener,
-   which fires on every frame and would have to read layout each time.
-   ===================================================================== */
-(function () {
-  'use strict';
-
-  var header = document.querySelector('.site-header');
-  if (!header || !window.IntersectionObserver) return;
-
-  var sentinel = document.createElement('div');
-  sentinel.setAttribute('aria-hidden', 'true');
-  sentinel.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:1px;pointer-events:none';
-  document.body.insertBefore(sentinel, document.body.firstChild);
-
-  new IntersectionObserver(function (entries) {
-    header.classList.toggle('is-stuck', !entries[0].isIntersecting);
-  }, { threshold: 0 }).observe(sentinel);
-})();
-
-/* =====================================================================
-   Mega menu — the panels that drop out of Služby / Řešení / Proč my.
+   Mega menu - the panels that drop out of Služby / Řešení / Proč my.
    Click to toggle; only one open at a time. Above 900px each panel is an
    overlay under the header, below it flows inline as an accordion, but the
    state machine is identical either way.
@@ -146,7 +125,7 @@
 })();
 
 /* =====================================================================
-   Button label swap — on hover each character rolls up while a duplicate
+   Button label swap - on hover each character rolls up while a duplicate
    rolls in from below, staggered across the word. Progressive enhancement:
    the markup ships as a plain text node and is only rebuilt here, so a
    failure or reduced-motion preference leaves an ordinary button.
@@ -160,7 +139,7 @@
 
   function build(btn) {
     /* A button with a badge keeps its label in .btn__label, so rebuild that
-       instead of the button — otherwise the icon would count as extra content
+       instead of the button, otherwise the icon would count as extra content
        and the swap would quietly skip the button altogether. Everything else
        still has to be a single plain text node; anything richer is left alone. */
     var host = btn.querySelector('.btn__label') || btn;
@@ -204,7 +183,7 @@
 })();
 
 /* =====================================================================
-   Mockup cursor — hovering a laptop screen in the hero swaps the native
+   Mockup cursor - hovering a laptop screen in the hero swaps the native
    cursor for a "Zobrazit projekt" pill that tracks the pointer. Fine
    pointers only; on touch there is no hover state to speak of and the pill
    would stick after a tap.
@@ -228,7 +207,7 @@
 
   var x = 0, y = 0, queued = false, shown = false;
 
-  /* One write per frame — mousemove fires far more often than that. */
+  /* One write per frame, mousemove fires far more often than that. */
   function flush() {
     queued = false;
     cursor.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0)';
@@ -267,7 +246,7 @@
 
   /* Grab-and-drag: the CSS keyframe hands off to JS, which otherwise just
      replays the same steady drift. Press and hold anywhere on the band and
-     it tracks the pointer 1:1 — drag right to pull earlier projects back
+     it tracks the pointer 1:1, drag right to pull earlier projects back
      into view, drag left to push further ahead. move/up listen on the
      window (not the band) so the drag keeps tracking even once the cursor
      leaves the strip. Release and it eases back into the ambient drift
@@ -330,7 +309,7 @@
 
       if (!dragging) {
         var targetVel = overLaptop ? 0 : -baseSpeed;
-        /* Exponential ease toward the target velocity — frame-rate independent. */
+        /* Exponential ease toward the target velocity, frame-rate independent. */
         vel += (targetVel - vel) * (1 - Math.exp(-dt * 8));
         pos = wrap(pos + vel * dt);
       }

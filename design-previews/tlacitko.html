@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kurzorové tlačítko — Profiweb</title>
+<title>Kurzorové tlačítko - Profiweb</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
   .card__spec { margin-left:auto; font-size:12px; color:var(--muted); }
   .card__note { font-size:12.5px; color:var(--muted); line-height:1.55; margin:3px 0 12px 34px; }
 
-  /* klidový vzorek — pilulka bez pohybu, ať jde porovnat i bez najíždění */
+  /* klidový vzorek: pilulka bez pohybu, ať jde porovnat i bez najíždění */
   .rest {
     display:flex; align-items:center; justify-content:center;
     padding:16px; margin-bottom:10px; border-radius:9px;
@@ -41,7 +41,7 @@
   }
   .rest .pill { position:static; transform:none; opacity:1; }
 
-  /* scéna — chová se jako mockup na webu: kurzor zmizí a jede za ním pilulka */
+  /* scéna: chová se jako mockup na webu: kurzor zmizí a jede za ním pilulka */
   .stage {
     position:relative; overflow:hidden; height:190px; border-radius:9px;
     background:#20301f; cursor:none;
@@ -116,7 +116,7 @@
 <h1>Kurzorové tlačítko nad mockupy</h1>
 <p class="lede">
   Deset verzí té pilulky, co jede za kurzorem přes ukázky webů. Nahoře v každé
-  kartě je klidový vzorek, dole živá scéna — <strong>najeď na ni myší</strong> a
+  kartě je klidový vzorek, dole živá scéna, <strong>najeď na ni myší</strong> a
   chová se přesně jako na webu: zmizí kurzor a pilulka ho nahradí. Nástup je
   u všech stejný, ať se porovnává jen vzhled. Řekni číslo a nasadím ho.
 </p>
@@ -130,7 +130,7 @@ var ARROW_R = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15"/><
 var V = [
   { n:"Současná",          spec:"modrá · 13/24",     dark:false, html:"Zobrazit projekt" },
   { n:"Kompaktní",         spec:"modrá · 10/18",     dark:false, html:"Zobrazit projekt",
-    note:"Stejná barva, menší a lehčí — přes screenshot toho tolik nezakryje." },
+    note:"Stejná barva, menší a lehčí, přes screenshot toho tolik nezakryje." },
   { n:"Se šipkou",         spec:"modrá + ↗",         dark:false, html:"Zobrazit projekt" + ARROW,
     note:"Šipka do rohu napoví, že to otevře něco jinde." },
   { n:"Tmavá",             spec:"ink · bílý text",   dark:false, html:"Zobrazit projekt",
@@ -168,7 +168,7 @@ document.getElementById('grid').innerHTML = V.map(function (v, i) {
 }).join('');
 
 /* Jeden posluchač pro všechny scény: pozici píše jen ta, nad kterou je myš.
-   Vnější prvek nese posun, vnitřní si řídí vlastní nástup — jinak by se
+   Vnější prvek nese posun, vnitřní si řídí vlastní nástup, jinak by se
    obojí přepisovalo v jedné transform vlastnosti. */
 document.querySelectorAll('[data-stage]').forEach(function (stage) {
   var follow = stage.querySelector('.follow');

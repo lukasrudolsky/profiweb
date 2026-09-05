@@ -1,5 +1,5 @@
 /* =====================================================================
-   Booking modal — date picker, time slots, details form, confirmation.
+   Booking modal - date picker, time slots, details form, confirmation.
 
    Availability and bookings come from cal.com, which is what talks to
    Google Calendar. Fill in CAL below and the calendar goes live; leave it
@@ -8,7 +8,7 @@
 
    Why cal.com and not the Google Calendar API directly: reading your
    free/busy and writing events needs credentials, and this is a static
-   site — anything in this file is readable by every visitor. cal.com's
+   site, anything in this file is readable by every visitor. cal.com's
    public endpoints need no key at all (verified: /v2/slots answers 404
    "user not found", not 401, and sends Access-Control-Allow-Origin: *),
    so the browser can call them safely with nothing secret on the page.
@@ -39,7 +39,7 @@
 
   /* Show and book in the visitor's own zone, not ours. Slots come back as
      absolute instants, so this only changes how they are bucketed into days
-     and rendered — and it is what cal.com puts in their confirmation mail.
+     and rendered, and it is what cal.com puts in their confirmation mail.
      CAL.timeZone stays the fallback for browsers without Intl data. */
   var TZ = (function () {
     try { return Intl.DateTimeFormat().resolvedOptions().timeZone || CAL.timeZone; }
@@ -262,7 +262,7 @@
     var days  = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
 
     /* While availability is in flight every day would render disabled and
-       labelled "bez volných termínů" — which is simply untrue, and reads as a
+       labelled "bez volných termínů", which is simply untrue, and reads as a
        broken calendar you can click at forever. Show placeholders instead. */
     if (state === 'loading') {
       for (var s = 0; s < lead + days; s++) {
@@ -291,7 +291,7 @@
       var free = date >= today && slotsFor(date).length > 0;
       if (!free) {
         btn.disabled = true;
-        btn.setAttribute('aria-label', longDate(date) + ' — bez volných termínů');
+        btn.setAttribute('aria-label', longDate(date) + ', bez volných termínů');
       } else {
         btn.setAttribute('aria-label', longDate(date));
       }
@@ -399,11 +399,11 @@
   /* ------------------------------------------------------ qualification --
      Availability is worth nothing to a project we would decline, so the
      calendar stays locked until the budget clears the minimum. Turning
-     people away here — before they pick a slot and type their details —
+     people away here, before they pick a slot and type their details,
      costs them ten seconds instead of a whole call. */
   var MIN_NOTE =
     'Weby stavíme od 20 000 Kč, menší projekty bohužel nebereme. ' +
-    'Zkuste <a href="#audit" data-booking-close data-audit-open>bezplatný audit webu</a> — ' +
+    'Zkuste <a href="#audit" data-booking-close data-audit-open>bezplatný audit webu</a>, ' +
     'dostanete konkrétní tipy hned a zdarma.';
 
   function budgetInput() { return root.querySelector('[name="budget"]:checked'); }
@@ -445,9 +445,9 @@
     var last = l.slice(-1);
     var last2 = l.slice(-2);
 
-    if (FEM_CONSONANT.indexOf(l) >= 0) return n;          // Karin, Ester — unchanged
+    if (FEM_CONSONANT.indexOf(l) >= 0) return n;          // Karin, Ester - unchanged
     if (last === 'a') return n.slice(0, -1) + 'o';        // Eva → Evo, Honza → Honzo
-    if ('eéiíyý'.indexOf(last) >= 0) return n;            // Marie, Lucie, Jiří — unchanged
+    if ('eéiíyý'.indexOf(last) >= 0) return n;            // Marie, Lucie, Jiří - unchanged
     if (last2 === 'ek') return n.slice(0, -2) + 'ku';     // Marek → Marku
     if (last2 === 'el') return n.slice(0, -2) + 'le';     // Pavel → Pavle
     if (last2 === 'ch') return n + 'u';                   // Vojtěch → Vojtěchu
@@ -460,7 +460,7 @@
     return '';
   }
 
-  /* "Europe/Prague · GMT+2" — say which zone the times are in, because they
+  /* "Europe/Prague · GMT+2": say which zone the times are in, because they
      are now the visitor's, not ours, and that is not self-evident. */
   function tzLabel() {
     var zone = TZ.replace(/_/g, ' ');
@@ -503,7 +503,7 @@
 
   /* -------------------------------------------------------- form panes --
      Seven fields in one column read as a wall, so the form is halved:
-     contact first, project second. Only the middle column swaps — the aside
+     contact first, project second. Only the middle column swaps, the aside
      and the calendar tease stay mounted, so the dialog never changes height
      and nothing around them jumps. */
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -547,7 +547,7 @@
     var ready = !!(selected && slot);
     b.disabled = !ready;
     b.setAttribute('aria-disabled', ready ? 'false' : 'true');
-    /* Visibility rides on a class, not on [disabled] — the button is also
+    /* Visibility rides on a class, not on [disabled]: the button is also
        disabled while the request is in flight, and it must stay on screen
        then to carry the "Rezervuji…" status. */
     var host = b.closest('.booking__slots');
@@ -566,7 +566,7 @@
     var b    = budgetValue();
     var tel  = phoneValue();
     /* cal.com's default event type has no phone field, so the number rides
-       along in notes — otherwise it would be collected and then dropped. */
+       along in notes, otherwise it would be collected and then dropped. */
     if (tel)  out.push('Telefon: ' + tel);
     if (b)    out.push('Rozpočet: ' + b);
     if (web)  out.push('Web: ' + web);
@@ -589,7 +589,7 @@
     showPane('kontakt');           // always start on the contact half
     personalize();                 // clears any greeting from a previous visit
 
-    /* Details first, slots second — qualify before spending anyone's time. */
+    /* Details first, slots second: qualify before spending anyone's time. */
     showStep('form');
     renderMonth();               // warms the month so step 2 opens populated
     renderSlots();
@@ -654,7 +654,7 @@
       return;
     }
 
-    /* Details are already in hand, so a slot only arms the confirm button —
+    /* Details are already in hand, so a slot only arms the confirm button,
        it must not book on its own, or a stray click books a call. */
     var timeBtn = e.target.closest('.slot');
     if (timeBtn && root.contains(timeBtn)) {
@@ -721,7 +721,7 @@
       }
 
       if (!ok) {
-        /* An error can sit on the pane that is not showing — jump back to it
+        /* An error can sit on the pane that is not showing, jump back to it
            rather than blocking on a field nobody can see. */
         var bad = form.querySelector('.has-error');
         var pane = bad && bad.closest('[data-pane]');
@@ -781,7 +781,7 @@
             language: 'cs'
           },
           /* The event type only carries the default fields, so everything the
-             form collects beyond name/email rides along in "notes" — otherwise
+             form collects beyond name/email rides along in "notes", otherwise
              budget, web and the message would be silently dropped. */
           bookingFieldsResponses: { notes: buildNotes() }
         })
@@ -797,14 +797,14 @@
             });
         })
         .then(function () {
-          /* The slot is gone now — drop the month so a reopen refetches. */
+          /* The slot is gone now, drop the month so a reopen refetches. */
           delete months[monthKey(selected)];
           succeed();
         })
         .catch(function (err) {
           formError(err.message + ' Vyberte prosím jiný čas nebo napište na ahoj@profiweb.cz.');
           /* The most likely cause is someone booking that slot while this
-             form was open, so the times on screen are stale — refetch rather
+             form was open, so the times on screen are stale, refetch rather
              than let them retry into the same wall. */
           delete months[monthKey(selected)];
           slot = null;
@@ -815,7 +815,7 @@
     };
 
     /* The submit label is split into per-character spans by site.js, so it
-       must never be relabelled — status goes to its own live region. */
+       must never be relabelled: status goes to its own live region. */
     function setBusy(btn, busy) {
       if (!btn) return;
       btn.disabled = busy;
@@ -824,7 +824,7 @@
     }
 
     /* Booking now happens on the slot step, so the status has to live beside
-       the confirm button — inside the form it would be on a hidden step. */
+       the confirm button, inside the form it would be on a hidden step. */
     function formError(msg, pending) {
       var host = confirmBtn() ? confirmBtn().parentNode : form;
       var box  = root.querySelector('[data-booking-error]');
@@ -851,8 +851,8 @@
 })();
 
 /* =====================================================================
-   Calendar tease. The month behind the form is decoration — aria-hidden,
-   nothing clickable — but it should show the real current month rather
+   Calendar tease. The month behind the form is decoration (aria-hidden,
+   nothing clickable), but it should show the real current month rather
    than an invented one, or the blur stops hiding the lie. Deliberately
    plain: no cell is marked free, because at this point we have not asked
    cal.com anything.

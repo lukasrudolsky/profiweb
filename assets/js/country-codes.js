@@ -1,7 +1,7 @@
 /* =====================================================================
    Country dial-code picker for the booking form.
 
-   Names are not shipped — Intl.DisplayNames gives them in Czech (and in
+   Names are not shipped, Intl.DisplayNames gives them in Czech (and in
    the visitor's language for anyone else), so only the dial codes need to
    travel. Flags are the regional-indicator pairs; no font on Windows draws
    those, so Noto Color Emoji is fetched from Google Fonts, subset with
@@ -84,7 +84,7 @@
   }
 
   /* Nothing to draw until the font is here, and the raw pair renders as two
-     letters — which is exactly what the ISO code says anyway. */
+     letters, which is exactly what the ISO code says anyway. */
   var booking = document.getElementById('booking');
   if (booking && window.MutationObserver) {
     new MutationObserver(function () {
@@ -198,7 +198,7 @@
     if (row) pick(row.getAttribute('data-dial'), row.getAttribute('data-iso'));
   });
 
-  /* A pointerdown anywhere else closes it — but not one that lands inside. */
+  /* A pointerdown anywhere else closes it, but not one that lands inside. */
   document.addEventListener('pointerdown', function (e) {
     if (!panel.hidden && !root.contains(e.target)) close();
   });

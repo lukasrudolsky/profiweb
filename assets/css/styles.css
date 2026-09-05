@@ -1,5 +1,5 @@
 /* =====================================================================
-   Profiweb.cz — Home
+   Profiweb.cz - Home
    Implemented from Figma node 691:11 (frame width 1440).
    Geometry below mirrors the Figma coordinates; decorative art sits on a
    centred 1440px track so it bleeds off-screen the way the frame clips it.
@@ -17,7 +17,7 @@
 /* =====================================================================
    TOKENS
    The single source of truth. Rules below consume these and should not
-   introduce raw hex, radii, shadows or durations — if a value is missing
+   introduce raw hex, radii, shadows or durations: if a value is missing
    here, add it here rather than inlining it.
 
    Palette names are semantic (what the colour is for), not literal (what
@@ -77,15 +77,6 @@
   /* -- elevation --------------------------------------------------- */
   --shadow-pop:    0 24px 40px -28px rgba(23, 54, 78, .45);
   --shadow-panel:  0 28px 48px -30px rgba(23, 54, 78, .5);
-  /* Four layers instead of one. A single blur ends where the Gaussian ends,
-     which under a full-width bar reads as a band with a visible bottom edge;
-     stacking doubling blurs at low alpha ramps the falloff out instead. Each
-     layer is faint on its own; they only add up close to the bar, so the
-     shading starts around the old weight and thins out to nothing. */
-  --shadow-bar:    0 2px 3px -2px rgba(23, 54, 78, .045),
-                   0 6px 9px -5px rgba(23, 54, 78, .045),
-                   0 14px 22px -12px rgba(23, 54, 78, .050),
-                   0 28px 46px -22px rgba(23, 54, 78, .055);
   --shadow-dialog: 0 40px 90px -30px rgba(23, 54, 78, .38),
                    0 4px 14px rgba(23, 54, 78, .06);
   --ring:          0 0 0 3px rgba(55, 147, 209, .16);
@@ -96,6 +87,7 @@
   --t-fast: .16s;
   --t-base: .26s;
   --t-slow: .34s;
+  --t-mega: .46s;     /* mega panel open/close: a bit slower than --t-slow */
   --t-draw: .5s;      /* delší než ostatní: kreslení tahu chce čas na přečtení */
   --ease:   cubic-bezier(.4, 0, .2, 1);
 
@@ -105,13 +97,13 @@
   /* Hero is tightened vs the Figma frame (which is very airy). One knob:
      raise to compress the hero further, set to 0px for pixel-exact Figma.
      Only applies to the fixed-height desktop hero (>= 1200px). */
-  --hero-tighten: 78px;
+  --hero-tighten: 166px;
 
   /* Mockup marquee. The pitch is Figma's bezel-to-bezel spacing and doubles
      as the scale unit: every other laptop measurement is a ratio of it, so
      the whole band shrinks proportionally with the viewport. Speed is the
      time to travel exactly one pitch. */
-  --laptop-pitch: clamp(280px, 57.75vw, 693px);
+  --laptop-pitch: clamp(320px, 66vw, 800px);
   --laptop-speed: 18s;
 
   /* Room the hero art needs under the copy once it is re-anchored (< 1200px):
@@ -166,8 +158,8 @@ p, h1, h2, h3 { margin: 0; }
   justify-content: center;
   height: clamp(50px, 5vw, 60px);
   padding-inline: clamp(22px, 2.583vw, 31px);
-  border-radius: 45px;
-  /* <button> does not inherit the page font — without this the UA's Arial wins
+  border-radius: 16px;   /* matches .site-header's rounding, not a full pill */
+  /* <button> does not inherit the page font, without this the UA's Arial wins
      on every button-flavoured .btn while the <a> ones stay on Inter. */
   font-family: inherit;
   font-size: clamp(16px, 1.667vw, 20px);
@@ -189,7 +181,7 @@ p, h1, h2, h3 { margin: 0; }
   pointer-events: none;
 }
 
-/* Figma widths, as floors — the label decides once the text outgrows them. */
+/* Figma widths, as floors: the label decides once the text outgrows them. */
 /* the header CTA is smaller than a page button so it fits the band */
 /* No min-width: it was 156px against a 129px natural width, so the surplus
    split into the sides and the real gap came out 36px instead of the 22px
@@ -239,7 +231,7 @@ p, h1, h2, h3 { margin: 0; }
 }
 
 /* On hover the camera slides out to the left and an arrow takes its place from
-   the right — both travelling the same way, so it reads as one handover. The
+   the right, both travelling the same way, so it reads as one handover. The
    arrow, not a play symbol: the button opens a booking form, it does not play
    a video, and promising playback would be a small lie. */
 .btn__badgeIcon--go { opacity: 0; transform: translateX(8px); }
@@ -249,7 +241,7 @@ p, h1, h2, h3 { margin: 0; }
 .btn--badge:hover .btn__badgeIcon--go,
 .btn--badge:focus-visible .btn__badgeIcon--go { opacity: 1; transform: none; }
 
-/* The camera's ink spans 1.55–21.65 of the 24-unit box, centre 11.6 — half a
+/* The camera's ink spans 1.55-21.65 of the 24-unit box, centre 11.6, half a
    unit left of the middle. The group carries that correction so the icon sits
    centred in the badge. */
 .btn__cam {
@@ -260,15 +252,15 @@ p, h1, h2, h3 { margin: 0; }
    characters would be laid out against the padding instead of the text. */
 .btn__label { display: inline-block; }
 
-/* Hover label swap — each character rolls up and its twin rolls in from below,
+/* Hover label swap: each character rolls up and its twin rolls in from below,
    staggered left-to-right. site.js builds the spans; until it runs (or under
    reduced motion) the button keeps its plain text node, so nothing depends on
    the enhancement having happened.
 
-   The accessible name comes from .sr-only, never from the animated spans —
+   The accessible name comes from .sr-only, never from the animated spans,
    otherwise assistive tech would spell the label out character by character. */
 /* Booking: month grid waiting on cal.com, and the submit status line. */
-/* skeleton cells carry the loading signal now — no blanket dimming */
+/* skeleton cells carry the loading signal now, no blanket dimming */
 .cal__grid.is-loading { pointer-events: none; }
 
 .booking__error {
@@ -337,23 +329,20 @@ p, h1, h2, h3 { margin: 0; }
 /* ----------------------------------------------------------------- Header */
 .site-header {
   position: sticky;
-  top: 12px;
+  top: 24px;
   z-index: 30;
   /* Floating bar: same width as the page content, offset from the very top. */
   width: min(var(--container), 100% - (var(--gutter) * 2));
-  margin: 12px auto 0;
+  margin: 24px auto 0;
   /* Figma had 110px, which reads as a lot of empty band on a real screen.
      Everything else in the header scales off this. */
-  height: clamp(58px, 5.4vw, 76px);
-  background: var(--menu-bg);
+  height: clamp(68px, 5.5vw, 80px);   /* floor stays above .btn--nav's 44px + margin */
+  background: rgba(247, 247, 247, .72);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, .6);
   border-radius: 16px;
-  /* No shadow at rest: at the top of the page the bar is part of the page, so
-     an edge there just reads as a line. It fades in only once content starts
-     passing underneath — see .is-stuck. */
-  box-shadow: 0 0 0 0 rgba(23, 54, 78, 0);
-  transition: box-shadow var(--t-slow) var(--ease);
 }
-.site-header.is-stuck { box-shadow: var(--shadow-bar); }
 .site-header__inner {
   display: flex;
   align-items: center;
@@ -361,9 +350,31 @@ p, h1, h2, h3 { margin: 0; }
   height: 100%;
 }
 
-/* Panel open: the bar drops its shadow so the two read as one surface and the
-   panel carries the elevation for both. */
-.site-header.has-mega-open { box-shadow: none; }
+/* Mobile drawer only: unlike the desktop mega panel (see .mega below), the
+   drawer has no trick to hide behind the bar's rounded corners, so the bar
+   still squares its bottom off to meet it flush and drops its ring in
+   favour of the drawer's own shadow. */
+.site-header.is-nav-open {
+  border-radius: 16px 16px 0 0;
+  box-shadow: none;
+}
+
+/* Invisible hit-area behind the open mega panel: a click on it is a click
+   outside the header, so the existing outside-click handler in site.js
+   closes the menu — no extra JS needed. Sits behind the header's own
+   stacking context (z-index 30) so the bar and its panel always paint
+   above it, but above the page's normal flow. */
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  visibility: hidden;
+  pointer-events: none;
+}
+.site-header.has-mega-open ~ .nav-backdrop {
+  visibility: visible;
+  pointer-events: auto;
+}
 
 .brand { display: flex; align-items: center; gap: clamp(9px, 1.083vw, 13px); }
 .brand__mark { width: clamp(24px, 2.1vw, 29px); height: auto; }
@@ -383,7 +394,7 @@ p, h1, h2, h3 { margin: 0; }
 .site-nav a:hover { color: var(--ink); }
 .site-nav__cta { display: none; }
 
-/* Drawer trigger — only ever visible once the inline nav folds away. */
+/* Drawer trigger: only ever visible once the inline nav folds away. */
 .nav-toggle {
   display: none;
   place-items: center;
@@ -422,7 +433,7 @@ p, h1, h2, h3 { margin: 0; }
    The panel is a child of its .nav-item, but .nav-item stays `position: static`
    so the panel resolves its absolute box against .site-header and can span the
    full container. Below 900px it simply drops to `position: static` and flows
-   inline as an accordion inside the drawer — no DOM moving required. */
+   inline as an accordion inside the drawer, no DOM moving required. */
 .icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 
 .nav-item { position: static; }
@@ -460,26 +471,52 @@ p, h1, h2, h3 { margin: 0; }
 .mega {
   position: absolute;
   font-size: 16px;
-  top: 100%;              /* header has no border to clear any more */
+  /* Reaches 16px up under the bar (its own corner radius) instead of
+     starting exactly at the bar's bottom edge. The bar keeps rounded
+     corners at all times now (see .site-header) — if the panel started
+     flush at 100%, that rounded corner would carve a tiny gap out of the
+     bar showing the page behind it, since the panel's own square top
+     corner doesn't reach that high. Tucked in behind the bar (z-index
+     below the bar's opaque background, see below) and padded back down by
+     the same amount, so the visible panel content still lands exactly
+     where it always did. */
+  top: calc(100% - 16px);
+  padding-top: 16px;
   left: 0;
   right: 0;
-  z-index: 25;
+  /* Negative, not just "low": .nav-item is position:static, so the panel's
+     stacking context is .site-header itself, where any positioned box
+     (this one) paints above the bar's own static in-flow content: logo,
+     links, the "Začít projekt" button, no matter how small its z-index is.
+     Negative pulls it behind that in-flow layer instead, so the bar's own
+     content always stays on top of the panel opening under it — and lets
+     the tucked-in top strip above sit behind the bar's own background too,
+     invisible until it clears the bar's rounded corner. */
+  z-index: -1;
   /* full bleed like the bar above it; only the content inside is contained */
-  transform: translateY(-12px);
   background: var(--menu-bg);
   border: 0;
-  border-radius: 16px;
-  box-shadow: var(--shadow-panel);
-  opacity: 0;
+  border-radius: 0 0 16px 16px;   /* flat top: it opens flush under the header bar */
+  /* Soft and blurred, not flat: a hard-edged shadow here would overlay
+     whatever hero copy sits just below the panel and slice a sharp line
+     across it. A blur fades out instead, however far it reaches. */
+  box-shadow: 0 20px 40px -16px rgba(23, 54, 78, .25);
   visibility: hidden;
-  transition: opacity var(--t-slow) var(--ease),
-              transform var(--t-slow) var(--ease),
-              visibility var(--t-slow);
+  /* Closed: clipped to a 0-height sliver at the top. Opening animates the
+     clip open top-to-bottom, so the panel grows out from under the header
+     like a blind unrolling, instead of fading in already full height. The
+     "round" value mirrors the panel's own border-radius so the growing edge
+     stays rounded throughout. No opacity/blur on the panel itself — it
+     stays fully opaque throughout so the page behind (the hero heading)
+     never bleeds through; .mega__col carries the blur-clearing fade for the
+     content instead, ONCE it's inside the already-solid, growing panel. */
+  clip-path: inset(0 0 100% 0 round 0 0 16px 16px);
+  transition: clip-path var(--t-mega) cubic-bezier(.16, 1, .3, 1),
+              visibility var(--t-mega);
 }
 .mega.is-open {
-  opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  clip-path: inset(0 0 0% 0 round 0 0 16px 16px);
 }
 
 /* surface is full bleed, content stays on the same grid as the bar above */
@@ -493,18 +530,19 @@ p, h1, h2, h3 { margin: 0; }
 .mega__col { padding: 0 0 22px; }
 .mega__col + .mega__col { border-left: 1px solid var(--line-header); }
 
-/* columns stagger in behind the panel */
+/* columns stagger in behind the panel, clearing from a blur as they land */
 .mega__col {
   opacity: 0;
+  filter: blur(4px);
   transform: translateY(7px);
-  transition: opacity var(--t-slow) ease, transform var(--t-slow) ease;
+  transition: opacity var(--t-mega) ease, filter var(--t-mega) ease, transform var(--t-mega) ease;
 }
-.mega.is-open .mega__col { opacity: 1; transform: none; }
+.mega.is-open .mega__col { opacity: 1; filter: blur(0); transform: none; }
 .mega.is-open .mega__col:nth-child(2) { transition-delay: .05s; }
 .mega.is-open .mega__col:nth-child(3) { transition-delay: .1s; }
 
 .mega__label {
-  padding: 20px 24px 14px;
+  padding: 36px 24px 14px;
   font-size: 12px;
   line-height: 1.4;
   letter-spacing: .08em;
@@ -512,12 +550,21 @@ p, h1, h2, h3 { margin: 0; }
   color: var(--text-mute);
   border-bottom: 1px solid var(--line-header);
 }
+/* The 24px side padding is the gutter around each column's inner divider —
+   on the outer edges of the panel it just pushes the text in from where the
+   logo/button above already sit, so the two rows read as misaligned. Zero it
+   only on the outer side of the first/last column so every edge lines up
+   pixel-for-pixel with .site-header__inner above. nth-last-child(2), not
+   :last-child: .mega__foot sits after the three columns in the same grid,
+   so it — not the third column — is the actual last child. */
+.mega__col:first-child .mega__label { padding-left: 0; }
+.mega__col:nth-last-child(2) .mega__label { padding-right: 0; }
 
 /* .site-nav a sets nowrap + a border for the drawer; both must be undone here,
    and it out-specifies a lone class, hence the .site-nav prefix. */
 .site-nav .mega__link {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 13px;
   padding: 16px 24px;
   white-space: normal;
@@ -525,13 +572,13 @@ p, h1, h2, h3 { margin: 0; }
   transition: background-color var(--t-fast) ease;
 }
 .site-nav .mega__link:last-child { border-bottom: 0; }
-.site-nav .mega__link:hover { background: var(--surface); }
+.site-nav .mega__link:hover { background: var(--paper); }
+.site-nav .mega__col:first-child .mega__link { padding-left: 0; }
 
 .mega__icon {
   flex: none;
   width: 19px;
   height: 19px;
-  margin-top: 3px;
   color: var(--ink);
 }
 .mega__text { display: block; min-width: 0; }
@@ -555,15 +602,17 @@ p, h1, h2, h3 { margin: 0; }
 
 /* -- third column, "Ukázka práce" --
    This replaced a four-up gallery in which two of the four tiles were
-   prism-wash-blue.jpg and prism-wash-dark.jpg — decorative background
+   prism-wash-blue.jpg and prism-wash-dark.jpg: decorative background
    gradients, not work. Under a label promising samples they read as filler,
    and the odd crops left the column ragged. One real screenshot, shown
    properly. */
 .site-nav .mega__case {
   display: block;
-  padding: 16px 24px 0;
+  padding: 16px 24px 0 24px;
   white-space: normal;
 }
+/* Last column: flush right, same reasoning as the first column above. */
+.mega__col:nth-last-child(2) .mega__case { padding-right: 0; }
 .mega__shot {
   display: block;
   overflow: hidden;
@@ -609,20 +658,24 @@ p, h1, h2, h3 { margin: 0; }
   list-style: none;
   counter-reset: none;
 }
+.mega__col:nth-last-child(2) .mega__steps,
+.mega__col:nth-last-child(2) .mega__facts { padding-right: 0; }
 .mega__steps li,
 .mega__facts li {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 13px;
-  padding: 12px 0;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line-header);
 }
+.mega__steps li:last-child,
+.mega__facts li:last-child { border-bottom: 0; }
 .mega__stepNo {
   display: grid;
   place-items: center;
   flex: none;
   width: 21px;
   height: 21px;
-  margin-top: 2px;
   font-size: 12px;
   line-height: 1;
   color: var(--blue);
@@ -638,7 +691,7 @@ p, h1, h2, h3 { margin: 0; }
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 15px 24px;
+  padding: 15px 0;
   border-top: 1px solid var(--line-header);
   opacity: 0;
   transform: translateY(7px);
@@ -672,9 +725,14 @@ p, h1, h2, h3 { margin: 0; }
 /* ------------------------------------------------------------------- Hero */
 .hero {
   position: relative;
-  height: calc(1235px - var(--hero-tighten));   /* Figma y 109 -> 1344 */
+  /* +132px over the Figma 1235: --laptop-pitch's max grew from 693 to 800
+     (laptops ~90px taller at full size) plus another 42px so the gap above
+     the laptop row matches the gap above the availability pill, without
+     the extra 42px the bigger mockups sat visibly closer to the copy above
+     than the nav sits above the pill. */
+  height: calc(1367px - var(--hero-tighten));   /* Figma y 109 -> 1344 */
   isolation: isolate;
-  padding-bottom: 120px;   /* room for the arced laptop row's dipped edge cards, see .laptop-band-arc in site.js */
+  padding-bottom: clamp(30px, 4.667vw, 56px);   /* matches .hero__content's padding-top */
 }
 @media (max-width: 767px) {
   .hero { padding-bottom: 40px; }
@@ -683,7 +741,7 @@ p, h1, h2, h3 { margin: 0; }
 .hero__gradient {
   position: absolute;
   inset: 0 0 auto 0;
-  height: calc(1137px - var(--hero-tighten));
+  height: calc(1269px - var(--hero-tighten));
   z-index: 0;
   background: linear-gradient(
     180deg,
@@ -700,7 +758,7 @@ p, h1, h2, h3 { margin: 0; }
   top: 0;
   left: 50%;
   width: 1440px;
-  height: calc(1235px - var(--hero-tighten));
+  height: calc(1367px - var(--hero-tighten));
   margin-left: -720px;
   z-index: 1;
   pointer-events: none;
@@ -717,7 +775,7 @@ p, h1, h2, h3 { margin: 0; }
   transform: translateX(-50%);
   overflow: hidden;
 }
-/* Figma 920:39 "Rectangle" — the wash behind the hero. Was a WebGL shader
+/* Figma 920:39 "Rectangle": the wash behind the hero. Was a WebGL shader
    drifting over a texture; it is a still image now, at request. The box spans
    the full viewport width (no side letterboxing) but is dropped down from the
    top of the collage, so the copy above always sits on plain white/gradient
@@ -725,7 +783,7 @@ p, h1, h2, h3 { margin: 0; }
 .collage__wash {
   position: absolute;
   left: 0;
-  top: 31.143%;              /* 327 / 1050 — keeps the photo clear of the copy */
+  top: 31.143%;              /* 327 / 1050, keeps the photo clear of the copy */
   bottom: 0;
   width: 100%;
   overflow: hidden;
@@ -741,7 +799,7 @@ p, h1, h2, h3 { margin: 0; }
    Figma spaces the three bezels at x -233 / 458 / 1151, i.e. a 693px pitch with
    the middle one centred. Bezel k sits at 50% - k*pitch - 262.5/693*pitch; the
    band leads with three pitches so it still bleeds in on ultra-wide screens,
-   and drifts by exactly one pitch — since every unit is identical, the loop is
+   and drifts by exactly one pitch, since every unit is identical, the loop is
    seamless with no jump. Every length is a ratio of the pitch, so the whole
    band scales with the viewport. */
 .laptop-band {
@@ -856,8 +914,8 @@ p, h1, h2, h3 { margin: 0; }
 
 /* Two-tone badge: an outlined capsule (no fill, matching the site's other
    bare-line pills/buttons) holding a small "good"-status tag chip flush
-   against a sentence. The tag reuses --ok / --ok-bg — the same "good" status
-   colour already used on the audit vitals chips elsewhere on the page — and
+   against a sentence. The tag reuses --ok / --ok-bg, the same "good" status
+   colour already used on the audit vitals chips elsewhere on the page, and
    the outer capsule's type scale matches the original Figma hero pill. */
 .availability__pill {
   display: inline-flex;
@@ -894,6 +952,15 @@ p, h1, h2, h3 { margin: 0; }
   line-height: 1.08;
   letter-spacing: -0.026em;
   text-wrap: balance;
+}
+@media (max-width: 767.98px) {
+  /* The manual <br> only fits the first sentence on one line once the
+     container is wide enough for it at the 28px floor; below that it forced
+     the text past the viewport edge. Drop it and let the browser choose
+     the break itself (text-wrap: balance doesn't reliably re-measure once
+     the <br> is display:none, so fall back to normal wrapping here). */
+  .hero__title-break { display: none; }
+  .hero__title { text-wrap: wrap; }
 }
 
 .hero__lead {
@@ -932,7 +999,7 @@ p, h1, h2, h3 { margin: 0; }
   white-space: nowrap;
 }
 /* One icon per perk instead of three identical ticks. Smaller than the old
-   29px check — a line glyph at that size competes with the label.
+   29px check: a line glyph at that size competes with the label.
    Bolt / shield / message: speed, certainty, the enquiry that arrives. These
    are inline rather than <use> because the draw-on below has to address each
    stroke, and CSS cannot reach inside a sprite's shadow tree. */
@@ -949,7 +1016,7 @@ p, h1, h2, h3 { margin: 0; }
 
 /* Each icon draws itself once the row scrolls in. pathLength="1" on every
    path normalises the strokes to one length, so a single keyframe takes the
-   same time over the bolt and over the bubble — no measuring in JS.
+   same time over the bolt and over the bubble, no measuring in JS.
 
    The strokes are hidden by .is-armed, which only site.js adds: without JS,
    without IntersectionObserver, or with reduced motion asked for, the row
@@ -1011,7 +1078,7 @@ p, h1, h2, h3 { margin: 0; }
 .card__art { position: absolute; inset: 0; overflow: hidden; }
 .card__art-flat { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-/* blurred blobs — placed by their Figma centre so they scale with the card */
+/* blurred blobs, placed by their Figma centre so they scale with the card */
 .blob {
   position: absolute;
   max-width: none;
@@ -1063,7 +1130,7 @@ p, h1, h2, h3 { margin: 0; }
   max-width: none;
 }
 
-/* floating badge (Figma 782:77) — px values are the 384px-wide reference card,
+/* floating badge (Figma 782:77): px values are the 384px-wide reference card,
    the cqw values keep it proportional at any card width. */
 .stat-badge {
   position: absolute;
@@ -1116,7 +1183,7 @@ p, h1, h2, h3 { margin: 0; }
 }
 
 /* ===================================================================== */
-/* Layout breakpoints — only where the structure itself has to change.   */
+/* Layout breakpoints: only where the structure itself has to change.   */
 /* ===================================================================== */
 
 /* Below the design width the hero art no longer has a fixed frame to sit in,
@@ -1183,7 +1250,13 @@ p, h1, h2, h3 { margin: 0; }
 
   /* Mega panels stop overlaying and become inline accordions in the drawer.
      grid-template-rows 0fr -> 1fr animates to the content's natural height. */
-  .site-nav { max-height: calc(100dvh - 100%); overflow-y: auto; overscroll-behavior: contain; }
+  /* svh, not dvh: dvh tracks the address bar live, so once the drawer is open
+     at its dvh-sized max-height, the bar sliding back in shrinks that cap out
+     from under already-rendered content, the CTA button at the bottom gets
+     sliced off mid-frame instead of the drawer reflowing. svh is the small
+     (bar-visible) viewport height, already the worst case, so it never
+     shrinks further after the drawer has opened. */
+  .site-nav { max-height: calc(100svh - 100%); overflow-y: auto; overscroll-behavior: contain; }
 
   .nav-item { border-bottom: 1px solid var(--line-header); }
   .nav-item__trigger {
@@ -1268,7 +1341,7 @@ p, h1, h2, h3 { margin: 0; }
 
 
 /* =====================================================================
-   Booking modal — opens from the hero CTA "Rezervovat 15 min hovor".
+   Booking modal: opens from the hero CTA "Rezervovat 15 min hovor".
    Reuses the page tokens (blue / surface / line, Inter) so it reads as
    part of the site; the page behind is blurred via backdrop-filter.
    ===================================================================== */
@@ -1357,7 +1430,7 @@ p, h1, h2, h3 { margin: 0; }
    form reads as the way to it rather than as a wall in front of it. It is
    decoration: aria-hidden in the markup, and nothing here is clickable.
 
-   The dates carry no availability — every cell looks the same on purpose.
+   The dates carry no availability, every cell looks the same on purpose.
    Marking some free would be a claim we have not asked cal.com about yet. */
 .booking__tease {
   position: relative;
@@ -1372,9 +1445,9 @@ p, h1, h2, h3 { margin: 0; }
   pointer-events: none;
 }
 /* Blurred enough to read as out of reach, not so much that it stops reading
-   as a calendar — that is the whole job of the panel. Applied per-element
+   as a calendar: that is the whole job of the panel. Applied per-element
    (month / weekdays / grid) rather than to a shared wrapper, so the message
-   — centred on the whole card, not a child of any of them — never inherits
+   (centred on the whole card, not a child of any of them) never inherits
    the blur meant for the calendar underneath it. */
 .booking__teaseBlur {
   filter: blur(1.1px);
@@ -1385,7 +1458,7 @@ p, h1, h2, h3 { margin: 0; }
   white-space: nowrap;   /* "Prosinec 2026" must not wrap and shift the grid */
 }
 .booking__tease .cal__weekdays { margin-top: 16px; font-size: 12px; }
-/* Six rows always, padded — the height is then the same in every month, and
+/* Six rows always, padded: the height is then the same in every month, and
    nothing below it moves. Also the shape survives JS never running. */
 .booking__tease .cal__grid {
   gap: 5px;
@@ -1542,7 +1615,7 @@ p, h1, h2, h3 { margin: 0; }
 }
 
 /* Fills the otherwise empty column on step 1 and sets expectations for the
-   call — the moment people hesitate is right before handing over an email. */
+   call: the moment people hesitate is right before handing over an email. */
 .booking__agenda {
   margin-top: 26px;
   padding-top: 22px;
@@ -1664,7 +1737,7 @@ p, h1, h2, h3 { margin: 0; }
   transition: background-color var(--t-fast) ease, color var(--t-fast) ease, border-color var(--t-fast) ease, transform var(--t-fast) ease;
 }
 /* A bookable day has to read as a button. Previously free days were var(--surface)
-   and blocked ones transparent — near-identical, so on a month with one
+   and blocked ones transparent, near-identical, so on a month with one
    opening nobody could tell where to click. */
 .cal__day:not(:disabled) {
   color: var(--blue);
@@ -1694,7 +1767,7 @@ p, h1, h2, h3 { margin: 0; }
 .cal__day:disabled:hover { background: transparent; color: var(--text-off); }
 .cal__day--pad { visibility: hidden; }
 
-/* placeholder cells while availability loads — clearly not clickable */
+/* placeholder cells while availability loads, clearly not clickable */
 .cal__day--skeleton {
   background: var(--surface-3);
   border-color: transparent;
@@ -1822,7 +1895,7 @@ p, h1, h2, h3 { margin: 0; }
 .field.has-error textarea { border-color: var(--danger); background: var(--paper); }
 .field.has-error .field__err { display: block; }
 
-/* Budget picker — tile radios; the group label is provided by the
+/* Budget picker: tile radios; the group label is provided by the
    fieldset legend that wraps it. */
 .field--budget { min-width: 0; margin: 0 0 18px; padding: 0; border: 0; }
 .field--budget legend {
@@ -1837,7 +1910,7 @@ p, h1, h2, h3 { margin: 0; }
 .field--budget.has-error .field__err { display: block; }
 .budget { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .budget__opt { position: relative; display: block; margin: 0; }
-/* Cover the whole tile rather than collapsing to 0x0 — a zero-sized input is
+/* Cover the whole tile rather than collapsing to 0x0: a zero-sized input is
    invisible to hit-testing, so only the label was ever clickable. */
 .budget__opt input {
   position: absolute;
@@ -1892,8 +1965,8 @@ p, h1, h2, h3 { margin: 0; }
 
 
 /* --------------------------------------------------------- Phone field
-   A native <select> carries the dial code — keyboard, screen reader and
-   mobile pickers all work as they should — and is laid over the flag and
+   A native <select> carries the dial code: keyboard, screen reader and
+   mobile pickers all work as they should, and is laid over the flag and
    caret at zero opacity, which are only there to be looked at. */
 .tel {
   display: flex;
@@ -1916,7 +1989,7 @@ p, h1, h2, h3 { margin: 0; }
 }
 .tel__btn:hover { background: var(--surface-2); }
 .tel__btn[aria-expanded="true"] { border-color: var(--blue); }
-/* Noto Color Emoji has to be named explicitly — Inter has no flag glyphs and
+/* Noto Color Emoji has to be named explicitly, Inter has no flag glyphs and
    would fall back to the two regional-indicator letters, which is what the
    pair renders as until the font lands. That fallback is also the graceful
    state: "CZ" instead of the Czech flag, never an empty box. */
@@ -2016,7 +2089,7 @@ p, h1, h2, h3 { margin: 0; }
 
 /* --------------------------------------------------------- Form halves
    Seven fields stacked in one 346px column read as a wall. The form is cut
-   in two — contact, then project — and only this middle column swaps: the
+   in two (contact, then project) and only this middle column swaps: the
    aside and the calendar tease stay put, so the dialog keeps its height and
    nothing around it jumps. */
 .booking__pane { display: none; }
@@ -2056,7 +2129,7 @@ p, h1, h2, h3 { margin: 0; }
   .booking__progressFill { transition: none; }
 }
 
-/* Same control as the step-level back link, one notch quieter — it moves
+/* Same control as the step-level back link, one notch quieter: it moves
    between halves of a form, not between screens. */
 .booking__back--pane { margin: -2px 0 14px; }
 
@@ -2072,7 +2145,7 @@ p, h1, h2, h3 { margin: 0; }
   border: 0;
   cursor: pointer;
 }
-/* Confirm sits directly under the time list — the primary action belongs
+/* Confirm sits directly under the time list: the primary action belongs
    where the eye already is, not in a column the user last touched two
    clicks ago. margin-top:auto pins it to the bottom of the flex column. */
 .booking__confirm {
@@ -2084,7 +2157,7 @@ p, h1, h2, h3 { margin: 0; }
   border: 0;
   cursor: pointer;
 }
-/* <b> defaults to 700, which we never load — that would render faux bold.
+/* <b> defaults to 700, which we never load, that would render faux bold.
    500 is the heaviest weight actually in the font file. */
 [data-done-email] { font-weight: 500; }
 
@@ -2209,7 +2282,7 @@ body.audit-open { overflow: hidden; }
   .cal__day { min-height: 38px; font-size: 15px; }
 }
 
-/* Smallest phones: the 7-column grid, not the copy, sets the modal floor —
+/* Smallest phones: the 7-column grid, not the copy, sets the modal floor,
    tighten its gutters and cell gaps so the dialog still fits 320px. */
 @media (max-width: 400px) {
   .booking__aside,
@@ -2226,7 +2299,7 @@ body.audit-open { overflow: hidden; }
 }
 
 /* =====================================================================
-   Website audit modal — shares the overlay, dialog chrome, .field and
+   Website audit modal: shares the overlay, dialog chrome, .field and
    .btn styling with the booking modal; everything below is the report.
    ===================================================================== */
 
@@ -2676,7 +2749,7 @@ body.audit-open { overflow: hidden; }
   .vital__chip { grid-column: 1 / -1; justify-self: start; }
 }
 
-/* The report can be long — keep the close button pinned to the top of the
+/* The report can be long, keep the close button pinned to the top of the
    dialog viewport. A zero-height sticky wrapper does that without taking part
    in the layout. */
 .audit__closewrap {

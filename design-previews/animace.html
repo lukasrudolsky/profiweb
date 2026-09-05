@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Animace ikon — Profiweb</title>
+<title>Animace ikon - Profiweb</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap" rel="stylesheet">
@@ -46,7 +46,7 @@
     margin:16px 0 12px; padding:22px 18px; background:var(--surface);
     border-radius:10px; min-height:76px; display:flex; align-items:center;
   }
-  /* přesně ten řádek výhod, co je na webu — stejná velikost i rozestupy */
+  /* přesně ten řádek výhod, co je na webu, stejná velikost i rozestupy */
   .perks { display:flex; flex-wrap:wrap; gap:14px 30px; margin:0; padding:0; list-style:none; }
   .perks li { display:flex; align-items:center; gap:9px; font-size:15px; color:var(--blue); white-space:nowrap; }
   .perks svg {
@@ -62,23 +62,23 @@
   @keyframes draw { from { stroke-dashoffset:1 } to { stroke-dashoffset:0 } }
   @keyframes pop { from { transform:scale(.4); opacity:0 } to { transform:scale(1); opacity:1 } }
 
-  /* 1 — kresba linky */
+  /* 1 - kresba linky */
   [data-v="1"].play path { animation:draw .5s var(--ease) both; }
   [data-v="1"].play li:nth-child(2) path { animation-delay:.11s }
   [data-v="1"].play li:nth-child(3) path { animation-delay:.22s }
 
-  /* 2 — vyskočení */
+  /* 2 - vyskočení */
   [data-v="2"].play svg { animation:pop .45s var(--back) both; }
   [data-v="2"].play li:nth-child(2) svg { animation-delay:.09s }
   [data-v="2"].play li:nth-child(3) svg { animation-delay:.18s }
 
-  /* 3 — zdola nahoru, i s textem */
+  /* 3 - zdola nahoru, i s textem */
   @keyframes rise { from { transform:translateY(10px); opacity:0 } to { transform:none; opacity:1 } }
   [data-v="3"].play li { animation:rise .5s var(--ease) both; }
   [data-v="3"].play li:nth-child(2) { animation-delay:.08s }
   [data-v="3"].play li:nth-child(3) { animation-delay:.16s }
 
-  /* 4 — každá po svém: blesk blikne, štítu se dokreslí fajfka, do bubliny se napíšou řádky */
+  /* 4 - každá po svém: blesk blikne, štítu se dokreslí fajfka, do bubliny se napíšou řádky */
   @keyframes flash {
     0% { transform:scale(.7); opacity:0 }
     45% { transform:scale(1.18); opacity:1 }
@@ -92,18 +92,18 @@
   [data-v="4"].play li:nth-child(3) [data-p="1"] { animation:draw .22s linear both; animation-delay:.66s }
   [data-v="4"].play li:nth-child(3) [data-p="2"] { animation:draw .18s linear both; animation-delay:.86s }
 
-  /* 5 — puls na hover */
+  /* 5 - puls na hover */
   [data-v="5"] svg { transition:transform .28s var(--back); }
   [data-v="5"] li:hover svg { transform:scale(1.18); }
 
-  /* 6 — šťouch na hover, každá jinak */
+  /* 6 - šťouch na hover, každá jinak */
   [data-v="6"] svg { transition:transform .3s var(--back); }
   [data-v="6"] li:nth-child(1):hover svg { transform:rotate(-10deg) scale(1.1); }
   [data-v="6"] li:nth-child(2):hover svg { transform:translateY(-3px) scale(1.06); }
   @keyframes wiggle { 0%,100% { transform:none } 30% { transform:rotate(6deg) } 65% { transform:rotate(-5deg) } }
   [data-v="6"] li:nth-child(3):hover svg { animation:wiggle .45s var(--ease); }
 
-  /* 7 — překlopení */
+  /* 7 - překlopení */
   @keyframes flip {
     from { transform:perspective(300px) rotateY(-88deg); opacity:0 }
     to { transform:perspective(300px) rotateY(0); opacity:1 }
@@ -112,7 +112,7 @@
   [data-v="7"].play li:nth-child(2) svg { animation-delay:.1s }
   [data-v="7"].play li:nth-child(3) svg { animation-delay:.2s }
 
-  /* 8 — kresba a doskok */
+  /* 8 - kresba a doskok */
   @keyframes settle { from { transform:scale(.93) } to { transform:scale(1) } }
   [data-v="8"].play path { animation:draw .45s var(--ease) both; }
   [data-v="8"].play svg { animation:settle .35s var(--back) both; animation-delay:.45s }
@@ -131,7 +131,7 @@
 <h1>Animace řádku výhod</h1>
 <p class="lede">
   Osm verzí na finální trojici blesk / štít / zpráva. Každá scéna je přesně ten
-  řádek, co je na webu — stejná velikost, stejné rozestupy, stejná modrá. Na
+  řádek, co je na webu, stejná velikost, stejné rozestupy, stejná modrá. Na
   webu by animace naběhla jednou, až se hero dostane do viewportu. Tady si ji
   přehraj tlačítkem; verze <strong>5</strong> a <strong>6</strong> se spouštějí
   najetím myší. Řekni číslo a nasadím ji.
@@ -147,7 +147,7 @@
 <script>
 var LABELS = ["Spuštěno za 2 týdny", "Pevná cena předem", "Zaměřeno na poptávky"];
 
-/* Cesty po jedné, aby šla animovat každá zvlášť — bez toho nejde odškrtnout
+/* Cesty po jedné, aby šla animovat každá zvlášť, bez toho nejde odškrtnout
    štít až po jeho dokreslení ani napsat řádky v bublině po sobě. */
 var ICONS = [
   ['M13 2 4 14h7l-1 8 9-12h-7z'],
@@ -168,9 +168,9 @@ var VERSIONS = [
   { n:"Puls na hover", tag:"trvalé", hover:true,
     note:"Žádný nástup, jen reakce na myš. Najeď na položku." },
   { n:"Šťouch na hover", tag:"trvalé", hover:true,
-    note:"Jako 5, ale každá reaguje jinak — blesk se nakloní, štít povyskočí, bublina zavrtí. Najeď na položku." },
+    note:"Jako 5, ale každá reaguje jinak, blesk se nakloní, štít povyskočí, bublina zavrtí. Najeď na položku." },
   { n:"Překlopení", tag:"0,7 s", hover:false,
-    note:"Otočení kolem svislé osy. Nápadné — na tři ikony vedle sebe možná až moc." },
+    note:"Otočení kolem svislé osy. Nápadné, na tři ikony vedle sebe možná až moc." },
   { n:"Kresba a doskok", tag:"1,0 s", hover:false,
     note:"Verze 1 plus jemné dosednutí na konci. Nejdotaženější." }
 ];
@@ -198,7 +198,7 @@ document.getElementById('grid').innerHTML = VERSIONS.map(function (v, i) {
     + '</footer></section>';
 }).join('');
 
-/* Třídu je nutné sundat, vynutit reflow a nasadit zpět — jinak prohlížeč
+/* Třídu je nutné sundat, vynutit reflow a nasadit zpět, jinak prohlížeč
    animaci nerestartuje, protože se hodnota vlastnosti nezměnila. */
 function play(sec) {
   if (!sec.querySelector('[data-play]')) return;

@@ -1,6 +1,6 @@
 /* =====================================================================
    Style guide chrome only. Every specimen on the page is styled by
-   styles.css — nothing here restyles a component, or the guide would
+   styles.css, nothing here restyles a component, or the guide would
    stop telling the truth about the site.
    ===================================================================== */
 .sg { background: var(--paper); }

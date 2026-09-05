@@ -1,12 +1,12 @@
 /* =====================================================================
-   Website audit — runs a real Lighthouse pass through the Google
+   Website audit - runs a real Lighthouse pass through the Google
    PageSpeed Insights API and renders the report inside the modal.
 
    The measurement happens on Google's servers: lab data comes from a
    Lighthouse run on a throttled mobile connection, field data (when the
    site has enough traffic) from the Chrome UX Report, i.e. real visits.
 
-   API KEY — REQUIRED
+   API KEY - REQUIRED
    ------------------
    Keyless requests share a single Google project quota that is exhausted
    nearly all the time, so without a key every audit fails with HTTP 429.
@@ -15,7 +15,7 @@
      "PageSpeed Insights API" → Enable → Credentials → Create API key
    Then paste it into index.html:
      <meta name="psi-api-key" content="AIza…">
-   Restrict the key by HTTP referrer to your domain — it is public in the
+   Restrict the key by HTTP referrer to your domain: it is public in the
    page, the referrer restriction is what keeps it from being reused.
    ===================================================================== */
 (function () {
@@ -26,12 +26,12 @@
   var PSI_URL  = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
   var TIMEOUT  = 90000;
 
-  /* localhost / file:// — the operator is looking, so say what is wrong */
+  /* localhost / file://, the operator is looking, so say what is wrong */
   var IS_DEV = /^(localhost|127\.0\.0\.1|\[::1\]|)$/.test(location.hostname);
 
   if (!PSI_KEY && window.console) {
     console.warn('audit.js: no PageSpeed Insights API key configured. Add ' +
-                 '<meta name="psi-api-key" content="…"> to index.html — without it ' +
+                 '<meta name="psi-api-key" content="…"> to index.html, without it ' +
                  'Google refuses the audit with HTTP 429. See the audit.js header.');
   }
 
@@ -71,7 +71,7 @@
     var u;
     try { u = new URL(v); } catch (e) { return null; }
     if (!/^https?:$/.test(u.protocol)) return null;
-    /* a hostname needs a dot and a sane TLD — "localhost" or a typo shouldn't
+    /* a hostname needs a dot and a sane TLD: "localhost" or a typo shouldn't
        be sent off to Google just to come back as a failed run */
     if (!/^[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}$/i.test(u.hostname)) return null;
     return u.toString();
@@ -84,7 +84,7 @@
     });
   }
   function ms(v) {
-    if (v == null) return '—';
+    if (v == null) return '-';
     return v >= 1000 ? cz(v / 1000, v >= 10000 ? 0 : 1) + ' s' : cz(v) + ' ms';
   }
 
@@ -120,7 +120,7 @@
         '<circle class="score__value" cx="30" cy="30" r="26" ' +
           'stroke-dasharray="' + (C * pct / 100).toFixed(2) + ' ' + C.toFixed(2) + '"></circle>' +
       '</svg>' +
-      '<span class="score__num">' + (score == null ? '—' : pct) + '</span>';
+      '<span class="score__num">' + (score == null ? '-' : pct) + '</span>';
     li.appendChild(el('span', 'score__label', label));
     li.setAttribute('aria-label', label + ': ' + (score == null ? 'neměřeno' : pct + ' ze 100'));
     return li;
@@ -131,7 +131,7 @@
     var li = el('li', 'vital vital--' + b);
     li.appendChild(el('p', 'vital__name', name));
     li.appendChild(el('p', 'vital__value', key === 'CLS'
-      ? (value == null ? '—' : cz(value, 2))
+      ? (value == null ? '-' : cz(value, 2))
       : ms(value)));
     li.appendChild(el('p', 'vital__note', note));
     var chip = el('span', 'vital__chip', BAND_LABEL[b] + (isField ? ' · reálná data' : ''));
@@ -316,11 +316,11 @@
             if (!PSI_KEY) {
               return fail(IS_DEV
                 ? 'Chybí API klíč k PageSpeed Insights. Doplňte ho do index.html jako ' +
-                  '<meta name="psi-api-key" content="…"> — návod je v hlavičce souboru audit.js.'
-                : 'Měření je právě přetížené. Zkuste to prosím za chvíli — nebo si rovnou ' +
+                  '<meta name="psi-api-key" content="…">, návod je v hlavičce souboru audit.js.'
+                : 'Měření je právě přetížené. Zkuste to prosím za chvíli, nebo si rovnou ' +
                   'domluvte hovor a projdeme web spolu.');
             }
-            return fail('Denní limit měření je vyčerpaný. Zkuste to prosím zítra — nebo si ' +
+            return fail('Denní limit měření je vyčerpaný. Zkuste to prosím zítra, nebo si ' +
                         'domluvte hovor a projdeme web spolu.');
           }
         /* Google reports a bad key as 400 too, so tell the two apart by reason
@@ -330,11 +330,11 @@
             /api key/i.test(e.message || '');
 
           if (keyProblem) {
-            if (window.console) console.error('audit.js: PageSpeed Insights rejected the API key —', e.message || r.status);
+            if (window.console) console.error('audit.js: PageSpeed Insights rejected the API key:', e.message || r.status);
             return fail(IS_DEV
               ? 'Google odmítl API klíč: ' + (e.message || 'neplatný klíč') +
                 ' Zkontrolujte <meta name="psi-api-key"> v index.html a omezení klíče na doménu.'
-              : 'Měření je dočasně nedostupné. Zkuste to prosím později — nebo si domluvte hovor a projdeme web spolu.');
+              : 'Měření je dočasně nedostupné. Zkuste to prosím později, nebo si domluvte hovor a projdeme web spolu.');
           }
           if (r.status === 400) {
             return fail('Adresu se nepodařilo načíst. Zkontrolujte, že web běží a je veřejně dostupný.');
@@ -347,7 +347,7 @@
         if (!lh) return fail('Z měření se nevrátila žádná data. Zkuste to prosím znovu.');
         if (lh.runtimeError && lh.runtimeError.code !== 'NO_ERROR') {
           return fail(lh.runtimeError.message ||
-            'Stránku se nepodařilo načíst — může být offline, chráněná heslem nebo blokuje roboty.');
+            'Stránku se nepodařilo načíst, může být offline, chráněná heslem nebo blokuje roboty.');
         }
 
         runBar.style.width = '100%';
