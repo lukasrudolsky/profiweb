@@ -3,15 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Profiweb | Weby, které přinesou poptávky do 14 dní</title>
-<meta name="description" content="Navrhneme a vytvoříme web, který jasně ukáže hodnotu vaší firmy, získá důvěru zákazníků a pomůže proměnit návštěvníky v poptávky. Hotovo za 14 dní.">
+<title>Z AI prototypu na web, který prodává | Profiweb</title>
+<meta name="description" content="Máte prototyp z AI nástroje, ale poptávky nechodí. Za 14 dní z něj uděláme ostrý web: vaše texty, skutečné reference, funkční formuláře, měření a rychlost. Pevná cena předem.">
 <link rel="icon" href="assets/images/profiweb-logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="assets/css/ai-prototyp.css">
+<link rel="preload" as="image" href="assets/images/web-greenservice-pece-o-zahrady.png" fetchpriority="high">
 
-<!-- Klíč k Google PageSpeed Insights API pro "Audit webu zdarma".
+<!-- Klíč k Google PageSpeed Insights API pro "Změřit prototyp zdarma".
      Zdarma na console.cloud.google.com (PageSpeed Insights API → Create API key).
      Bez klíče Google audit odmítne. Omezte klíč na svoji doménu (HTTP referrer). -->
 <meta name="psi-api-key" content="">
@@ -44,7 +46,7 @@
 <!-- ============================ Header ============================ -->
 <header class="site-header">
   <div class="container site-header__inner">
-    <a class="brand" href="#">
+    <a class="brand" href="index.html">
       <img class="brand__mark" src="assets/images/profiweb-logo.svg" alt="" width="37" height="33">
       <span class="brand__name">Profiweb</span>
     </a>
@@ -54,7 +56,7 @@
       <span class="nav-toggle__bars" aria-hidden="true"></span>
     </button>
 
-    <nav class="site-nav" id="site-nav" aria-label="Hlavní navigace" data-lenis-prevent>
+    <nav class="site-nav" id="site-nav" aria-label="Hlavní navigace">
       <div class="nav-item nav-item--mega">
         <button class="nav-item__trigger" type="button" aria-expanded="false" aria-controls="mega-sluzby">
           <svg class="nav-item__sign" aria-hidden="true"><use href="#i-plus"></use></svg>Služby
@@ -63,21 +65,21 @@
           <div class="mega__inner">
             <div class="mega__col">
               <p class="mega__label">Co stavíme</p>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-browser"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Firemní web</span>
                   <span class="mega__desc">Vysvětlí vaši službu a získá důvěru.</span>
                 </span>
               </a>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-target"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Landing page</span>
                   <span class="mega__desc">Jedna stránka s jediným cílem: poptávka.</span>
                 </span>
               </a>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cart"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">E-shop na míru</span>
@@ -87,21 +89,21 @@
             </div>
             <div class="mega__col">
               <p class="mega__label">Co k tomu patří</p>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pen"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Copywriting</span>
                   <span class="mega__desc">Texty, kterým zákazník rozumí napoprvé.</span>
                 </span>
               </a>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gauge"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">SEO a výkon</span>
                   <span class="mega__desc">Aby vás našli a stránka naskočila hned.</span>
                 </span>
               </a>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-refresh"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Správa a rozvoj</span>
@@ -111,7 +113,7 @@
             </div>
             <div class="mega__col mega__col--media mega__col--case">
               <p class="mega__label">Ukázka práce</p>
-              <a class="mega__case" href="#">
+              <a class="mega__case" href="index.html">
                 <span class="mega__shot">
                   <img src="assets/images/web-greenservice-pece-o-zahrady.png" alt="Web GreenService - péče o zahrady" loading="lazy" decoding="async">
                 </span>
@@ -136,21 +138,21 @@
           <div class="mega__inner">
             <div class="mega__col">
               <p class="mega__label">Podle oboru</p>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wrench"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Služby a řemesla</span>
                   <span class="mega__desc">Plný kalendář místo rozdaných letáků.</span>
                 </span>
               </a>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-heart"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Kliniky a ordinace</span>
                   <span class="mega__desc">Pacient vám věří dřív, než dorazí.</span>
                 </span>
               </a>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-factory"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">B2B a výroba</span>
@@ -160,21 +162,21 @@
             </div>
             <div class="mega__col">
               <p class="mega__label">Podle cíle</p>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-trend"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Více poptávek</span>
                   <span class="mega__desc">Celý web vede k jedinému kroku.</span>
                 </span>
               </a>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-shield"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Vyšší důvěra</span>
                   <span class="mega__desc">Reference, čísla a konkrétní jména.</span>
                 </span>
               </a>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-zap"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Rychlejší web</span>
@@ -215,8 +217,8 @@
           </div>
         </div>
       </div>
-      <a href="#">Reference</a>
-      <a href="#">Ceník</a>
+      <a href="index.html">Reference</a>
+      <a href="index.html">Ceník</a>
       <div class="nav-item nav-item--mega">
         <button class="nav-item__trigger" type="button" aria-expanded="false" aria-controls="mega-proc">
           <svg class="nav-item__sign" aria-hidden="true"><use href="#i-plus"></use></svg>Proč my
@@ -225,21 +227,21 @@
           <div class="mega__inner">
             <div class="mega__col">
               <p class="mega__label">Profiweb</p>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-users"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">O nás</span>
                   <span class="mega__desc">Kdo vaše weby doopravdy staví.</span>
                 </span>
               </a>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sparkle"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Kariéra</span>
                   <span class="mega__desc">Hledáme posily do týmu.</span>
                 </span>
               </a>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-help"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Časté dotazy</span>
@@ -249,21 +251,21 @@
             </div>
             <div class="mega__col">
               <p class="mega__label">Otevřené pozice</p>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-layout"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Product designer</span>
                   <span class="mega__desc">Navrhujte weby, které prodávají.</span>
                 </span>
               </a>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-code"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Frontend vývojář</span>
                   <span class="mega__desc">Převeďte návrh do rychlého kódu.</span>
                 </span>
               </a>
-              <a class="mega__link" href="#">
+              <a class="mega__link" href="index.html">
                 <svg class="mega__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-shapes"></use></svg>
                 <span class="mega__text">
                   <span class="mega__title">Brand designer</span>
@@ -304,11 +306,11 @@
           </div>
         </div>
       </div>
-      <a href="#">Články</a>
-      <a class="btn btn--primary site-nav__cta" href="#">Začít projekt</a>
+      <a href="index.html">Články</a>
+      <a class="btn btn--primary site-nav__cta" href="index.html">Začít projekt</a>
     </nav>
 
-    <a class="btn btn--primary btn--nav" href="#">Začít projekt</a>
+    <a class="btn btn--primary btn--nav" href="index.html">Začít projekt</a>
   </div>
 </header>
 
@@ -317,124 +319,487 @@
 <div class="nav-backdrop" aria-hidden="true"></div>
 
 <!-- ============================= Hero ============================= -->
-<section class="hero">
-  <!-- decorative 1440-wide track: the laptop mockup marquee -->
-  <div class="hero__deco" aria-hidden="true">
-    <!-- Karusel: čtvrtá jednotka (index 3) stojí přesně na středu a je hlavní,
-         ostatní jsou ztmavené. site.js posune pás o jeden pitch a hlavní se
-         stane následující. Každá jednotka je zatím totožná, takže se pás po
-         dojetí kroku neviditelně vrátí a smyčka nemá švy. Devět jednotek
-         s náběhem tří pitchů pokryje šířky do ~4600px, s menším pitchem víc.
-         Až bude mít každý mockup vlastní projekt, stačí vyměnit snímek
-         v .laptop__bezel u každé jednotky zvlášť. -->
-    <div class="laptop-band">
-      <div class="laptop"><div class="laptop__bezel"><img src="assets/images/mockup-mobilni-aplikace-v-ruce.png" alt="" decoding="async"></div></div>
-      <div class="laptop"><div class="laptop__bezel"><img src="assets/images/mockup-mobilni-aplikace-v-ruce.png" alt="" decoding="async"></div></div>
-      <div class="laptop"><div class="laptop__bezel"><img src="assets/images/mockup-mobilni-aplikace-v-ruce.png" alt="" decoding="async"></div></div>
-      <div class="laptop"><div class="laptop__bezel"><img src="assets/images/mockup-mobilni-aplikace-v-ruce.png" alt="" decoding="async"></div></div>
-      <div class="laptop"><div class="laptop__bezel"><img src="assets/images/mockup-mobilni-aplikace-v-ruce.png" alt="" decoding="async"></div></div>
-      <div class="laptop"><div class="laptop__bezel"><img src="assets/images/mockup-mobilni-aplikace-v-ruce.png" alt="" decoding="async"></div></div>
-      <div class="laptop"><div class="laptop__bezel"><img src="assets/images/mockup-mobilni-aplikace-v-ruce.png" alt="" decoding="async"></div></div>
-      <div class="laptop"><div class="laptop__bezel"><img src="assets/images/mockup-mobilni-aplikace-v-ruce.png" alt="" decoding="async"></div></div>
-      <div class="laptop"><div class="laptop__bezel"><img src="assets/images/mockup-mobilni-aplikace-v-ruce.png" alt="" decoding="async"></div></div>
-    </div>
-  </div>
+<section class="lp-hero">
+  <div class="container lp-hero__inner">
+    <div class="lp-hero__copy">
+      <p class="availability">
+        <span class="availability__pill">
+          <span class="availability__tag">Dostupný</span>
+          <span class="availability__text">Volná 2 místa na tento měsíc</span>
+        </span>
+      </p>
 
-  <div class="container hero__content">
-    <p class="availability">
-      <span class="availability__pill">
-        <!-- Bez počtu míst a bez názvu měsíce schválně: obojí je údaj,
-             který se musí ručně udržovat, a jakmile se to zanedbá, tvrdí
-             web nepravdu. Tohle zůstane platné samo. -->
-        <span class="availability__tag">Nabíráme nové projekty</span>
-      </span>
-    </p>
+      <h1 class="lp-hero__title">Máte prototyp z AI. Chybí web, který prodává.</h1>
 
-    <h1 class="hero__title">Váš produkt nebo služba je špička. <br class="hero__title-break">Ukazuje to váš web?</h1>
+      <p class="lp-hero__lead">Za odpoledne máte klikací stránku, která vypadá jako od agentury. Zákazník ale neposuzuje layout, posuzuje, jestli vám dá své číslo. Za 14 dní z prototypu uděláme ostrý web: vaše texty, vaše reference, funkční formuláře, měření a rychlost.</p>
 
-    <p class="hero__lead">Navrhneme a vytvoříme web, který jasně ukáže hodnotu vaší firmy, získá důvěru zákazníků a pomůže proměnit návštěvníky v poptávky. Hotovo za 14 dní, ne za měsíce.</p>
+      <div class="lp-hero__actions">
+        <a class="btn btn--primary btn--hero btn--badge" href="#booking" data-booking-open><span class="btn__badge"><svg class="btn__badgeIcon btn__badgeIcon--cam" viewBox="0 0 24 24" aria-hidden="true"><g class="btn__cam"><rect class="btn__camBody" x="2.4" y="6.4" width="12.2" height="11.2" rx="2.4"/><path class="btn__camLens" d="M20.8 8.4v7.2L14.6 12z"/></g></svg><svg class="btn__badgeIcon btn__badgeIcon--go" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15"/><path d="m13.5 6 6 6-6 6"/></svg></span><span class="btn__label">Rezervovat 15 min hovor</span></a>
+        <button class="btn btn--secondary btn--hero" type="button" data-audit-open>Změřit prototyp zdarma</button>
+      </div>
 
-    <div class="hero__actions">
-      <a class="btn btn--primary btn--hero btn--badge" href="#booking" data-booking-open><span class="btn__badge"><svg class="btn__badgeIcon" viewBox="0 0 24 24" aria-hidden="true"><g class="btn__cam"><rect class="btn__camBody" x="2.4" y="6.4" width="12.2" height="11.2" rx="2.4"/><path class="btn__camLens" d="M20.8 8.4v7.2L14.6 12z"/></g></svg></span><span class="btn__label">Rezervovat 15 min hovor</span></a>
-      <a class="btn btn--secondary btn--hero" href="#reference">Jak web může vypadat?</a>
+      <ul class="perks">
+        <li><svg class="perks__icon" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Spuštěno za 14 dní</span></li>
+        <li><svg class="perks__icon" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M12 3 4 6v6c0 5 3.4 7.6 8 9 4.6-1.4 8-4 8-9V6z"/><path pathLength="1" d="m9 12 2 2 4-4"/></svg><span>Pevná cena předem</span></li>
+        <li><svg class="perks__icon" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M4 4.5h16a1.6 1.6 0 0 1 1.6 1.6v8.8a1.6 1.6 0 0 1-1.6 1.6h-8.6L7 21v-4.5H4a1.6 1.6 0 0 1-1.6-1.6V6.1A1.6 1.6 0 0 1 4 4.5z"/><path pathLength="1" d="M6.5 8.5h11"/><path pathLength="1" d="M6.5 12h7"/></svg><span>Prototyp jako zadání</span></li>
+      </ul>
     </div>
 
-    <ul class="perks">
-      <li><svg class="perks__icon" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Spuštěno za 2 týdny</span></li>
-      <li><svg class="perks__icon" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M12 3 4 6v6c0 5 3.4 7.6 8 9 4.6-1.4 8-4 8-9V6z"/><path pathLength="1" d="m9 12 2 2 4-4"/></svg><span>Pevná cena předem</span></li>
-      <li><svg class="perks__icon" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M4 4.5h16a1.6 1.6 0 0 1 1.6 1.6v8.8a1.6 1.6 0 0 1-1.6 1.6h-8.6L7 21v-4.5H4a1.6 1.6 0 0 1-1.6-1.6V6.1A1.6 1.6 0 0 1 4 4.5z"/><path pathLength="1" d="M6.5 8.5h11"/><path pathLength="1" d="M6.5 12h7"/></svg><span>Zaměřeno na poptávky</span></li>
-    </ul>
+    <div class="lp-hero__art">
+      <div class="mocks">
+        <div class="mock mock--ghost" aria-hidden="true">
+          <span class="mock__tag mock__tag--ghost">prototyp</span>
+          <div class="mock__bar">
+            <span class="mock__dot"></span><span class="mock__dot"></span><span class="mock__dot"></span>
+            <span class="mock__url">preview.aitool.app/vase-firma</span>
+          </div>
+          <div class="mock__body">
+            <img src="assets/images/web-greenservice-pece-o-zahrady.png" alt="" width="1200" height="750" loading="lazy" decoding="async">
+          </div>
+        </div>
+
+        <div class="mock mock--live">
+          <span class="mock__tag mock__tag--live">spuštěný web</span>
+          <div class="mock__bar" aria-hidden="true">
+            <span class="mock__dot"></span><span class="mock__dot"></span><span class="mock__dot"></span>
+            <span class="mock__url">vasefirma.cz</span>
+          </div>
+          <div class="mock__body">
+            <img src="assets/images/web-greenservice-pece-o-zahrady.png" alt="Ukázka spuštěného webu postaveného z prototypu" width="1200" height="750" fetchpriority="high" decoding="async">
+          </div>
+        </div>
+
+        <p class="lp-badge">
+          <span class="lp-badge__dot" aria-hidden="true"></span>
+          <span>
+            <span class="lp-badge__title">Nová poptávka z webu</span>
+            <span class="lp-badge__meta">právě teď, z mobilu</span>
+          </span>
+        </p>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- =========================== Problems =========================== -->
-<section class="problems">
+<!-- ============================ Bolesti ============================ -->
+<section class="lp-section lp-section--tint" id="proc-neprodava">
   <div class="container">
-    <p class="eyebrow">CO SLYŠÍME NEJČASTĚJI</p>
-    <h2 class="section-title">Poznáváte se v tom?</h2>
-    <p class="section-lead">Web vám dnes postaví kdekdo. Málokdo ale tak, aby vaši práci skutečně prodal.</p>
+    <div class="lp-section__head">
+      <p class="eyebrow">CO NA PROTOTYPU NEFUNGUJE</p>
+      <h2 class="section-title">Prototyp přesvědčil vás. Zákazníka ještě ne.</h2>
+      <p class="section-lead">Rozdíl mezi prototypem a webem, který prodává, není v grafice. Je v tom, co se stane, když na něj přijde skutečný člověk na mobilu, ve tři odpoledne, s pěti dalšími záložkami.</p>
+    </div>
 
-    <ul class="cards">
-      <li class="card">
-        <div class="card__media">
-          <div class="card__art" aria-hidden="true">
-            <img class="blob blob--3" src="assets/images/soft-blob-deep-blue-small.svg" alt="" loading="lazy" decoding="async">
-            <img class="blob blob--2" src="assets/images/soft-blob-cyan.svg" alt="" loading="lazy" decoding="async">
-            <img class="blob blob--1" src="assets/images/soft-blob-blue.svg" alt="" loading="lazy" decoding="async">
-            <img class="blob blob--4" src="assets/images/soft-blob-deep-blue-large.svg" alt="" loading="lazy" decoding="async">
-            <div class="card__wash"><img src="assets/images/prism-wash-blue.jpg" alt="" loading="lazy" decoding="async"></div>
-          </div>
-          <div class="browser">
-            <div class="browser__shot"><img src="assets/images/kalendar-rezervovane-hovory.jpg" alt="Kalendář s rezervovanými hovory" loading="lazy" decoding="async"></div>
-          </div>
-          <div class="stat-badge">
-            <img class="stat-badge__ring" src="assets/images/circle-badge-icon.svg" alt="" width="26" height="26" loading="lazy" decoding="async">
-            <img class="stat-badge__avatar" src="assets/images/warning-triangle-icon.png" alt="" width="22" height="22" loading="lazy" decoding="async">
-            <p class="stat-badge__title">Tento měsíc</p>
-            <p class="stat-badge__meta">Nové poptávky z webu: 0</p>
-          </div>
-        </div>
-        <div class="card__body">
-          <h3 class="card__title">Web neprodává</h3>
-          <p class="card__text">Máte skvělou službu, ale web to neumí říct tak, aby to zákazník pochopil a chtěl.</p>
-        </div>
-      </li>
-
-      <li class="card">
-        <div class="card__media">
-          <img class="card__art-flat" src="assets/images/blob-cluster-frame.svg" alt="" aria-hidden="true" loading="lazy" decoding="async">
-          <div class="browser">
-            <div class="browser__shot"><img src="assets/images/kalendar-bez-rezervaci.jpg" alt="Kalendář bez rezervací" loading="lazy" decoding="async"></div>
-          </div>
-        </div>
-        <div class="card__body">
-          <h3 class="card__title">Web neprodává</h3>
-          <p class="card__text">Máte skvělou službu, ale web to neumí říct tak, aby to zákazník pochopil a chtěl.</p>
-        </div>
-      </li>
-
-      <li class="card">
-        <div class="card__media">
-          <img class="card__art-flat" src="assets/images/blob-cluster-frame.svg" alt="" aria-hidden="true" loading="lazy" decoding="async">
-          <div class="browser">
-            <div class="browser__shot"><img src="assets/images/kalendar-bez-rezervaci.jpg" alt="Kalendář bez rezervací" loading="lazy" decoding="async"></div>
-          </div>
-        </div>
-        <div class="card__body">
-          <h3 class="card__title">Web neprodává</h3>
-          <p class="card__text">Máte skvělou službu, ale web to neumí říct tak, aby to zákazník pochopil a chtěl.</p>
-        </div>
-      </li>
-    </ul>
+    <div class="pains">
+      <div class="pain">
+        <svg class="pain__icon" aria-hidden="true"><use href="#i-pen"></use></svg>
+        <h3 class="pain__title">Texty jsou obecné</h3>
+        <p class="pain__text">Model napsal, co se píše na každém webu. Nic z toho neřekne, proč zrovna vy.</p>
+      </div>
+      <div class="pain">
+        <svg class="pain__icon" aria-hidden="true"><use href="#i-users"></use></svg>
+        <h3 class="pain__title">Reference jsou vymyšlené</h3>
+        <p class="pain__text">Loga a citace, které nikdy nevznikly. Zákazník to pozná dřív, než čekáte.</p>
+      </div>
+      <div class="pain">
+        <svg class="pain__icon" aria-hidden="true"><use href="#i-browser"></use></svg>
+        <h3 class="pain__title">Formulář nikam nevede</h3>
+        <p class="pain__text">Tlačítko reaguje, ale poptávka nikam nedorazí. Nebo dorazí do spamu.</p>
+      </div>
+      <div class="pain">
+        <svg class="pain__icon" aria-hidden="true"><use href="#i-trend"></use></svg>
+        <h3 class="pain__title">Nikdo neměří</h3>
+        <p class="pain__text">Nevíte, kolik lidí přišlo, kde odešli a která stránka poptávky vůbec dělá.</p>
+      </div>
+      <div class="pain">
+        <svg class="pain__icon" aria-hidden="true"><use href="#i-layout"></use></svg>
+        <h3 class="pain__title">Na mobilu se to rozjede</h3>
+        <p class="pain__text">Prototyp vznikl v jedné šířce okna. Dvě třetiny návštěv přijdou z telefonu.</p>
+      </div>
+      <div class="pain">
+        <svg class="pain__icon" aria-hidden="true"><use href="#i-target"></use></svg>
+        <h3 class="pain__title">Vyhledávače o vás neví</h3>
+        <p class="pain__text">Jeden titulek pro celý web, žádné popisky, žádná sitemap. Google nemá co indexovat.</p>
+      </div>
+    </div>
   </div>
 </section>
 
+<!-- ======================== Převod prototypu ======================== -->
+<section class="lp-section" id="co-udelame">
+  <div class="container">
+    <div class="lp-section__head lp-section__head--left">
+      <p class="eyebrow">CO S PROTOTYPEM UDĚLÁME</p>
+      <h2 class="section-title">Co z prototypu zmizí a co nastoupí</h2>
+      <p class="section-lead">Prototyp nezahazujeme. Je to nejlepší zadání, jaké může klient přinést: ukazuje strukturu, kterou jste si vymysleli, i to, co se vám líbí. Projdeme ho položku po položce.</p>
+    </div>
 
+    <div class="swap">
+      <div class="swap__group">
+        <div class="swap__head">
+          <h3 class="swap__title">Důvěra</h3>
+          <p class="swap__note">první čtyři sekundy</p>
+        </div>
+        <div class="swap__cols" aria-hidden="true">
+          <span class="swap__label">V prototypu</span>
+          <span class="swap__label">Po nás</span>
+        </div>
+        <div class="swap__row"><p class="swap__from">Texty vygenerované modelem</p><p class="swap__to">Texty z 45minutového rozhovoru s vámi, vaše čísla a jména</p></div>
+        <div class="swap__row"><p class="swap__from">Vymyšlené reference a loga</p><p class="swap__to">Skutečné reference se souhlasem, včetně dohledatelných firem</p></div>
+        <div class="swap__row"><p class="swap__from">Fotky ze stocku nebo z generátoru</p><p class="swap__to">Fotky vaší práce, lidí a provozovny, ořezané a odlehčené</p></div>
+        <div class="swap__row"><p class="swap__from">Web bez tváře</p><p class="swap__to">Kdo za firmou stojí, jak vypadá, čemu se věnuje</p></div>
+        <div class="swap__row"><p class="swap__from">Chybí zásady a fakturační údaje</p><p class="swap__to">Zpracování údajů, souhlas s cookies, IČO a sídlo v patičce</p></div>
+      </div>
+
+      <div class="swap__group">
+        <div class="swap__head">
+          <h3 class="swap__title">Prodej</h3>
+          <p class="swap__note">cesta k poptávce</p>
+        </div>
+        <div class="swap__cols" aria-hidden="true">
+          <span class="swap__label">V prototypu</span>
+          <span class="swap__label">Po nás</span>
+        </div>
+        <div class="swap__row"><p class="swap__from">Klikací atrapa formuláře</p><p class="swap__to">Formulář, který doručí poptávku do e-mailu i do kalendáře</p></div>
+        <div class="swap__row"><p class="swap__from">Šest různých výzev k akci</p><p class="swap__to">Jeden hlavní krok, opakovaný tam, kde k němu člověk dozraje</p></div>
+        <div class="swap__row"><p class="swap__from">Neošetřené stavy</p><p class="swap__to">Načítání, prázdný výsledek, chyba i validace vstupů</p></div>
+        <div class="swap__row"><p class="swap__from">Text psaný pro vás</p><p class="swap__to">Text psaný pro zákazníka: co dostane, kdy a za kolik</p></div>
+        <div class="swap__row"><p class="swap__from">Ceny nikde</p><p class="swap__to">Rozsah cen nebo kalkulace, aby nechodily poptávky mimo rozpočet</p></div>
+      </div>
+
+      <div class="swap__group">
+        <div class="swap__head">
+          <h3 class="swap__title">Provoz</h3>
+          <p class="swap__note">aby to vydrželo</p>
+        </div>
+        <div class="swap__cols" aria-hidden="true">
+          <span class="swap__label">V prototypu</span>
+          <span class="swap__label">Po nás</span>
+        </div>
+        <div class="swap__row"><p class="swap__from">Megabajty JavaScriptu na úvodu</p><p class="swap__to">Vykreslení obsahu do 1,5 s na mobilu, Core Web Vitals v zeleném</p></div>
+        <div class="swap__row"><p class="swap__from">Jeden titulek pro celý web</p><p class="swap__to">Titulky, popisky, strukturovaná data, sitemap, Search Console</p></div>
+        <div class="swap__row"><p class="swap__from">Žádné měření</p><p class="swap__to">Analytika a měřená konverze: víte, kolik poptávek web přinesl</p></div>
+        <div class="swap__row"><p class="swap__from">Kontrast a klávesnice neřešené</p><p class="swap__to">Ovládání klávesnicí, čitelný kontrast, popisky pro čtečky</p></div>
+        <div class="swap__row"><p class="swap__from">Nikdo neví, jak to upravit</p><p class="swap__to">Předaný kód, přístupy a návod. Doména a účty vedené na vás</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= Ukázka ============================= -->
+<section class="lp-section lp-section--tint" id="ukazka">
+  <div class="container">
+    <div class="lp-section__head lp-section__head--left">
+      <p class="eyebrow">UKÁZKA PRÁCE</p>
+      <h2 class="section-title">GreenService: z prototypu na web s kalkulačkou</h2>
+    </div>
+
+    <div class="case">
+      <div class="case__shot">
+        <img src="assets/images/web-greenservice-pece-o-zahrady.png" alt="Landing page GreenService s kalkulačkou ceny a poptávkovým formulářem" width="1200" height="750" loading="lazy" decoding="async">
+      </div>
+      <div class="case__copy">
+        <h3 class="case__title">Péče o zahrady</h3>
+        <p class="case__text">Přišli s prototypem: hezká stránka, formulář bez příjemce a ceny nikde. Zákazníci volali kvůli zakázkám, které firma vůbec nedělá. Strukturu jsme nechali, obsah a techniku postavili znovu.</p>
+        <ul class="case__list">
+          <li>Kalkulačka ceny podle výměry zahrady, hned v první obrazovce</li>
+          <li>Poptávka chodí do e-mailu i do kalendáře, potvrzení zákazníkovi</li>
+          <li>Rozsah prací a ceny přímo na stránce, ne až po telefonu</li>
+          <li>Měření odeslaných poptávek a jejich zdrojů</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================== Co dostanete ========================== -->
+<section class="lp-section" id="co-dostanete">
+  <div class="container">
+    <div class="lp-section__head">
+      <p class="eyebrow">PŘEDÁNÍ</p>
+      <h2 class="section-title">Co dostanete do ruky</h2>
+      <p class="section-lead">Poslední den si tenhle seznam projdeme spolu jako předávací protokol. Nic z toho není příplatek.</p>
+    </div>
+
+    <div class="deliver">
+      <div class="deliver__col">
+        <p class="deliver__label">Web</p>
+        <ul class="deliver__list">
+          <li><img src="assets/images/checkmark-icon.svg" alt="" width="16" height="16" loading="lazy" decoding="async">Spuštěný web na vaší doméně <span>s HTTPS a zálohami</span></li>
+          <li><img src="assets/images/checkmark-icon.svg" alt="" width="16" height="16" loading="lazy" decoding="async">Texty všech stránek <span>schválené vámi před kódováním</span></li>
+          <li><img src="assets/images/checkmark-icon.svg" alt="" width="16" height="16" loading="lazy" decoding="async">Design systém <span>barvy, typografie a komponenty jako tokeny</span></li>
+          <li><img src="assets/images/checkmark-icon.svg" alt="" width="16" height="16" loading="lazy" decoding="async">Zdrojový kód <span>ve vašem repozitáři, bez zámku u dodavatele</span></li>
+        </ul>
+      </div>
+      <div class="deliver__col">
+        <p class="deliver__label">Prodej a měření</p>
+        <ul class="deliver__list">
+          <li><img src="assets/images/checkmark-icon.svg" alt="" width="16" height="16" loading="lazy" decoding="async">Funkční poptávkový formulář <span>otestovaný zkušební poptávkou</span></li>
+          <li><img src="assets/images/checkmark-icon.svg" alt="" width="16" height="16" loading="lazy" decoding="async">Rezervace termínu <span>napojená na váš kalendář</span></li>
+          <li><img src="assets/images/checkmark-icon.svg" alt="" width="16" height="16" loading="lazy" decoding="async">Analytika s měřenou konverzí <span>víte, která stránka poptávky dělá</span></li>
+          <li><img src="assets/images/checkmark-icon.svg" alt="" width="16" height="16" loading="lazy" decoding="async">Search Console <span>nastavená a ověřená, se sitemap</span></li>
+        </ul>
+      </div>
+      <div class="deliver__col">
+        <p class="deliver__label">Papíry a přístupy</p>
+        <ul class="deliver__list">
+          <li><img src="assets/images/checkmark-icon.svg" alt="" width="16" height="16" loading="lazy" decoding="async">Všechny přístupy <span>doména, hosting, analytika, e-maily</span></li>
+          <li><img src="assets/images/checkmark-icon.svg" alt="" width="16" height="16" loading="lazy" decoding="async">Zásady zpracování údajů a cookies <span>připravené texty</span></li>
+          <li><img src="assets/images/checkmark-icon.svg" alt="" width="16" height="16" loading="lazy" decoding="async">Report z měření rychlosti <span>před spuštěním a po něm</span></li>
+          <li><img src="assets/images/checkmark-icon.svg" alt="" width="16" height="16" loading="lazy" decoding="async">Návod na úpravy <span>psaný česky, ne pro vývojáře</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================== Harmonogram ========================== -->
+<section class="lp-section lp-section--tint" id="jak-to-probiha">
+  <div class="container">
+    <div class="lp-section__head">
+      <p class="eyebrow">JAK TO PROBÍHÁ</p>
+      <h2 class="section-title">Čtrnáct dní, pět kroků, žádné čekání naslepo</h2>
+      <p class="section-lead">Každý krok má výstup, který uvidíte. Nikdy nenastane týden, kdy se u nás něco děje a vy nevíte co.</p>
+    </div>
+
+    <ol class="steps">
+      <li class="step">
+        <p class="step__day">DEN 0</p>
+        <h3 class="step__title">Hovor a audit prototypu</h3>
+        <p class="step__text">Patnáct minut o tom, co má web přinést. Projdeme prototyp a řekneme, co z něj zůstane.</p>
+        <p class="step__out"><span>Výstup</span>Rozsah a pevná cena</p>
+      </li>
+      <li class="step">
+        <p class="step__day">DEN 1–3</p>
+        <h3 class="step__title">Struktura a texty</h3>
+        <p class="step__text">Rozhovor o vaší práci, zákaznících a námitkách. Z něj napíšeme obsah a rozvrhneme stránky.</p>
+        <p class="step__out"><span>Výstup</span>Texty ke schválení</p>
+      </li>
+      <li class="step">
+        <p class="step__day">DEN 4–8</p>
+        <h3 class="step__title">Návrh a kód</h3>
+        <p class="step__text">Design na vašem obsahu, ne na výplni. Stavíme rovnou do prohlížeče, na náhledové adrese.</p>
+        <p class="step__out"><span>Výstup</span>Živý náhled webu</p>
+      </li>
+      <li class="step">
+        <p class="step__day">DEN 9–12</p>
+        <h3 class="step__title">Napojení a testy</h3>
+        <p class="step__text">Formuláře, kalendář, měření, SEO. Test na skutečných telefonech a pomalém připojení.</p>
+        <p class="step__out"><span>Výstup</span>Zkušební poptávka vám dorazí</p>
+      </li>
+      <li class="step">
+        <p class="step__day">DEN 13–14</p>
+        <h3 class="step__title">Spuštění a předání</h3>
+        <p class="step__text">Nasazení na doménu, HTTPS, přesměrování, zálohy. Předáme přístupy a ukážeme, jak web upravit.</p>
+        <p class="step__out"><span>Výstup</span>Web online, vše je vaše</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================= Ceník ============================= -->
+<section class="lp-section" id="cenik">
+  <div class="container">
+    <div class="lp-section__head">
+      <p class="eyebrow">CENÍK</p>
+      <h2 class="section-title">Pevná cena, potvrzená dřív, než začneme</h2>
+      <p class="section-lead">Cenu určíme na úvodním hovoru podle rozsahu a od té chvíle se nemění. Nedoplácíte za změny, které vzniknou na naší straně, ani za to, že práce trvala déle, než jsme čekali.</p>
+    </div>
+
+    <div class="plans">
+      <div class="plan">
+        <span class="plan__flag plan__flag--ghost" aria-hidden="true">balíček</span>
+        <h3 class="plan__title">Ostrá landing page</h3>
+        <p class="plan__price">29 000 Kč</p>
+        <p class="plan__terms">bez DPH · do 7 dní</p>
+        <p class="plan__text">Jedna stránka z prototypu, dotažená do provozu. Pro jednu službu nebo kampaň.</p>
+        <ul class="plan__list">
+          <li>Až 8 sekcí, texty na míru</li>
+          <li>Poptávkový formulář a rezervace termínu</li>
+          <li>Základ SEO a měření konverzí</li>
+          <li>Nasazení na vaši doménu</li>
+        </ul>
+      </div>
+
+      <div class="plan plan--pick">
+        <span class="plan__flag">Nejčastější volba</span>
+        <h3 class="plan__title">Firemní web</h3>
+        <p class="plan__price">59 000 Kč</p>
+        <p class="plan__terms">bez DPH · do 14 dní</p>
+        <p class="plan__text">Celý web postavený na prototypu: služby, reference, ceník, kontakt.</p>
+        <ul class="plan__list">
+          <li>Vše z landing page</li>
+          <li>Až 6 stránek a připravený blog</li>
+          <li>Design systém: barvy, typografie, komponenty</li>
+          <li>Přenos obsahu ze starého webu a přesměrování</li>
+          <li>Zaškolení, jak si obsah upravíte sami</li>
+        </ul>
+      </div>
+
+      <div class="plan">
+        <span class="plan__flag plan__flag--ghost" aria-hidden="true">balíček</span>
+        <h3 class="plan__title">Na míru</h3>
+        <p class="plan__price">od 120 000 Kč</p>
+        <p class="plan__terms">bez DPH · termín dle rozsahu</p>
+        <p class="plan__text">Když web musí něco počítat, prodávat nebo si povídat s vaším systémem.</p>
+        <ul class="plan__list">
+          <li>E-shop nebo objednávkový systém</li>
+          <li>Kalkulačky a konfigurátory</li>
+          <li>Napojení na CRM, ERP nebo fakturaci</li>
+          <li>Vícejazyčné verze</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="extras">
+      <div class="extra">
+        <h3 class="extra__title">Audit prototypu samostatně · 4 900 Kč</h3>
+        <p class="extra__text">Písemný rozbor toho, co v prototypu chybí a v jakém pořadí to řešit. Když si nás pak objednáte, částku odečteme z ceny zakázky.</p>
+      </div>
+      <div class="extra">
+        <h3 class="extra__title">Správa a rozvoj · od 2 900 Kč měsíčně</h3>
+        <p class="extra__text">Aktualizace, zálohy, hlídání výpadků, drobné úpravy a měsíční přehled poptávek z webu. Bez závazku, výpovědní lhůta měsíc.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ Závazky ============================ -->
+<section class="lp-section lp-section--tint" id="zavazky">
+  <div class="container">
+    <div class="lp-section__head">
+      <p class="eyebrow">NA ČEM SI ZAKLÁDÁME</p>
+      <h2 class="section-title">Co garantujeme písemně</h2>
+      <p class="section-lead">Všech pět bodů je součástí smlouvy, ne slib na webu.</p>
+    </div>
+
+    <div class="pledges">
+      <div class="pledge">
+        <img src="assets/images/checkmark-icon.svg" alt="" width="22" height="22" loading="lazy" decoding="async">
+        <h3 class="pledge__title">Pevná cena, potvrzená před začátkem</h3>
+        <p class="pledge__text">V průběhu se nemění. Když si vy vyžádáte něco nad rámec, nejdřív pošleme cenu a čekáme na vaše ano.</p>
+      </div>
+      <div class="pledge">
+        <img src="assets/images/checkmark-icon.svg" alt="" width="22" height="22" loading="lazy" decoding="async">
+        <h3 class="pledge__title">Termín ve smlouvě, ne přání</h3>
+        <p class="pledge__text">Nestihneme-li spuštění ve sjednaný den z důvodu na naší straně, snižujeme cenu o 10 %.</p>
+      </div>
+      <div class="pledge">
+        <img src="assets/images/checkmark-icon.svg" alt="" width="22" height="22" loading="lazy" decoding="async">
+        <h3 class="pledge__title">30 dní ladění po spuštění zdarma</h3>
+        <p class="pledge__text">Drobné úpravy textů, oprava čehokoli, co se objeví v reálném provozu. Bez počítání hodin.</p>
+      </div>
+      <div class="pledge">
+        <img src="assets/images/checkmark-icon.svg" alt="" width="22" height="22" loading="lazy" decoding="async">
+        <h3 class="pledge__title">Všechno je vaše</h3>
+        <p class="pledge__text">Doména, hosting, kód, analytika i účty vedeme na vaše jméno. Odejít od nás jde kdykoli, bez výkupného za data.</p>
+      </div>
+      <div class="pledge">
+        <img src="assets/images/checkmark-icon.svg" alt="" width="22" height="22" loading="lazy" decoding="async">
+        <h3 class="pledge__title">Jeden kontakt po celou dobu</h3>
+        <p class="pledge__text">Mluvíte s tím, kdo web staví. Žádný account manager, který se ptá vývojáře a odpoví za dva dny.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================== Časté dotazy ========================== -->
+<section class="lp-section" id="dotazy">
+  <div class="container">
+    <div class="lp-section__head">
+      <p class="eyebrow">ČASTÉ DOTAZY</p>
+      <h2 class="section-title">Na co se ptají nejčastěji</h2>
+    </div>
+
+    <div class="faq">
+      <details class="faq__item" open>
+        <summary class="faq__q">Proč prototyp prostě nenasadit a nešetřit?<svg class="faq__sign" aria-hidden="true"><use href="#i-plus"></use></svg></summary>
+        <p class="faq__a">Nasadit jde. Jenom vám pak měsíce běží web, u kterého nevíte, proč nefunguje, a každá oprava stojí víc než udělat to rovnou. Náklad není v kódu, ale v poptávkách, které mezitím nepřijdou.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">Používáte při práci AI?<svg class="faq__sign" aria-hidden="true"><use href="#i-plus"></use></svg></summary>
+        <p class="faq__a">Ano, tam, kde zrychlí rutinu. Ne na to, co uvidí váš zákazník, bez toho, že bychom za každé slovo a řádek kódu ručili my. Rozdíl mezi prototypem a naší prací není v tom, jestli AI, ale v tom, kdo nese odpovědnost.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">Kdo píše texty?<svg class="faq__sign" aria-hidden="true"><use href="#i-plus"></use></svg></summary>
+        <p class="faq__a">My, na základě rozhovoru s vámi. Dostanete je ke schválení dřív, než se začne kódovat, takže případné neshody se řeší v dokumentu, ne v hotovém webu.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">Co když se mi návrh nebude líbit?<svg class="faq__sign" aria-hidden="true"><use href="#i-plus"></use></svg></summary>
+        <p class="faq__a">V každé fázi je jedno kolo připomínek v ceně. Protože nejdřív schvalujete texty a strukturu, k zásadnímu překopání designu prakticky nedochází. Kdyby ano, řekneme cenu předem.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">Na čem web poběží a bude se dát upravovat?<svg class="faq__sign" aria-hidden="true"><use href="#i-plus"></use></svg></summary>
+        <p class="faq__a">Na statických souborech bez frameworku, což znamená rychlé načtení a nic, co by se samo rozbilo aktualizací. Obsah, který měníte často, napojíme na editor, ve kterém si články a texty upravíte sami. Ukážeme vám jak.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">Máme starý web, přijdeme o pozice ve vyhledávání?<svg class="faq__sign" aria-hidden="true"><use href="#i-plus"></use></svg></summary>
+        <p class="faq__a">Ne. Adresy původních stránek přesměrujeme na nové, obsah přeneseme a po spuštění hlídáme v Search Console, že Google novou verzi načetl bez chyb.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">Co potřebujete ode mě?<svg class="faq__sign" aria-hidden="true"><use href="#i-plus"></use></svg></summary>
+        <p class="faq__a">Odkaz na prototyp, 45 minut na rozhovor, tři kontakty na spokojené zákazníky a fotky, co máte. Když to dorazí do třetího dne, čtrnáctidenní termín platí.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">Co když projekt uprostřed zastavíme?<svg class="faq__sign" aria-hidden="true"><use href="#i-plus"></use></svg></summary>
+        <p class="faq__a">Doplatíte jen odvedenou práci do daného kroku a dostanete ji: texty, návrhy i kód. Nic si nedržíme jako zástavu.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Závěrečná výzva ======================== -->
+<section class="lp-section" id="dalsi-krok">
+  <div class="container">
+    <div class="closer">
+      <div>
+        <h2 class="closer__title">Další krok trvá patnáct minut</h2>
+        <p class="closer__text">Pošlete odkaz na prototyp a domluvte si hovor. Projdeme ho společně a řekneme, co z něj zůstane, co bude stát a kdy může být online. Z hovoru odcházíte s rozsahem a cenou, i kdybyste si nás nakonec neobjednali.</p>
+        <div class="closer__actions">
+          <a class="btn btn--primary btn--hero btn--badge" href="#booking" data-booking-open><span class="btn__badge"><svg class="btn__badgeIcon btn__badgeIcon--cam" viewBox="0 0 24 24" aria-hidden="true"><g class="btn__cam"><rect class="btn__camBody" x="2.4" y="6.4" width="12.2" height="11.2" rx="2.4"/><path class="btn__camLens" d="M20.8 8.4v7.2L14.6 12z"/></g></svg><svg class="btn__badgeIcon btn__badgeIcon--go" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h15"/><path d="m13.5 6 6 6-6 6"/></svg></span><span class="btn__label">Rezervovat 15 min hovor</span></a>
+          <button class="btn btn--secondary btn--hero" type="button" data-audit-open>Změřit prototyp zdarma</button>
+        </div>
+      </div>
+
+      <dl class="closer__aside">
+        <div class="closer__row">
+          <dt>Mluvit budete s</dt>
+          <dd>Lukáš Rudolský<small>zakládající vývojář, Profiweb</small></dd>
+        </div>
+        <div class="closer__row">
+          <dt>Nebo napište</dt>
+          <dd><a href="mailto:ahoj@profiweb.cz">ahoj@profiweb.cz</a></dd>
+        </div>
+        <div class="closer__row">
+          <dt>Hovor</dt>
+          <dd>15 minut<small>Google Meet, zdarma a bez závazků</small></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ Patička ============================ -->
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <p class="site-footer__brand">
+      <img src="assets/images/profiweb-logo.svg" alt="" width="24" height="21" loading="lazy" decoding="async">
+      <span>Profiweb</span>
+    </p>
+    <p>Weby, které přinesou poptávky do 14 dní.</p>
+    <nav class="site-footer__links" aria-label="Patička">
+      <a href="index.html">Úvod</a>
+      <a href="#cenik">Ceník</a>
+      <a href="#dotazy">Časté dotazy</a>
+      <a href="mailto:ahoj@profiweb.cz">ahoj@profiweb.cz</a>
+    </nav>
+  </div>
+</footer>
 <!-- ====================== Booking modal (15 min) ====================== -->
 <div class="booking" id="booking" hidden>
   <div class="booking__backdrop" data-booking-close></div>
 
-  <div class="booking__dialog" role="dialog" aria-modal="true" aria-labelledby="booking-title" data-lenis-prevent>
+  <div class="booking__dialog" role="dialog" aria-modal="true" aria-labelledby="booking-title">
     <button class="booking__close" type="button" data-booking-close aria-label="Zavřít rezervaci">
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
     </button>
@@ -679,7 +1044,7 @@
 <div class="audit" id="audit" hidden>
   <div class="audit__backdrop" data-audit-close></div>
 
-  <div class="audit__dialog" role="dialog" aria-modal="true" aria-labelledby="audit-title" tabindex="-1" data-lenis-prevent>
+  <div class="audit__dialog" role="dialog" aria-modal="true" aria-labelledby="audit-title" tabindex="-1">
     <div class="audit__closewrap">
       <button class="audit__close" type="button" data-audit-close aria-label="Zavřít audit">
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -788,12 +1153,9 @@
   </div>
 </div>
 
-<script src="assets/js/lenis.min.js" defer></script>
 <script src="assets/js/site.js" defer></script>
 <script src="assets/js/booking.js" defer></script>
 <script src="assets/js/country-codes.js" defer></script>
 <script src="assets/js/audit.js" defer></script>
-<!-- last: its anchor handler defers to any click the scripts above claimed -->
-<script src="assets/js/smooth-scroll.js" defer></script>
 </body>
 </html>

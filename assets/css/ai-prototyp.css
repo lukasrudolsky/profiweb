@@ -1,0 +1,803 @@
+/* =====================================================================
+   Profiweb.cz - Landing page "Z AI prototypu na web, který prodává"
+   (ai-prototyp-na-web.html)
+
+   Doplněk ke styles.css, ne jeho náhrada: tokeny, .container, .btn,
+   .eyebrow, .section-title, .section-lead, .availability, .perks i oba
+   modály se berou odtamtud. Tady jsou jen bloky, které existují pouze
+   na této stránce.
+
+   Stejný responzivní model jako na homepage: clamp() sedí na cílovou
+   hodnotu na 1200px (šířka containeru) a pod ní se plynule zmenšuje.
+   Breakpointy jsou vyhrazené pro skutečné změny layoutu.
+   ===================================================================== */
+
+/* Sekce sdílí jeden rytmus, aby se stránka nečetla jako slepenec bloků. */
+.lp-section {
+  padding-block: clamp(52px, 6.667vw, 80px);
+}
+.lp-section--tint {
+  background: var(--surface);
+  border-block: 1px solid var(--line);
+}
+.lp-section__head {
+  max-width: 760px;
+  text-align: center;
+  margin-inline: auto;
+}
+.lp-section__head--left {
+  text-align: left;
+  margin-inline: 0;
+}
+
+/* ==================================================================== */
+/* Hero                                                                 */
+/* Dva sloupce: text vlevo, dvojice mockupů vpravo. Mockupy jsou to     */
+/* jediné, co na stránce ukazuje rozdíl prototyp / web, takže dostávají */
+/* polovinu plochy až do 980px, pod tím jdou pod text.                  */
+/* ==================================================================== */
+.lp-hero {
+  padding-top: clamp(28px, 4vw, 56px);
+  padding-bottom: clamp(48px, 6vw, 76px);
+  overflow: hidden;
+}
+.lp-hero__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 64px);
+}
+.lp-hero__title {
+  margin-top: clamp(14px, 1.833vw, 22px);
+  font-size: clamp(32px, 4.333vw, 52px);
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.lp-hero__lead {
+  max-width: 34em;
+  margin-top: clamp(14px, 1.667vw, 20px);
+  font-size: clamp(16px, 1.667vw, 20px);
+  line-height: 1.76;
+  letter-spacing: -0.02em;
+  color: var(--text-lead-2);
+  text-wrap: pretty;
+}
+.lp-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(10px, 1.167vw, 14px);
+  margin-top: clamp(22px, 2.667vw, 32px);
+}
+
+/* Hero má proti homepage poloviční šířku, tak se obě tlačítka vedle sebe
+   vejdou jen s užším vnitřním odsazením. Výška a typografie zůstávají. */
+.lp-hero__actions .btn,
+.closer__actions .btn { padding-inline: clamp(18px, 2vw, 22px); font-size: clamp(16px, 1.5vw, 18px); }
+
+/* Pill i perky se na homepage centrují pod středový hero. Tady stojí nad
+   textem zarovnaným vlevo, takže se řadí k němu. */
+.lp-hero .availability { justify-content: flex-start; }
+.lp-hero .perks {
+  justify-content: flex-start;
+  gap: clamp(12px, 1.5vw, 18px);
+  margin-top: clamp(22px, 2.667vw, 32px);
+}
+.lp-hero .perks li { font-size: clamp(15px, 1.333vw, 16px); }
+.lp-hero .perks__icon { width: clamp(16px, 1.5vw, 18px); height: clamp(16px, 1.5vw, 18px); }
+
+/* ---- hero art: prototyp za spuštěným webem ------------------------- */
+/* Odsazení nahoře drží štítky uvnitř sekce (ta má overflow: hidden),
+   dole a vlevo dělá místo pro odznak a pro vykouknutí prototypu. */
+.mocks {
+  position: relative;
+  padding: clamp(24px, 2.667vw, 32px) 0 clamp(28px, 3.5vw, 42px) clamp(24px, 3vw, 40px);
+}
+
+/* Rám prohlížeče. Světlá varianta = prototyp (přerušovaný okraj, ztlumený),
+   ostrá varianta = spuštěný web. Rozdíl nese okraj a sytost, ne barva. */
+/* Rám nesmí mít overflow: hidden, jinak by uřízl štítek nad sebou. Rohy
+   proto zaobluje každá část zvlášť: lišta nahoře, plocha se snímkem dole. */
+.mock {
+  position: relative;
+  border-radius: var(--r-xl);
+  background: var(--paper);
+}
+.mock__bar {
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: clamp(26px, 2.667vw, 32px);
+  padding-inline: clamp(10px, 1.167vw, 14px);
+  background: var(--menu-bg);
+  border-bottom: 1px solid var(--line);
+}
+.mock__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-pill);
+  background: var(--line-hover);
+}
+.mock__url {
+  margin-left: 6px;
+  font-size: clamp(10px, 1vw, 12px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Screenshot je celá stránka, tedy velmi vysoký obrázek. Oříznutí na poměr
+   okna prohlížeče drží oba mockupy stejně vysoké a hero kompaktní. */
+.mock__body {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: 0 0 var(--r-xl) var(--r-xl);
+  overflow: hidden;
+}
+.mock__body img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.mock--ghost {
+  position: absolute;
+  left: 0;
+  top: clamp(16px, 2vw, 26px);
+  width: 64%;
+  border: 1px dashed var(--line-hover);
+  filter: grayscale(1);
+  opacity: .55;
+}
+.mock--ghost .mock__bar { background: var(--surface-2); }
+
+.mock--live {
+  position: relative;
+  margin-left: auto;
+  width: 84%;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-panel);
+}
+
+/* Štítek nad rámem: říká, co je co, bez další věty v textu. Sedí celý nad
+   oknem (bottom: 100%), jinak by zakrýval adresní řádek pod sebou. */
+.mock__tag {
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 5px;
+  left: clamp(12px, 1.5vw, 18px);
+  z-index: 1;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  font-size: clamp(11px, 1.083vw, 13px);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.mock__tag--ghost {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text-mute);
+}
+.mock__tag--live {
+  background: var(--blue);
+  border: 1px solid var(--blue);
+  color: var(--paper);
+}
+
+/* Plovoucí odznak, stejná role jako .stat-badge na homepage: ukazuje, k
+   čemu web slouží, aniž by to musel říkat nadpis. */
+.lp-badge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: clamp(9px, 1vw, 12px) clamp(12px, 1.333vw, 16px);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-pop);
+}
+.lp-badge__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--green);
+  flex: none;
+}
+.lp-badge__title {
+  font-size: clamp(12px, 1.167vw, 14px);
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+.lp-badge__meta {
+  font-size: clamp(11px, 1.083vw, 13px);
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+}
+
+/* ==================================================================== */
+/* Bolesti                                                              */
+/* ==================================================================== */
+.pains {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: clamp(20px, 2.667vw, 32px) clamp(24px, 3.333vw, 40px);
+  margin-top: clamp(32px, 4vw, 48px);
+  text-align: left;
+}
+.pain {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px clamp(12px, 1.333vw, 16px);
+  padding-top: clamp(16px, 1.667vw, 20px);
+  border-top: 1px solid var(--line);
+}
+.pain__icon {
+  grid-row: span 2;
+  width: clamp(22px, 2vw, 24px);
+  height: clamp(22px, 2vw, 24px);
+  color: var(--blue);
+}
+.pain__title {
+  font-size: clamp(17px, 1.5vw, 18px);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+.pain__text {
+  font-size: clamp(15px, 1.333vw, 16px);
+  line-height: 1.7;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+  text-wrap: pretty;
+}
+
+/* ==================================================================== */
+/* Převod prototypu: dva sloupce "z čeho" a "na co"                     */
+/* ==================================================================== */
+.swap { margin-top: clamp(28px, 3.333vw, 40px); }
+.swap__group + .swap__group { margin-top: clamp(28px, 3.333vw, 40px); }
+
+.swap__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  padding-bottom: clamp(10px, 1.167vw, 14px);
+  border-bottom: 2px solid var(--ink);
+}
+.swap__title {
+  font-size: clamp(20px, 2vw, 24px);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+}
+.swap__note {
+  font-size: clamp(14px, 1.333vw, 16px);
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+  color: var(--blue);
+}
+
+.swap__cols,
+.swap__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 2.667vw, 32px);
+}
+.swap__cols {
+  padding-top: clamp(10px, 1.167vw, 14px);
+}
+.swap__label {
+  font-size: clamp(12px, 1.167vw, 13px);
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+.swap__row {
+  padding-block: clamp(11px, 1.167vw, 14px);
+  border-top: 1px solid var(--line);
+  font-size: clamp(15px, 1.333vw, 16px);
+  line-height: 1.62;
+  letter-spacing: -0.02em;
+}
+.swap__from,
+.swap__to {
+  position: relative;
+  padding-left: 22px;
+}
+/* Krátká čárka místo odrážky: přerušovaná u prototypu, plná u výsledku.
+   Rozdíl je vidět i bez barvy, tedy i v tisku a při poruše barvocitu. */
+.swap__from::before,
+.swap__to::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+  width: 12px;
+}
+.swap__from {
+  color: var(--text-mute);
+}
+.swap__from::before { border-top: 1px dashed var(--text-faint); }
+.swap__to::before { border-top: 2px solid var(--blue); }
+
+/* ==================================================================== */
+/* Ukázka                                                               */
+/* ==================================================================== */
+.case {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(28px, 4vw, 56px);
+  margin-top: clamp(28px, 3.333vw, 40px);
+}
+.case__shot {
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-pop);
+}
+.case__shot img { width: 100%; }
+.case__title {
+  font-size: clamp(22px, 2.333vw, 28px);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+}
+.case__text {
+  margin-top: clamp(12px, 1.333vw, 16px);
+  font-size: clamp(15px, 1.417vw, 17px);
+  line-height: 1.76;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+  text-wrap: pretty;
+}
+.case__list {
+  display: grid;
+  gap: clamp(8px, 0.917vw, 11px);
+  margin-top: clamp(16px, 1.667vw, 20px);
+}
+.case__list li {
+  position: relative;
+  padding-left: 26px;
+  font-size: clamp(15px, 1.333vw, 16px);
+  line-height: 1.62;
+  letter-spacing: -0.02em;
+}
+.case__list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.34em;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--r-pill);
+  background: var(--blue-tint);
+  border: 1px solid var(--line-blue);
+}
+
+/* ==================================================================== */
+/* Co dostanete                                                         */
+/* ==================================================================== */
+.deliver {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: clamp(16px, 2vw, 24px);
+  margin-top: clamp(32px, 4vw, 48px);
+  text-align: left;
+}
+.deliver__col {
+  padding: clamp(20px, 2.333vw, 28px) clamp(18px, 2.167vw, 26px) clamp(22px, 2.5vw, 30px);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+}
+.deliver__label {
+  font-size: clamp(13px, 1.25vw, 15px);
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+  color: var(--blue);
+}
+.deliver__list {
+  display: grid;
+  gap: clamp(10px, 1.083vw, 13px);
+  margin-top: clamp(14px, 1.5vw, 18px);
+}
+.deliver__list li {
+  position: relative;
+  padding-left: 28px;
+  font-size: clamp(15px, 1.333vw, 16px);
+  line-height: 1.62;
+  letter-spacing: -0.02em;
+}
+.deliver__list img {
+  position: absolute;
+  left: 0;
+  top: 0.28em;
+  width: 16px;
+  height: 16px;
+}
+.deliver__list span { color: var(--text-body); }
+
+/* ==================================================================== */
+/* Harmonogram                                                          */
+/* ==================================================================== */
+/* styles.css nuluje odsazení jen u <ul>. Bez tohohle by výchozí odsazení
+   <ol> odkrylo podklad mřížky jako šedý pruh před prvním krokem. */
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
+  gap: 1px;
+  margin-top: clamp(32px, 4vw, 48px);
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  text-align: left;
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 0.667vw, 8px);
+  padding: clamp(18px, 2vw, 24px) clamp(16px, 1.833vw, 22px) clamp(20px, 2.167vw, 26px);
+  background: var(--paper);
+}
+.step__day {
+  font-size: clamp(12px, 1.167vw, 14px);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  color: var(--blue);
+}
+.step__title {
+  font-size: clamp(17px, 1.5vw, 18px);
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+}
+.step__text {
+  font-size: clamp(14px, 1.25vw, 15px);
+  line-height: 1.66;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+}
+.step__out {
+  margin-top: auto;
+  padding-top: clamp(12px, 1.333vw, 16px);
+  font-size: clamp(13px, 1.167vw, 14px);
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+.step__out span {
+  display: block;
+  color: var(--text-mute);
+  font-size: clamp(11px, 1vw, 12px);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+/* ==================================================================== */
+/* Ceník                                                                */
+/* ==================================================================== */
+.plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr));
+  gap: clamp(16px, 2vw, 24px);
+  margin-top: clamp(32px, 4vw, 48px);
+  align-items: start;
+  text-align: left;
+}
+.plan {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.083vw, 13px);
+  padding: clamp(22px, 2.5vw, 30px) clamp(20px, 2.333vw, 28px) clamp(24px, 2.667vw, 32px);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+}
+.plan--pick {
+  border-color: var(--blue);
+  box-shadow: var(--shadow-pop);
+}
+/* Stuha drží nadpisy a ceny všech tří balíčků na jedné lince, i když ji
+   dva z nich nepotřebují. Bez toho se ceny neporovnávají na jeden pohled. */
+.plan__flag {
+  align-self: flex-start;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  background: var(--blue-tint);
+  color: var(--blue);
+  font-size: clamp(12px, 1.167vw, 13px);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+.plan__flag--ghost { visibility: hidden; }
+.plan__title {
+  font-size: clamp(19px, 1.833vw, 22px);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+}
+.plan__price {
+  font-size: clamp(28px, 3vw, 36px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.plan__terms {
+  font-size: clamp(13px, 1.167vw, 14px);
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  color: var(--text-mute);
+}
+.plan__text {
+  font-size: clamp(15px, 1.333vw, 16px);
+  line-height: 1.7;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+}
+.plan__list {
+  display: grid;
+  gap: clamp(8px, 0.917vw, 11px);
+  margin-top: 2px;
+}
+.plan__list li {
+  position: relative;
+  padding-left: 22px;
+  font-size: clamp(14px, 1.25vw, 15px);
+  line-height: 1.62;
+  letter-spacing: -0.02em;
+}
+.plan__list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 12px;
+  border-top: 2px solid var(--line-hover);
+}
+.plan--pick .plan__list li::before { border-color: var(--blue); }
+
+.extras {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: clamp(16px, 2vw, 24px);
+  margin-top: clamp(16px, 2vw, 24px);
+  padding: clamp(20px, 2.333vw, 28px) clamp(20px, 2.333vw, 28px);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  text-align: left;
+}
+.extra__title {
+  font-size: clamp(16px, 1.5vw, 18px);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+.extra__text {
+  margin-top: 4px;
+  font-size: clamp(14px, 1.25vw, 15px);
+  line-height: 1.66;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+}
+
+/* ==================================================================== */
+/* Závazky                                                              */
+/* ==================================================================== */
+.pledges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: clamp(20px, 2.5vw, 30px) clamp(24px, 3.333vw, 40px);
+  margin-top: clamp(32px, 4vw, 48px);
+  text-align: left;
+}
+.pledge {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px clamp(12px, 1.333vw, 16px);
+}
+.pledge img {
+  grid-row: span 2;
+  width: clamp(20px, 1.833vw, 22px);
+  height: clamp(20px, 1.833vw, 22px);
+  margin-top: 3px;
+}
+.pledge__title {
+  font-size: clamp(17px, 1.5vw, 18px);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+.pledge__text {
+  font-size: clamp(15px, 1.333vw, 16px);
+  line-height: 1.7;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+  text-wrap: pretty;
+}
+
+/* ==================================================================== */
+/* Časté dotazy                                                         */
+/* ==================================================================== */
+.faq {
+  max-width: 800px;
+  margin: clamp(28px, 3.333vw, 40px) auto 0;
+  text-align: left;
+}
+.faq__item {
+  border-top: 1px solid var(--line);
+}
+.faq__item:last-child { border-bottom: 1px solid var(--line); }
+.faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: clamp(16px, 1.667vw, 20px);
+  cursor: pointer;
+  list-style: none;
+  font-size: clamp(17px, 1.583vw, 19px);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+.faq__q::-webkit-details-marker { display: none; }
+.faq__sign {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  color: var(--blue);
+  transition: transform var(--t-base) var(--ease);
+}
+.faq__item[open] .faq__sign { transform: rotate(45deg); }
+.faq__a {
+  padding-bottom: clamp(18px, 1.833vw, 22px);
+  max-width: 68ch;
+  font-size: clamp(15px, 1.333vw, 16px);
+  line-height: 1.76;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+  text-wrap: pretty;
+}
+
+/* ==================================================================== */
+/* Závěrečná výzva                                                      */
+/* ==================================================================== */
+.closer {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(28px, 4vw, 56px);
+  padding: clamp(28px, 3.667vw, 44px) clamp(24px, 3.333vw, 40px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2xl);
+}
+.closer__title {
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.closer__text {
+  margin-top: clamp(12px, 1.333vw, 16px);
+  font-size: clamp(16px, 1.5vw, 18px);
+  line-height: 1.76;
+  letter-spacing: -0.02em;
+  color: var(--text-lead-2);
+  text-wrap: pretty;
+}
+.closer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(10px, 1.167vw, 14px);
+  margin-top: clamp(20px, 2.333vw, 28px);
+}
+.closer__aside {
+  display: grid;
+  gap: clamp(14px, 1.667vw, 20px);
+  padding-left: clamp(24px, 3.333vw, 40px);
+  border-left: 1px solid var(--line);
+}
+.closer__row dt {
+  font-size: clamp(12px, 1.167vw, 13px);
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+.closer__row dd {
+  margin: 2px 0 0;
+  font-size: clamp(15px, 1.417vw, 17px);
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+}
+.closer__row dd a:hover { color: var(--blue); }
+.closer__row small {
+  display: block;
+  font-size: clamp(13px, 1.167vw, 14px);
+  color: var(--text-body);
+}
+
+/* ==================================================================== */
+/* Patička                                                              */
+/* ==================================================================== */
+.site-footer {
+  margin-top: clamp(52px, 6.667vw, 80px);
+  padding-block: clamp(24px, 2.667vw, 32px);
+  border-top: 1px solid var(--line);
+}
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px clamp(20px, 2.667vw, 32px);
+  font-size: clamp(13px, 1.25vw, 15px);
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+}
+.site-footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+}
+.site-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px clamp(16px, 2vw, 24px);
+  margin-left: auto;
+}
+.site-footer__links a:hover { color: var(--blue); }
+
+/* ===================================================================== */
+/* Breakpointy: jen tam, kde se musí změnit struktura.                   */
+/* ===================================================================== */
+
+/* Hero art se pod 980px nevejde vedle textu, aniž by mockupy zdrobněly
+   pod čitelnost. Jde pod text, celou šířkou. */
+@media (max-width: 980px) {
+  .lp-hero__inner { grid-template-columns: 1fr; }
+  .lp-hero__art { order: 2; max-width: 560px; width: 100%; }
+  .case { grid-template-columns: 1fr; }
+  .closer { grid-template-columns: 1fr; }
+  .closer__aside {
+    padding-left: 0;
+    padding-top: clamp(20px, 2.5vw, 28px);
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+}
+
+/* Dva sloupce převodu se pod 640px přeskládají pod sebe: každý řádek pak
+   čte "z tohohle" a hned pod tím "na tohle". */
+@media (max-width: 640px) {
+  .swap__cols { display: none; }
+  .swap__row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .site-footer__links { margin-left: 0; }
+}

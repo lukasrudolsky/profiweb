@@ -152,7 +152,9 @@ Pak otevřete `http://localhost:<port>/index.html`.
 │   │   ├── site.js             Navigace, mega menu, hero animace
 │   │   ├── booking.js          Rezervační modal (cal.com API)
 │   │   ├── audit.js            Audit webu (PageSpeed Insights API)
-│   │   └── country-codes.js    Data telefonních předvoleb
+│   │   ├── country-codes.js    Data telefonních předvoleb
+│   │   ├── lenis.min.js        Knihovna Lenis 1.3.26 (plynulý scroll)
+│   │   └── smooth-scroll.js    Nastavení Lenisu a plynulé kotvy
 │   ├── images/                 Optimalizované obrázky a ikony
 │   │   └── source/             Zdrojové verze před optimalizací
 │   └── fonts/                  Prázdné, fonty se zatím berou z Google Fonts
@@ -178,6 +180,7 @@ dají měnit nezávisle.
 | [booking.js](assets/js/booking.js) | Rezervační modal: formulář, kalendář, časy, potvrzení | `[data-booking-open]`, `[data-booking-close]` |
 | [audit.js](assets/js/audit.js) | Modal auditu, volání PageSpeed API, vykreslení reportu | `[data-audit-open]`, `<meta name="psi-api-key">` |
 | [country-codes.js](assets/js/country-codes.js) | Data telefonních předvoleb pro pole v rezervaci | `[data-cc-search]` |
+| [smooth-scroll.js](assets/js/smooth-scroll.js) | Plynulý scroll (Lenis) a odskok kotev pod lepivou hlavičku | `[data-lenis-prevent]` |
 
 ---
 

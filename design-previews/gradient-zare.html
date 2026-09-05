@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gradient ve skle - Profiweb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap" rel="stylesheet">
+<style>
+  /* Tokeny jsou opsané z ../assets/css/styles.css, aby náhled zůstal
+     samostatně otevíratelný bez serveru. Tmavé odstíny jsou odvozené
+     z inkoustu stínů webu (rgba(23,54,78)) - je to stejná modrá rodina
+     jako --blue, jen posunutá do tmy, takže plocha nevybočí ze značky. */
+  :root {
+    --blue:#3793d1; --ink:#000; --muted:#66676c; --line:#efefef; --surface:#fafafa;
+    --ease:cubic-bezier(.22,.61,.36,1);
+
+    /* tmavá modrá rampa */
+    --deep-0:#050d15;   /* nejtmavší rohy */
+    --deep-1:#0b2135;
+    --deep-2:#17364e;   /* = inkoust stínů webu */
+  }
+  *,*::before,*::after { box-sizing:border-box; }
+  body {
+    margin:0; padding:48px 32px 120px; background:#fff; color:var(--ink);
+    font-family:Inter,system-ui,sans-serif; font-variation-settings:"opsz" 32;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1 { font-size:28px; font-weight:500; letter-spacing:-.02em; margin:0 0 8px; }
+  h2 { font-size:17px; font-weight:500; letter-spacing:-.015em; margin:38px 0 10px; }
+  .lede { max-width:72ch; margin:0 0 20px; font-size:16px; line-height:1.65; color:var(--muted); }
+  .note { max-width:72ch; margin:0 0 14px; font-size:13px; line-height:1.6; color:var(--muted); }
+  code { font:400 .92em/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+
+  .bar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:0 0 14px; }
+  .bar__label { font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-right:2px; }
+  .bar:last-of-type { margin-bottom:22px; }
+  .btn {
+    font:inherit; font-size:14px; cursor:pointer; padding:9px 18px; border-radius:22px;
+    border:1px solid var(--line); background:#fff; color:var(--ink);
+    transition:background .2s var(--ease), border-color .2s var(--ease);
+  }
+  .btn:hover { background:var(--surface); border-color:#e0e0e0; }
+  .btn[aria-pressed="true"] { background:var(--blue); border-color:var(--blue); color:#fff; }
+
+  /* ================================================================
+     STAGE - gradient pod sklem
+     Vrstvy zdola nahoru:
+       1. .stage        barevná plocha (odraz od země + tmavý nádech)
+       2. .stage__glow  horké jádro, aby mohlo dýchat samostatně
+       3. .stage__glass rýhované sklo - to je ta "glass" vrstva
+       4. .stage::after šum proti pruhování
+     Poloměry jsou v procentech, takže kompozice drží v jakémkoli formátu.
+     ================================================================ */
+  .stage {
+    position:relative;
+    aspect-ratio:1326 / 762;
+    border-radius:14px;
+    overflow:hidden;
+    isolation:isolate;
+    display:grid;
+    place-items:center;
+  }
+
+  /* -- tmavá varianta (výchozí) -- */
+  .stage--dark {
+    --glow:rgba(143,208,242,.42);
+    --glow-mid:rgba(55,147,209,.26);
+    background:
+      radial-gradient(72% 58% at 26% 106%,
+        rgba(124,196,236,.40) 0%, rgba(55,147,209,.13) 44%, rgba(5,13,21,0) 76%),
+      radial-gradient(120% 125% at 50% 52%,
+        var(--deep-2) 0%, var(--deep-1) 46%, var(--deep-0) 100%);
+  }
+
+  /* -- půlnoční: stejná stavba, jen stažená do tmy a bez odrazu vlevo -- */
+  .stage--midnight {
+    --glow:rgba(143,208,242,.30);
+    --glow-mid:rgba(55,147,209,.16);
+    background:
+      radial-gradient(130% 130% at 50% 50%,
+        #0e2941 0%, #071827 48%, #03080d 100%);
+  }
+
+  /* -- světlá: pro bílé sekce webu; záře jde do --blue-tint, ne do bílé -- */
+  .stage--light {
+    --glow:rgba(55,147,209,.30);
+    --glow-mid:rgba(55,147,209,.11);
+    background:
+      radial-gradient(72% 58% at 26% 106%,
+        rgba(55,147,209,.22) 0%, rgba(232,242,250,0) 60%),
+      radial-gradient(120% 125% at 50% 52%, #ffffff 0%, #eaf3fb 52%, #d2e4f4 100%);
+  }
+
+  /* Horké jádro. Vlastní vrstva, ne další položka v background, protože
+     jedině tak se dá rozsvěcet nezávisle na zbytku plochy. */
+  .stage__glow {
+    position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:radial-gradient(58% 62% at 50% 46%,
+      var(--glow) 0%, var(--glow-mid) 34%, rgba(23,54,78,0) 70%);
+  }
+
+  /* -- RÝHOVANÉ SKLO ------------------------------------------------
+     Každá rýha je válcová čočka: na okrajích odráží světlo (světlý pruh),
+     uprostřed je tlustší a tmavší. Proto ten sled světlá / tmavá / světlá
+     uvnitř jedné šířky --rib. Je to jeden repeating-linear-gradient, ne
+     kreslené pruhy, takže rýhování zůstává ostré v jakémkoli měřítku.
+
+     Druhá vrstva je širší a posunutá o půl rýhy: dělá nepravidelnost,
+     aby plocha nevypadala jako tapeta z jedné opakující se linky. */
+  .stage__glass {
+    position:absolute; inset:0; z-index:2; pointer-events:none;
+    /* Tři knoflíky: šířka rýhy a síla odlesku / jádra. Sklo má gradient
+       lámat, ne přebít - jakmile jsou --rib-hi/--rib-lo moc silné,
+       přestane to být sklo a začne to být vlnitá lepenka. */
+    --rib:clamp(16px, 1.9vw, 30px);
+    --rib-hi:rgba(255,255,255,.09);
+    --rib-hi-soft:rgba(255,255,255,.02);
+    --rib-lo:rgba(3,14,24,.11);
+    --rib-wide-hi:rgba(255,255,255,.04);
+    --rib-wide-lo:rgba(3,14,24,.045);
+    background:
+      repeating-linear-gradient(90deg,
+        var(--rib-hi)      0,
+        var(--rib-hi-soft) calc(var(--rib) * .20),
+        var(--rib-lo)      calc(var(--rib) * .50),
+        var(--rib-hi-soft) calc(var(--rib) * .80),
+        var(--rib-hi)      var(--rib)),
+      repeating-linear-gradient(90deg,
+        var(--rib-wide-hi) 0,
+        rgba(255,255,255,0) calc(var(--rib) * 1.5),
+        var(--rib-wide-lo) calc(var(--rib) * 3));
+  }
+  /* Na světlé ploše musí být sklo výrazně jemnější: tmavá jádra rýh by na
+     bílé působila jako špína a silné odlesky gradient úplně vybílí. */
+  .stage--light .stage__glass {
+    --rib-hi:rgba(255,255,255,.26);
+    --rib-hi-soft:rgba(255,255,255,.05);
+    --rib-lo:rgba(23,54,78,.045);
+    --rib-wide-hi:rgba(255,255,255,.07);
+    --rib-wide-lo:rgba(23,54,78,.02);
+  }
+  .stage.is-flat .stage__glass { display:none; }
+
+  /* Jemný šum: gradient bez něj na velkých plochách pruhuje (banding).
+     Kryje se přes overlay, takže ve světlé i tmavé variantě sedí stejně. */
+  .stage::after {
+    content:"";
+    position:absolute; inset:0; pointer-events:none; z-index:3;
+    opacity:.055;
+    mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* Na světlé ploše overlay skoro nic neudělá - rozdíly mezi sousedními
+     kroky gradientu jsou tam menší, takže prstence prosvítaly. Multiply
+     na vyšší krytí je rozbije, aniž by plocha zšedla. */
+  .stage--light::after { opacity:.10; mix-blend-mode:multiply; }
+
+  /* Dýchání záře. Mírné - je to pozadí, ne animace. */
+  .stage.is-pulsing .stage__glow { animation:glow-breathe 7s var(--ease) infinite; }
+  @keyframes glow-breathe {
+    0%, 100% { opacity:.78; transform:scale(.97); }
+    50%      { opacity:1;   transform:scale(1.03); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stage.is-pulsing .stage__glow { animation:none; }
+  }
+
+  /* -- MATNÝ PANEL --------------------------------------------------
+     Druhý druh skla: nerozostřuje se sám, rozostřuje to pod sebou
+     (backdrop-filter). Leží nad rýhováním, takže rýhy pod ním změknou
+     - přesně jak se chová opravdové matné sklo položené na rýhované.
+     Panel je tu proto, aby bylo vidět, jestli je na ploše čitelný text. */
+  .panel {
+    position:relative; z-index:4;
+    width:min(46%, 420px);
+    padding:26px 28px 24px;
+    border-radius:18px;
+    -webkit-backdrop-filter:blur(18px) saturate(1.35);
+    backdrop-filter:blur(18px) saturate(1.35);
+    background:linear-gradient(150deg, rgba(255,255,255,.16), rgba(255,255,255,.06));
+    border:1px solid rgba(255,255,255,.22);
+    box-shadow:0 20px 50px -24px rgba(3,14,24,.7), inset 0 1px 0 rgba(255,255,255,.30);
+    color:#fff;
+  }
+  .stage--light .panel {
+    background:linear-gradient(150deg, rgba(255,255,255,.62), rgba(255,255,255,.34));
+    border-color:rgba(255,255,255,.75);
+    box-shadow:0 20px 50px -26px rgba(23,54,78,.35), inset 0 1px 0 rgba(255,255,255,.9);
+    color:#11212e;
+  }
+  .panel__title { font-size:20px; font-weight:500; letter-spacing:-.02em; margin:0 0 8px; }
+  .panel__text { font-size:14px; line-height:1.6; margin:0; opacity:.82; }
+  .panel__cta {
+    display:inline-block; margin-top:16px; padding:9px 18px; border-radius:999px;
+    font-size:14px; background:var(--blue); color:#fff;
+  }
+  .stage.is-bare .panel { display:none; }
+
+  /* ---------------------------------------------------------------- kód */
+  .code {
+    margin:10px 0 0; padding:16px 18px; border:1px solid var(--line); border-radius:12px;
+    background:var(--surface); overflow-x:auto;
+    font:400 12.5px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    color:#33353a; white-space:pre;
+  }
+  .swatches { display:flex; gap:14px; flex-wrap:wrap; margin:10px 0 0; }
+  .sw { display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted); }
+  .sw i { width:22px; height:22px; border-radius:6px; border:1px solid rgba(0,0,0,.08); }
+</style>
+</head>
+<body>
+
+<h1>Gradient ve skle</h1>
+<p class="lede">
+  Modrá plocha Profiwebu pod rýhovaným sklem. Rýhy nejsou textura ani obrázek -
+  je to jeden <code>repeating-linear-gradient</code>, kde každá rýha je válcová
+  čočka: světlá na okrajích, tmavší uprostřed. Nad tím může ležet matný panel
+  (<code>backdrop-filter</code>), který rýhy pod sebou rozmaže, jak se chová
+  opravdové matné sklo položené na rýhované.
+</p>
+
+<div class="bar">
+  <span class="bar__label">Plocha</span>
+  <button class="btn" type="button" data-bg="dark" aria-pressed="true">Tmavá</button>
+  <button class="btn" type="button" data-bg="midnight" aria-pressed="false">Půlnoční</button>
+  <button class="btn" type="button" data-bg="light" aria-pressed="false">Světlá</button>
+</div>
+<div class="bar">
+  <span class="bar__label">Sklo</span>
+  <button class="btn" type="button" data-toggle="is-flat" aria-pressed="false">Bez rýhování</button>
+  <button class="btn" type="button" data-toggle="is-bare" aria-pressed="false">Bez panelu</button>
+  <button class="btn" type="button" data-toggle="is-pulsing" aria-pressed="false">Dýchání</button>
+</div>
+
+<div class="stage stage--dark" id="stage">
+  <span class="stage__glow" aria-hidden="true"></span>
+  <span class="stage__glass" aria-hidden="true"></span>
+  <div class="panel">
+    <p class="panel__title">Web hotový za 14 dní</p>
+    <p class="panel__text">
+      Pevná cena předem, žádné měsíce ladění. Ukážeme vám návrh dřív,
+      než se rozhodnete.
+    </p>
+    <span class="panel__cta">Rezervovat 15 min hovor</span>
+  </div>
+</div>
+
+<h2>Paleta</h2>
+<div class="swatches">
+  <span class="sw"><i style="background:#050d15"></i>#050d15 rohy</span>
+  <span class="sw"><i style="background:#0b2135"></i>#0b2135 střed</span>
+  <span class="sw"><i style="background:#17364e"></i>#17364e inkoust stínů</span>
+  <span class="sw"><i style="background:#3793d1"></i>#3793d1 --blue</span>
+  <span class="sw"><i style="background:#8fd0f2"></i>#8fd0f2 záře</span>
+  <span class="sw"><i style="background:#dff0fb"></i>#dff0fb jádro</span>
+</div>
+
+<h2>Rýhované sklo</h2>
+<p class="note">
+  Šířka rýhy je jediný knoflík. Sled světlá / tmavá / světlá uvnitř jedné
+  <code>--rib</code> dělá ten válcový tvar; kdyby byl jen jeden přechod,
+  vypadalo by to jako pruhovaná tapeta, ne jako sklo. Druhá, širší a
+  posunutá vrstva rozbíjí pravidelnost.
+</p>
+<pre class="code">.sklo {
+  position: absolute; inset: 0; pointer-events: none;
+  --rib: clamp(16px, 1.9vw, 30px);
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(255,255,255,.10) 0,
+      rgba(255,255,255,.02) calc(var(--rib) * .20),
+      rgba(3,14,24,.13)     calc(var(--rib) * .50),
+      rgba(255,255,255,.02) calc(var(--rib) * .80),
+      rgba(255,255,255,.10) var(--rib)),
+    repeating-linear-gradient(90deg,
+      rgba(255,255,255,.05) 0,
+      rgba(255,255,255,0)   calc(var(--rib) * 1.5),
+      rgba(3,14,24,.05)     calc(var(--rib) * 3));
+}</pre>
+
+<h2>Matný panel</h2>
+<p class="note">
+  <code>backdrop-filter</code> rozostřuje to, co je pod prvkem, takže panel
+  musí ležet nad vrstvou s rýhováním. Vnitřní horní linka
+  (<code>inset 0 1px 0</code>) je odlesk na hraně skla - bez ní panel vypadá
+  jako plochá průsvitná fólie.
+</p>
+<pre class="code">.panel {
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  backdrop-filter: blur(18px) saturate(1.35);
+  background: linear-gradient(150deg, rgba(255,255,255,.16), rgba(255,255,255,.06));
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: 0 20px 50px -24px rgba(3,14,24,.7),
+              inset 0 1px 0 rgba(255,255,255,.30);
+}</pre>
+
+<script>
+  var stage = document.getElementById('stage');
+  var bgBtns = document.querySelectorAll('[data-bg]');
+
+  bgBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      bgBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+      /* Přepisuje se jen barevná varianta; přepínače skla drží dál. */
+      stage.classList.remove('stage--dark', 'stage--midnight', 'stage--light');
+      stage.classList.add('stage--' + btn.dataset.bg);
+    });
+  });
+
+  document.querySelectorAll('[data-toggle]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var on = stage.classList.toggle(btn.dataset.toggle);
+      btn.setAttribute('aria-pressed', String(on));
+    });
+  });
+</script>
+
+</body>
+</html>

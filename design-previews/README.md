@@ -1,7 +1,7 @@
 # design-previews
 
 Samostatné HTML náhledy jednotlivých komponent exportované z Figma návrhu
-(ikony, animace, tlačítka, rámečky, style guide). Slouží pro izolované
+(ikony, animace, tlačítka, rámečky, gradienty, style guide). Slouží pro izolované
 prohlížení a ladění komponent při vývoji, nejsou nikde odkazované z
 `index.html` a nejsou potřeba pro provoz živého webu.
 

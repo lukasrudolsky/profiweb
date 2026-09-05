@@ -194,18 +194,75 @@
   var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
   if (!fine.matches) return;
 
-  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   var screens = document.querySelectorAll('.laptop__bezel');
   if (!screens.length) return;
 
   var cursor = document.createElement('div');
   cursor.className = 'mock-cursor';
   cursor.setAttribute('aria-hidden', 'true');
-  cursor.innerHTML = '<span class="mock-cursor__pill">Zobrazit projekt</span>';
+  /* Očko v pilulce. Kreslí se plochami, ne linkou: při mrknutí se celá
+     <g> zmáčkne po ose Y a tah by se u obrysu deformoval, zatímco výplň
+     se poctivě scvrkne na proužek. Duhovka je podříznutá tvarem oka
+     (clipPath), takže může uhýbat do stran a nikdy nevyleze přes okraj. */
+  cursor.innerHTML =
+    '<span class="mock-cursor__pill">' +
+      '<svg class="mock-cursor__eye" viewBox="0 0 24 16">' +
+        '<defs>' +
+          '<clipPath id="mockEyeClip">' +
+            '<path d="M0.9 8S5.1 1.1 12 1.1 23.1 8 23.1 8 19 14.9 12 14.9 0.9 8 0.9 8Z"/>' +
+          '</clipPath>' +
+        '</defs>' +
+        '<g class="mock-cursor__lid">' +
+          '<path class="mock-cursor__white"' +
+            ' d="M0.9 8S5.1 1.1 12 1.1 23.1 8 23.1 8 19 14.9 12 14.9 0.9 8 0.9 8Z"/>' +
+          '<g clip-path="url(#mockEyeClip)">' +
+            '<g class="mock-cursor__iris">' +
+              '<circle class="mock-cursor__ring" cx="12" cy="8" r="3.9"/>' +
+              '<circle class="mock-cursor__pupil-dot" cx="12" cy="8" r="1.85"/>' +
+              '<circle class="mock-cursor__spark" cx="10.7" cy="6.6" r="0.95"/>' +
+            '</g>' +
+          '</g>' +
+        '</g>' +
+      '</svg>' +
+      '<span>Zobrazit projekt</span>' +
+    '</span>';
   document.body.appendChild(cursor);
 
-  var x = 0, y = 0, queued = false, shown = false;
+  var x = 0, y = 0, queued = false, shown = false, pressed = false;
+
+  /* Pohled zorničky. Cíl (tx, ty) drží směr posledního pohybu myši,
+     (px, py) je vyhlazená poloha, která jde do transformu - jednotky jsou
+     souřadnice viewBoxu, ne pixely. Doleva a doprava se kouká dál než
+     nahoru a dolů: očko je na výšku placaté a zornička by jinak vylezla
+     přes víčko. */
+  var pupil = cursor.querySelector('.mock-cursor__iris');
+  var GAZE_X = 3.1, GAZE_Y = 1.9, GAZE_REACH = 14;
+  var tx = 0, ty = 0, px = 0, py = 0;
+  var lastX = 0, lastY = 0, lastMove = 0, gazing = false;
+
+  function aim(e) {
+    var dx = e.clientX - lastX, dy = e.clientY - lastY;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    var len = Math.sqrt(dx * dx + dy * dy);
+    if (len < 0.5) return;
+    /* Cuknutí myší kouká míň než pořádný přejezd. */
+    var force = Math.min(len / GAZE_REACH, 1);
+    tx = (dx / len) * GAZE_X * force;
+    ty = (dy / len) * GAZE_Y * force;
+    lastMove = Date.now();
+  }
+
+  function gaze() {
+    if (!shown) { gazing = false; return; }
+    /* Když myš chvíli stojí, oko se vrátí doprostřed. */
+    if (Date.now() - lastMove > 140) { tx *= 0.88; ty *= 0.88; }
+    px += (tx - px) * 0.18;
+    py += (ty - py) * 0.18;
+    pupil.style.transform =
+      'translate(' + px.toFixed(2) + 'px, ' + py.toFixed(2) + 'px)';
+    requestAnimationFrame(gaze);
+  }
 
   /* One write per frame, mousemove fires far more often than that. */
   function flush() {
@@ -215,9 +272,14 @@
   function move(e) {
     x = e.clientX;
     y = e.clientY;
+    aim(e);
     if (!queued) { queued = true; requestAnimationFrame(flush); }
   }
   function show(e) {
+    /* Bez tohohle by první delta byla proti poloze z minulého hoveru
+       a oko by se hned na začátku prudce zvrhlo na stranu. */
+    lastX = e.clientX;
+    lastY = e.clientY;
     move(e);
     if (shown) return;
     shown = true;
@@ -225,100 +287,252 @@
        place instead of flying across from the last hover. */
     flush();
     cursor.classList.add('is-visible');
+    if (!gazing) { gazing = true; requestAnimationFrame(gaze); }
   }
   function hide() {
     if (!shown) return;
     shown = false;
     cursor.classList.remove('is-visible');
+    release();
+    /* Pilulka se příště nafoukne s pohledem rovně, ne s okem zapíchnutým
+       tam, kam se koukalo naposledy. */
+    tx = ty = px = py = 0;
+    pupil.style.transform = '';
+  }
+
+  /* Stisk: pilulka se posadí, oko na tu chvíli zavře a po puštění se
+     odsud rozjede vlnka. Puštění chytáme na okně, ne na bezelu - myš se
+     dá pustit i mimo obrazovku a pilulka by jinak zůstala zmáčknutá. */
+  function press() {
+    if (!shown) return;
+    pressed = true;
+    cursor.classList.add('is-pressed');
+  }
+  function release() {
+    if (!pressed) return;
+    pressed = false;
+    cursor.classList.remove('is-pressed');
+    if (!shown) return;
+    /* Restart jednorázové animace: bez sáhnutí na layout mezi remove
+       a add by prohlížeč obě změny slil a vlnka by se podruhé nespustila. */
+    cursor.classList.remove('is-clicked');
+    void cursor.offsetWidth;
+    cursor.classList.add('is-clicked');
   }
 
   [].forEach.call(screens, function (screen) {
     screen.addEventListener('mouseenter', show);
     screen.addEventListener('mousemove', move);
     screen.addEventListener('mouseleave', hide);
+    screen.addEventListener('mousedown', press);
   });
+  window.addEventListener('mouseup', release);
 
-  /* The band drifts under a still pointer, and scrolling or leaving the
+  /* The band moves under a still pointer, and scrolling or leaving the
      window can strand the pill with no mouseleave ever firing. */
   window.addEventListener('scroll', hide, { passive: true });
   window.addEventListener('blur', hide);
   document.addEventListener('mouseleave', hide);
 
-  /* Grab-and-drag: the CSS keyframe hands off to JS, which otherwise just
-     replays the same steady drift. Press and hold anywhere on the band and
-     it tracks the pointer 1:1, drag right to pull earlier projects back
-     into view, drag left to push further ahead. move/up listen on the
-     window (not the band) so the drag keeps tracking even once the cursor
-     leaves the strip. Release and it eases back into the ambient drift
-     from wherever it was left. Hovering an actual laptop (without
-     dragging) freezes it outright, so the "Zobrazit projekt" pill has
-     something still to point at. */
+})();
+
+/* =====================================================================
+   Hero mockups - vždycky jeden hlavní projekt uprostřed.
+
+   Pás stojí a posouvá se po celých krocích: uprostřed hero sekce je pořád
+   jeden mockup v barvě a v plné velikosti, ostatní jsou ztmavené (CSS
+   .is-active na .laptop). Po chvíli se hlavní stane ten následující a pás
+   se o jeden krok posune, takže nový hlavní dosedne přesně na střed.
+
+   Geometrie: pás začíná na 50% - 3.37879 pitche a bezel je široký 0.75758
+   pitche, takže střed bezelu k vychází na 50% + (k - 3) * pitch. Vycentrovat
+   index i tedy znamená posunout pás o (3 - i) pitchů. Posun se píše přes
+   calc() s tokenem --laptop-pitch, aby přežil změnu šířky okna bez
+   přepočítávání v JS.
+
+   Návrat na začátek: všechny jednotky nesou stejný snímek, takže po dojetí
+   kroku stačí pás bez animace vrátit o jeden pitch zpět a přeznačit hlavní
+   jednotku. Render je pixel po pixelu totožný, smyčka tedy nemá švy. Až bude
+   mít každý mockup vlastní projekt, tenhle skok se nahradí procházením
+   celého pásu (proměnná pos přestane být jen 0/1).
+   ===================================================================== */
+(function () {
+  'use strict';
+
   var band = document.querySelector('.laptop-band');
-  if (band && !reduceMotion) {
-    var pitch = band.firstElementChild ? band.firstElementChild.getBoundingClientRect().width : 693;
-    var baseSpeed = pitch / 18;   /* matches the original 18s-per-pitch drift */
-    var pos = 0;
-    var vel = -baseSpeed;
-    var overLaptop = false;
-    var dragging = false;
-    var dragStartX = 0;
-    var dragStartPos = 0;
-    var last = null;
+  if (!band) return;
 
-    band.style.animation = 'none';
-    band.style.cursor = 'grab';
-    band.style.touchAction = 'pan-y';
+  var units = [].slice.call(band.querySelectorAll('.laptop'));
+  if (units.length < 5) return;   /* potřebujeme sousedy na obě strany */
 
-    function wrap(p) {
-      return pitch > 0 ? ((p % pitch) + pitch) % pitch - pitch : p; /* keep in (-pitch, 0] */
-    }
+  var HOME = 4;                   /* jednotka, která v klidu stojí na vrcholu oblouku */
+  var pos = 0;                    /* posun pásu v pitchích */
+  var active = HOME;
+  var timer = null;
+  var guard = null;
+  var sliding = false;
 
-    /* Plain mouse events, not Pointer Events: this whole feature is already
-       gated to fine-pointer/hover devices above, so there is no touch/pen
-       case to unify, and move/up are tracked on the window so the drag
-       keeps following the cursor even once it leaves the band's box. */
-    band.addEventListener('mousedown', function (e) {
-      if (e.button !== 0) return;
-      dragging = true;
-      dragStartX = e.clientX;
-      dragStartPos = pos;
-      band.style.cursor = 'grabbing';
-      e.preventDefault();
-    });
-    window.addEventListener('mousemove', function (e) {
-      if (!dragging) return;
-      pos = wrap(dragStartPos + (e.clientX - dragStartX));
-    });
-    function endDrag() {
-      if (!dragging) return;
-      dragging = false;
-      band.style.cursor = 'grab';
-    }
-    window.addEventListener('mouseup', endDrag);
-    window.addEventListener('blur', endDrag);
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    [].forEach.call(screens, function (screen) {
-      screen.addEventListener('mouseenter', function () { overLaptop = true; });
-      screen.addEventListener('mouseleave', function () { overLaptop = false; });
-    });
-
-    function tick(now) {
-      if (last === null) last = now;
-      var dt = Math.min(now - last, 50) / 1000;
-      last = now;
-
-      if (!dragging) {
-        var targetVel = overLaptop ? 0 : -baseSpeed;
-        /* Exponential ease toward the target velocity, frame-rate independent. */
-        vel += (targetVel - vel) * (1 - Math.exp(-dt * 8));
-        pos = wrap(pos + vel * dt);
-      }
-
-      band.style.transform = 'translate3d(' + pos.toFixed(2) + 'px, 0, 0)';
-      requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
+  function setTransform() {
+    band.style.transform = 'rotate(calc(' + (-pos) + ' * var(--wheel-step)))';
   }
+
+  function paint(animate) {
+    /* Skok musí vypnout přechod, jinak by se oblouk viditelně vracel.
+       To zařídí .is-snapping ve stylu. */
+    if (!animate) band.classList.add('is-snapping');
+    setTransform();
+    units.forEach(function (unit, i) {
+      unit.classList.toggle('is-active', i === active);
+    });
+    if (!animate) {
+      void band.offsetWidth;      /* reflow: další krok se má zase animovat */
+      band.classList.remove('is-snapping');
+    }
+  }
+
+  /* Hold sedí v --laptop-hold, aby časování bylo na jednom místě se
+     stylem. Token je v sekundách, getComputedStyle vrací "3.4s". */
+  function hold() {
+    var raw = getComputedStyle(document.documentElement).getPropertyValue('--laptop-hold');
+    var ms = parseFloat(raw) * (raw.indexOf('ms') > -1 ? 1 : 1000);
+    return isFinite(ms) && ms > 400 ? ms : 3400;
+  }
+
+  function queue() {
+    clearTimeout(timer);
+    timer = setTimeout(step, hold());
+  }
+
+  function step() {
+    if (sliding || dragging) return;
+    sliding = true;
+    pos = 1;
+    active = HOME + 1;            /* nový hlavní se rozsvěcí už během jízdy */
+    paint(true);
+    /* Pojistka: transitionend neproběhne, když je přejezd nulově dlouhý
+       nebo ho prohlížeč zahodí. Bez ní by se pás po prvním kroku zasekl. */
+    clearTimeout(guard);
+    guard = setTimeout(finish, 1400);
+  }
+
+  /* Konec jízdy: pás se neviditelně vrátí a čeká na další krok. */
+  function finish() {
+    if (!sliding) return;
+    clearTimeout(guard);
+    sliding = false;
+    pos = 0;
+    active = HOME;
+    paint(false);
+    if (!paused()) queue();
+  }
+
+  band.addEventListener('transitionend', function (e) {
+    if (e.target !== band || e.propertyName !== 'transform') return;
+    finish();
+  });
+
+  var over = false;
+  function paused() { return over || dragging || document.hidden; }
+
+  /* Najetí myší na displej zastaví přepínání, aby si člověk mohl projekt
+     prohlédnout. Posloucháme na displejích, ne na pásu: ten je jen bezrozměrný
+     bod ve středu kruhu, takže na něj myš nikdy nedosáhne. Stejně se chová
+     i skrytá záložka, jinak by se kroky nastřádaly a proběhly naráz. */
+  units.forEach(function (unit) {
+    var screen = unit.querySelector('.laptop__bezel');
+    if (!screen) return;
+    screen.addEventListener('mouseenter', function () { over = true; clearTimeout(timer); });
+    screen.addEventListener('mouseleave', function () { over = false; if (!sliding) queue(); });
+  });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { clearTimeout(timer); }
+    else if (!sliding && !over) { queue(); }
+  });
+
+  /* =====================================================================
+     Tažení: chycením mockupu se dá obloukem otáčet.
+
+     Protože jsou všechny jednotky totožné a rozmístěné po stejném úhlu, je
+     render po posunu o celý krok k nerozeznání od výchozího. Během tažení
+     proto posun průběžně normalizujeme do (-0.5, 0.5] a celé kroky
+     zahazujeme: točit jde donekonečna, aniž by došly jednotky. Po puštění
+     oblouk dosedne na nejbližší zarážku, což je po normalizaci vždycky ta
+     pod rukou, a přepínání se zase rozjede.
+     ===================================================================== */
+  var dragging = false, startX = 0, startPos = 0, pxPerStep = 0;
+
+  /* Kolik pixelů vodorovně odpovídá jednomu kroku: vzdálenost středů displejů
+     dvou sousedních jednotek. Čte se z rozvržení při každém chycení, takže
+     sedí na jakékoli šířce okna bez přepočítávání při resize. */
+  function stepWidth() {
+    var a = units[HOME].querySelector('.laptop__bezel');
+    var b = units[HOME + 1] && units[HOME + 1].querySelector('.laptop__bezel');
+    if (!a || !b) return 0;
+    var ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+    return Math.abs((rb.left + rb.width / 2) - (ra.left + ra.width / 2));
+  }
+
+  function normalize(p) {
+    while (p > 0.5) p -= 1;
+    while (p <= -0.5) p += 1;
+    return p;
+  }
+
+  function onDown(e) {
+    if (e.button != null && e.button !== 0) return;
+    pxPerStep = stepWidth();
+    if (!pxPerStep) return;
+
+    dragging = true;
+    startX = e.clientX;
+    startPos = pos;
+    clearTimeout(timer);
+    clearTimeout(guard);
+    sliding = false;
+    band.classList.add('is-dragging');
+    /* Bez tohohle začne prohlížeč vláčet obrázek laptopu jako soubor. */
+    e.preventDefault();
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    /* Tažení doprava má mockupy posunout doprava, tedy otočit opačně. */
+    pos = normalize(startPos - (e.clientX - startX) / pxPerStep);
+    startX = e.clientX;
+    startPos = pos;
+    setTransform();
+  }
+
+  function onUp() {
+    if (!dragging) return;
+    dragging = false;
+    band.classList.remove('is-dragging');
+    pos = 0;
+    active = HOME;
+    paint(true);              /* dosednutí na nejbližší zarážku */
+    if (!paused()) queue();
+  }
+
+  var hasPointer = 'PointerEvent' in window;
+  units.forEach(function (unit) {
+    unit.addEventListener(hasPointer ? 'pointerdown' : 'mousedown', onDown);
+  });
+  window.addEventListener(hasPointer ? 'pointermove' : 'mousemove', onMove);
+  window.addEventListener(hasPointer ? 'pointerup' : 'mouseup', onUp);
+  if (hasPointer) window.addEventListener('pointercancel', onUp);
+  window.addEventListener('blur', onUp);
+
+  paint(false);
+  if (!reduceMotion.matches) queue();
+  /* Zapnutí "omezit pohyb" za běhu přepínání zastaví, vypnutí ho vrátí. */
+  var onMotionChange = function (e) {
+    if (e.matches) clearTimeout(timer);
+    else if (!sliding) queue();
+  };
+  if (reduceMotion.addEventListener) reduceMotion.addEventListener('change', onMotionChange);
+  else reduceMotion.addListener(onMotionChange);
 })();
 
 /* =====================================================================
