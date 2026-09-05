@@ -2,6 +2,12 @@
 
 <img src="docs/logo-3d.svg" alt="Profiweb logo" width="220">
 
+<details>
+<summary><b>Roztočit logo</b></summary>
+<br>
+<img src="docs/logo-3d-spin.svg" alt="Profiweb, roztočené logo" width="220">
+</details>
+
 # Profiweb.cz
 
 ### Weby, které přinesou poptávky do 14 dní
@@ -153,7 +159,8 @@ Pak otevřete `http://localhost:<port>/index.html`.
 ├── design-previews/            Náhledy komponent z Figmy (mimo živý web)
 └── docs/                       Materiály pro toto README, mimo živý web
     ├── logo-3d.svg             Animované 3D logo v hlavičce (generované)
-    ├── logo-3d.js              Generátor toho SVG
+    ├── logo-3d-spin.svg        Jeho živější varianta na kliknutí
+    ├── logo-3d.js              Generátor obou SVG
     └── screenshots/            Snímky obrazovky webu
 ```
 

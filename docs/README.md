@@ -5,33 +5,58 @@ se nenačítá na živém webu.
 
 | Soubor | Co to je |
 | :-- | :-- |
-| [logo-3d.svg](logo-3d.svg) | Animované 3D logo v hlavičce README |
-| [logo-3d.js](logo-3d.js) | Generátor toho SVG, spouští se ručně |
+| [logo-3d.svg](logo-3d.svg) | Animované 3D logo v hlavičce README, klidné kolébání |
+| [logo-3d-spin.svg](logo-3d-spin.svg) | Živější otáčení, v README se pouští klikem |
+| [logo-3d.js](logo-3d.js) | Generátor obou SVG, spouští se ručně |
 | [screenshots/](screenshots/) | Snímky obrazovky webu, viz [README](screenshots/README.md) uvnitř |
 
 ## Animované logo
 
-`logo-3d.svg` se přehrává i v README na GitHubu, protože animace je psaná
-v CSS uvnitř SVG. GitHub obrázky vkládá jako `<img>`, kde se JavaScript
-nespustí, ale CSS animace ano.
+Animace je psaná v CSS uvnitř SVG, takže se přehrává i v README na GitHubu:
+obrázky se tam vkládají jako `<img>`, kde se JavaScript nespustí, ale CSS
+animace ano.
 
-Trojrozměrnost není nakreslená ručně: tvar loga je vytlačený do hloubky jako
-stoh třiceti kopií na různých `z` a každá se promítá ortograficky, takže
-otáčení kolem svislé osy je `translateX(z·sin θ)` plus `scaleX(cos θ)` kolem
-středu. Náklon se drží v rozsahu 12° až 36°, aby logo nikdy neprošlo přes
-90°: tam by se obrátilo pořadí vrstev a značka by se navíc půlku času
-ukazovala zrcadlově.
+Trojrozměrnost není nakreslená ručně. Tvar loga je vytlačený do hloubky jako
+stoh dvaceti kopií na různých `z` a každá se promítá ortograficky. Bod
+`(x, y, z)` otočený kolem svislé osy o θ a pak kolem vodorovné o φ padne na
+obrazovku takto:
 
-Soubor je vygenerovaný, needitujte ho ručně. Změny patří do `logo-3d.js`
-(nahoře jsou konstanty pro náklon, hloubku, počet vrstev a délku cyklu):
+```
+X = x·cos θ                 + z·sin θ
+Y = x·sin θ·sin φ + y·cos φ - z·cos θ·sin φ
+```
+
+Což je afinní zobrazení `(x, y)` plus posun závislý jen na `z`, tedy přesně
+jedna `matrix()` na vrstvu. Hloubka vrstvy po otočení je úměrná
+`z·cos θ·cos φ`, takže dokud oba úhly drží pod 90°, roste s pořadím vrstev a
+stačí kreslit odzadu dopředu. Přes 90° by se pořadí obrátilo a značka by se
+navíc ukazovala zrcadlově, proto se rozkmit v obou režimech drží pod.
+
+### Na pohyb myši logo reagovat neumí
+
+V README to nejde ani trikem: `<img>` k sobě pointer události nepustí, takže
+dovnitř SVG se nedostane ani JavaScript, ani CSS `:hover`. Jediná interakce,
+kterou GitHub v README nabízí, je rozbalení `<details>`, a přesně na tom stojí
+tlačítko "Roztočit logo": kliknutí odkryje `logo-3d-spin.svg` s výraznějším
+otáčením.
+
+Logo reagující na kurzor by šlo udělat na samotném webu, kde běží JavaScript.
+
+### Přegenerování
+
+SVG jsou vygenerovaná, needitujte je ručně. Změny patří do
+[logo-3d.js](logo-3d.js), kde jsou dole konstanty obou režimů (základní
+náklon, rozkmit, frekvence naklánění, délka cyklu, pohupování):
 
 ```bash
 node docs/logo-3d.js
 ```
 
-Při zapnutém `prefers-reduced-motion` se animace vypne a logo zůstane stát
-v nakloněné pozici, takže dojem hloubky zůstane i bez pohybu.
+Klidná verze respektuje `prefers-reduced-motion` a se zastavenými animacemi
+zůstane stát v nakloněné pozici, takže dojem hloubky přetrvá i bez pohybu.
+Klikací verze se nezastavuje záměrně: animaci si tam uživatel pustil sám, a to
+je právě případ, kdy je pohyb v pořádku.
 
 Statické logo webu zůstává beze změny v
 [assets/images/profiweb-logo.svg](../assets/images/profiweb-logo.svg), tohle
-je jen varianta pro README.
+jsou jen varianty pro README.
