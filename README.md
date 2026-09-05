@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/images/profiweb-logo.svg" alt="Profiweb logo" width="76">
+<img src="docs/logo-3d.svg" alt="Profiweb logo" width="220">
 
 # Profiweb.cz
 
@@ -151,7 +151,10 @@ Pak otevřete `http://localhost:<port>/index.html`.
 │   │   └── source/             Zdrojové verze před optimalizací
 │   └── fonts/                  Prázdné, fonty se zatím berou z Google Fonts
 ├── design-previews/            Náhledy komponent z Figmy (mimo živý web)
-└── docs/screenshots/           Obrázky použité v tomto README
+└── docs/                       Materiály pro toto README, mimo živý web
+    ├── logo-3d.svg             Animované 3D logo v hlavičce (generované)
+    ├── logo-3d.js              Generátor toho SVG
+    └── screenshots/            Snímky obrazovky webu
 ```
 
 Každá složka má vlastní `README.md` s podrobnostmi o svém obsahu.
