@@ -58,6 +58,8 @@
   var triggers = [].slice.call(header.querySelectorAll('.nav-item__trigger'));
   if (!triggers.length) return;
 
+  var wideMq = window.matchMedia('(min-width: 901px)');
+
   function panelFor(trigger) {
     return document.getElementById(trigger.getAttribute('aria-controls'));
   }
@@ -146,14 +148,55 @@
     });
   });
 
+  /* Nad 900px panely nesmějí zůstat uvnitř hlavičky. Ta je position: sticky,
+     čímž se stává "backdrop root": potomek s backdrop-filter rozostřuje jen
+     to, co je namalované uvnitř ní, ne stránku pod ní, takže by z panelového
+     skla zbyl průsvitný závoj s ostrým textem za ním. Na <body> panel
+     vzorkuje stránku a vypadá jako lišta. Polohu si pak dopočítá CSS z
+     --header-h, protože se nemá o co opřít.
+
+     V šuplíku to musí být naopak: tam je panel accordion pod svým tlačítkem
+     a mimo .nav-item by neměl co rozbalovat. Proto se při překročení
+     breakpointu stěhuje zpátky. */
+  function place() {
+    triggers.forEach(function (trigger) {
+      var panel = panelFor(trigger);
+      if (!panel) return;
+      var home = trigger.parentNode;          /* .nav-item, odkud panel pochází */
+      var want = wideMq.matches ? document.body : home;
+      if (panel.parentNode !== want) want.appendChild(panel);
+    });
+  }
+
+  /* Panel už není potomkem .nav-item, takže cesta z tlačítka dolů vyvolá na
+     položce mouseleave a rozjede zavírání. Vlastní dvojice na panelu ho zase
+     zruší, jakmile do něj myš dojede. */
+  triggers.forEach(function (trigger) {
+    var panel = panelFor(trigger);
+    if (!panel) return;
+    panel.addEventListener('mouseenter', function () {
+      if (hoverable.matches) clearTimers();
+    });
+    panel.addEventListener('mouseleave', function () {
+      if (!hoverable.matches) return;
+      clearTimers();
+      closeTimer = setTimeout(function () { closeAll(null); }, 160);
+    });
+  });
+
   /* Zúžení okna do šuplíku nesmí nechat viset rozjeté odpočítávání. */
   var onHoverChange = function () { clearTimers(); };
   if (hoverable.addEventListener) hoverable.addEventListener('change', onHoverChange);
   else hoverable.addListener(onHoverChange);
 
-  /* Clicking anywhere outside the header closes whatever is open. */
+  /* Klik mimo hlavičku zavírá, co je otevřené. Panel se počítá jako "uvnitř",
+     i když v DOM sousedí s hlavičkou - jinak by kliknutí do menu zavřelo
+     samo sebe dřív, než by odkaz stihl zabrat. */
+  function insideMenu(node) {
+    return !!(node.closest('.site-header') || node.closest('.mega'));
+  }
   document.addEventListener('click', function (e) {
-    if (!e.target.closest('.site-header')) closeAll(null);
+    if (!insideMenu(e.target)) closeAll(null);
   });
 
   document.addEventListener('keydown', function (e) {
@@ -162,9 +205,10 @@
     if (open) { setOpen(open, false); open.focus(); }
   });
 
-  /* Tabbing out of the header should not leave a panel hanging open. */
+  /* Tabbing out of the header should not leave a panel hanging open - ale
+     tabnout do panelu je pohyb dovnitř menu, ne ven z něj. */
   document.addEventListener('focusin', function (e) {
-    if (!e.target.closest('.site-header')) closeAll(null);
+    if (!insideMenu(e.target)) closeAll(null);
   });
 
   /* Collapsing the drawer must not leave a panel expanded inside it. */
@@ -173,11 +217,12 @@
     drawerToggle.addEventListener('click', function () { closeAll(null); });
   }
 
-  /* Crossing the drawer breakpoint resets everything to a known state. */
-  var wide = window.matchMedia('(min-width: 901px)');
-  var onChange = function () { closeAll(null); };
-  if (wide.addEventListener) wide.addEventListener('change', onChange);
-  else wide.addListener(onChange);
+  /* Crossing the drawer breakpoint resets everything to a known state - a
+     panely se u toho musí přestěhovat mezi <body> a svou .nav-item. */
+  var onChange = function () { closeAll(null); place(); };
+  if (wideMq.addEventListener) wideMq.addEventListener('change', onChange);
+  else wideMq.addListener(onChange);
+  place();
 })();
 
 /* =====================================================================
@@ -668,4 +713,3 @@
 
   io.observe(perks);
 })();
-

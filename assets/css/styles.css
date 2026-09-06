@@ -27,6 +27,13 @@
   /* -- brand ------------------------------------------------------- */
   --blue:        #3793d1;   /* Figma primary */
   --blue-hover:  #2f83bd;
+  /* Skleněná varianta modré pro tlačítka "ve skle". Není to --blue s alfou:
+     průsvitem by prosvítal světlý podklad a modrá by zesvětlala. Tyhle dvě
+     jsou dopočítané pozpátku tak, aby se s 15 % podkladu (--paper #ffffff
+     v obsahu i --menu-bg #f7f7f7 v liště, mezi nimi je rozdíl 1/255) složily
+     zpátky na --blue. Tlačítko tedy vypadá stejně jako plné,
+     ale opravdu propouští, co je pod ním. */
+  --glass-blue:       rgba(21, 129, 202, .85);
   --blue-tint:   #e8f2fa;   /* selected day, agenda bullets */
   --blue-tint-2: #cfe6f7;   /* the same tint, one step darker, on hover */
   --green:       #00ce28;
@@ -45,6 +52,16 @@
   /* -- surfaces + lines -------------------------------------------- */
   --paper:        #ffffff;
   --menu-bg:      #f7f7f7;  /* header bar, mega panels, mobile drawer */
+  /* Skleněná varianta téhož povrchu. Krytí je vysoké schválně: lišta sklo
+     jednou měla a bylo vráceno, protože při nízkém krytí brala barvu od
+     fotek, které pod ní projížděly, a začala se štrejchovat. Na 0.82 zůstane
+     odstín v podstatě --menu-bg a průsvit se projeví jako pohyb, ne jako
+     zabarvení. */
+  --glass-menu:   rgba(247, 247, 247, .82);
+  /* Výška lišty. Jako token proto, že se o ni opírá i mega panel: ten už
+     není potomkem hlavičky, takže si svoji polohu pod ní musí spočítat sám
+     (odsazení lišty od horní hrany 24px + tahle výška). */
+  --header-h:     clamp(68px, 5.5vw, 80px);
   --surface:      #fafafa;
   --surface-2:    #f2f2f2;  /* secondary button hover */
   --surface-3:    #f0f2f4;  /* skeleton cells */
@@ -102,11 +119,6 @@
   --gutter: clamp(16px, 2vw, 24px);
 
 
-  /* Hero is tightened vs the Figma frame (which is very airy). One knob:
-     raise to compress the hero further, set to 0px for pixel-exact Figma.
-     Only applies to the fixed-height desktop hero (>= 1200px). */
-  --hero-tighten: 81px;
-
   /* Mockup carousel. The pitch is Figma's bezel-to-bezel spacing and doubles
      as the scale unit: every other laptop measurement is a ratio of it, so
      the whole band shrinks proportionally with the viewport. Step is how long
@@ -133,8 +145,18 @@
 
   /* Room the hero art needs under the copy once it is re-anchored (< 1200px):
      the plate is 587/693 of the pitch, plus breathing space. */
-  --deco-gap: clamp(36px, 5vw, 72px);
-  --deco-h: calc(var(--laptop-pitch) * 1.06 + var(--deco-gap));
+  /* Odstup, který hero drží nad obsahem i pod ním: mezi lištou a odznakem
+     dostupnosti nahoře a mezi perky a horní hranou mockupu dole. Obě mezery
+     mají být na oko stejné, takže je nese jedna hodnota a nemůžou se
+     rozejít. Píše ji .hero__content (padding-top), .hero (padding-bottom)
+     a --deco-h. */
+  --hero-gap: clamp(30px, 4.667vw, 56px);
+  /* Pruh vyhrazený pro hero art pod obsahem (< 1200px). Od jeho spodní hrany
+     visí oblouk a horní hrana mockupu vychází přesně 0.97253 pitche nad ní -
+     to je geometrie oblouku, odměřená z rozvržení. Výška pruhu je tedy ten
+     odstup plus mezera, kterou nad mockupem chceme mít: horní hrana pak
+     padne přesně --hero-gap pod obsah. */
+  --deco-h: calc(var(--laptop-pitch) * 0.97253 + var(--hero-gap));
 
   /* availability dot pulse */
   --dot-pulse: 2.4s;
@@ -238,6 +260,97 @@ p, h1, h2, h3 { margin: 0; }
    declared here. Padding alone sets the width, as on every other button. */
 .btn--nav { height: 44px; font-size: 16px; padding-inline: 22px; }
 
+/* -- modrá tlačítka ve skle --
+   Plná plocha vystřídaná sklem: výplň je průsvitná a rozostřuje, co je pod
+   ní, přes to leží horní lesk, po obvodu světlá hrana a napříč odlesk, který
+   po najetí tlačítko přejede. Tvar, velikost ani rozestupy se nemění -
+   všechno je jen barva, stín a dvě vrstvy uvnitř.
+
+   Nese to CTA v liště, jeho dvojče v mobilním šuplíku a "Rezervovat 15 min
+   hovor" v heru. Obrysové .btn--secondary schválně ne: to nemá být plocha,
+   takže nemá co zesklit.
+
+   Odstín viz --glass-blue v tokenech; kontrast bílého textu zůstává, jaký
+   byl u plné modré. */
+.btn--nav,
+.site-nav__cta,
+.btn--badge {
+  position: relative;
+  /* Vlastní stohovací kontext: obě skleněné vrstvy visí na z-index -1, aby
+     ležely nad výplní, ale pod textem. Bez isolate by propadly za tlačítko. */
+  isolation: isolate;
+  background: var(--glass-blue);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  backdrop-filter: blur(14px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),      /* horní hrana skla */
+    inset 0 -1px 0 rgba(255, 255, 255, 0.14),     /* spodní dosvit */
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16),    /* obvodová linka */
+    0 8px 18px -10px rgba(23, 54, 78, 0.5);       /* měkký stín pod sklem */
+  transition: background-color var(--t-fast) ease, box-shadow var(--t-fast) ease;
+}
+/* Horní lesk: sklo je nahoře světlejší, dolů se ztrácí. */
+.btn--nav::before,
+.site-nav__cta::before,
+.btn--badge::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(180deg,
+              rgba(255, 255, 255, 0.30) 0%,
+              rgba(255, 255, 255, 0.07) 48%,
+              rgba(255, 255, 255, 0) 62%);
+  pointer-events: none;
+}
+/* Odlesk, který po najetí přejede tlačítko - to je na tom to "liquid".
+   Nehýbe se samotná vrstva, ale poloha jejího pozadí: vrstva tak zůstane
+   přesně na tvaru tlačítka (inset 0 a zděděný rádius si ji ořežou samy)
+   a nepotřebuje overflow: hidden. To je tu podstatné - hero tlačítko má
+   ikonu kamery zaparkovanou v levém odsazení a ořez by ji uřízl. */
+.btn--nav::after,
+.site-nav__cta::after,
+.btn--badge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-image: radial-gradient(closest-side at 50% 0%,
+                    rgba(255, 255, 255, 0.34),
+                    rgba(255, 255, 255, 0));
+  background-repeat: no-repeat;
+  background-size: 150% 240%;
+  background-position: -25% 0;
+  transition: background-position .55s cubic-bezier(.2, .8, .3, 1);
+  pointer-events: none;
+}
+.btn--nav:hover::after,
+.site-nav__cta:hover::after,
+.btn--badge:hover::after { background-position: 125% 0; }
+
+/* Hover nemění barvu - odstín drží ve všech stavech, stejně jako u hero
+   tlačítka. Nese ho přejezd odlesku a o kus výraznější sklo. Pravidlo musí
+   stát za .btn--primary:hover, se kterým má shodnou specifičnost: jinak by
+   se přes něj vrátilo ztmavení na --blue-hover. */
+.btn--nav:hover,
+.site-nav__cta:hover {
+  background: var(--glass-blue);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.52),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+    0 10px 22px -10px rgba(23, 54, 78, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Odlesk zůstane stát tam, kde je; sklo se pozná i bez přejezdu. */
+  .btn--nav::after,
+  .site-nav__cta::after,
+  .btn--badge::after { transition: none; }
+}
+
 /* Figma's 270/234 were kept here as floors, but the secondary's floor sat 6px
    above its natural width, so its real gap came out 34px next to the
    primary's 31px. Padding decides now; the primary is unaffected (it was
@@ -269,7 +382,7 @@ p, h1, h2, h3 { margin: 0; }
 /* The icon arriving is the whole hover here, so the fill holds its colour:
    darkening it as well would be two signals for one event. Later in the file
    than .btn--primary:hover, which it has to out-rank at equal specificity. */
-.btn--badge:hover { background: var(--blue); }
+.btn--badge:hover { background: var(--glass-blue); }
 .btn__badge {
   flex: none;
   width: var(--badge-size);
@@ -403,14 +516,17 @@ p, h1, h2, h3 { margin: 0; }
   margin: 24px auto 0;
   /* Figma had 110px, which reads as a lot of empty band on a real screen.
      Everything else in the header scales off this. */
-  height: clamp(68px, 5.5vw, 80px);   /* floor stays above .btn--nav's 44px + margin */
-  /* Opaque, not glass. Translucent + backdrop-filter meant the bar took its
-     colour from whatever scrolled under it, so the photo sections further
-     down tinted and streaked it, and it no longer matched the fully opaque
-     mega panel opening below. Flat --menu-bg is the token's stated surface
-     for the bar, the panels and the drawer alike, so the header now reads
-     the same the whole way down the page as it does at the top. */
-  background: var(--menu-bg);
+  height: var(--header-h);            /* floor stays above .btn--nav's 44px + margin */
+  /* Sklo. Poprvé to tu bylo s nízkým krytím a vrátilo se to k plné barvě,
+     protože lišta brala odstín od fotek, které pod ní projížděly. Teď je
+     krytí 0.82 a rozostření silné, takže se pod lištou pozná pohyb, ale ne
+     barva. Rámeček se nevrací, ten byl odstraněn na výslovné přání (níž).
+
+     Mega panel sklo mít nemůže, i když je to ta samá šedá plocha - proč,
+     viz komentář u .mega. */
+  background: var(--glass-menu);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
   /* Bez rámečku, na výslovné přání. Lišta měla po obvodu vlasovou linku
      rgba(255,255,255,.6) - na šedém --menu-bg světlejší obrys, viditelný
      jak se zavřeným, tak s otevřeným menu.
@@ -447,7 +563,11 @@ p, h1, h2, h3 { margin: 0; }
    still squares its bottom off to meet it flush. It used to clear its
    box-shadow here as well, in favour of the drawer's own; the bar has no
    shadow of its own any more, so there is nothing left to clear. */
-.site-header.is-nav-open {
+/* Se šuplíkem i s mega panelem lišta srovná spodní rohy: obojí na ni dosedá
+   hranou a zaoblení by mezi nimi nechalo prosvítat stránku. Panel proto
+   nemusí být zastrčený za lištu, jak to dělal dokud byl jejím potomkem. */
+.site-header.is-nav-open,
+.site-header.has-mega-open {
   border-radius: var(--r-chrome) var(--r-chrome) 0 0;
 }
 
@@ -576,32 +696,30 @@ p, h1, h2, h3 { margin: 0; }
 .nav-item__trigger[aria-expanded="true"] .nav-item__sign { transform: rotate(135deg); }
 
 .mega {
-  position: absolute;
+  /* Panel žije na <body>, ne v hlavičce, a přesouvá ho tam site.js. Důvod je
+     jediný a tvrdý: .site-header je position: sticky, čímž se stává
+     "backdrop root" - potomek s backdrop-filter rozostřuje jen to, co je
+     namalované uvnitř lišty, ne stránku pod ní. Dokud byl panel uvnitř,
+     zbyl z jeho skla průsvitný závoj, přes který se hero nadpis táhl ostře.
+     Venku vzorkuje stránku a je ze skla stejně jako lišta.
+
+     Cenou je, že si polohu musí spočítat sám: lišta je odsazená 24px od
+     horní hrany a vysoká --header-h, takže panel začíná přesně pod ní.
+     Šířka je ta samá jako lišta, včetně zarovnání na střed. */
+  position: fixed;
   font-size: 16px;
-  /* Reaches 16px up under the bar (its own corner radius) instead of
-     starting exactly at the bar's bottom edge. The bar keeps rounded
-     corners at all times now (see .site-header) — if the panel started
-     flush at 100%, that rounded corner would carve a tiny gap out of the
-     bar showing the page behind it, since the panel's own square top
-     corner doesn't reach that high. Tucked in behind the bar (z-index
-     below the bar's opaque background, see below) and padded back down by
-     the same amount, so the visible panel content still lands exactly
-     where it always did. */
-  top: calc(100% - 16px);
-  padding-top: 16px;
+  top: calc(24px + var(--header-h));
   left: 0;
   right: 0;
-  /* Negative, not just "low": .nav-item is position:static, so the panel's
-     stacking context is .site-header itself, where any positioned box
-     (this one) paints above the bar's own static in-flow content: logo,
-     links, the "Začít projekt" button, no matter how small its z-index is.
-     Negative pulls it behind that in-flow layer instead, so the bar's own
-     content always stays on top of the panel opening under it — and lets
-     the tucked-in top strip above sit behind the bar's own background too,
-     invisible until it clears the bar's rounded corner. */
-  z-index: -1;
-  /* full bleed like the bar above it; only the content inside is contained */
-  background: var(--menu-bg);
+  width: min(var(--container), 100% - (var(--gutter) * 2));
+  margin-inline: auto;
+  /* Pod lištou (30), nad překryvem za panelem (20). Obsah lišty tak zůstává
+     nad panelem, který se pod ní rozjíždí. */
+  z-index: 29;
+  /* Sklo jako lišta - o to tady celou dobu šlo. */
+  background: var(--glass-menu);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
   border: 0;
   border-radius: 0 0 16px 16px;   /* flat top: it opens flush under the header bar */
   /* Soft and blurred, not flat: a hard-edged shadow here would overlay
@@ -613,10 +731,9 @@ p, h1, h2, h3 { margin: 0; }
      clip open top-to-bottom, so the panel grows out from under the header
      like a blind unrolling, instead of fading in already full height. The
      "round" value mirrors the panel's own border-radius so the growing edge
-     stays rounded throughout. No opacity/blur on the panel itself — it
-     stays fully opaque throughout so the page behind (the hero heading)
-     never bleeds through; .mega__col carries the blur-clearing fade for the
-     content instead, ONCE it's inside the already-solid, growing panel. */
+     stays rounded throughout. Panel sám se neroztmívá - roluje se ven už
+     hotový, včetně skla; .mega__col si nese rozostřovací náběh obsahu
+     zvlášť, až uvnitř rostoucího panelu. */
   clip-path: inset(0 0 100% 0 round 0 0 16px 16px);
   transition: clip-path var(--t-mega) cubic-bezier(.16, 1, .3, 1),
               visibility var(--t-mega);
@@ -700,13 +817,16 @@ p, h1, h2, h3 { margin: 0; }
    each other, which is what the eye compares inside one panel. */
 
 /* .site-nav a sets nowrap + a border for the drawer; both must be undone here,
-   and it out-specifies a lone class, hence the .site-nav prefix. */
+   a samotná třída na to nestačí - .site-nav a je specifičtější. Prefix proto
+   zůstává, ale je jím .mega, ne .site-nav: panel je nad 900px vytažený mimo
+   navigaci (viz .mega) a scoping na .site-nav by tam přestal platit. .mega je
+   jeho rodič v obou polohách a dvě třídy .site-nav a přebijí stejně. */
 /* Ikona se váže na titulek, ne na celý blok textu: u dvouřádkového popisku
    by ji svislé vystředění stáhlo mezi řádky a řada by se rozházela. Proto
    zarovnání k hornímu okraji a záporný posun, který ji optiky posadí na
    účaří titulku - objekt má těžiště výš než jeho box, protože si dole nese
    kontaktní stín. */
-.site-nav .mega__link {
+.mega .mega__link {
   display: flex;
   align-items: flex-start;
   /* Řádky mřížky drží rozteč, ale položka sama se roztahovat nemá: karta pod
@@ -719,8 +839,8 @@ p, h1, h2, h3 { margin: 0; }
 
 /* Karta obepíná položku: svisle přesně její výšku, vodorovně je o kousek
    vsazená, aby stála volně ve sloupci a sousední karty se nedotýkaly. */
-.site-nav .mega__link { position: relative; }
-.site-nav .mega__link::before {
+.mega .mega__link { position: relative; }
+.mega .mega__link::before {
   content: "";
   position: absolute;
   inset: 0 8px;
@@ -729,7 +849,7 @@ p, h1, h2, h3 { margin: 0; }
   background: transparent;
   transition: background-color var(--t-fast) ease;
 }
-.site-nav .mega__link:hover::before { background: var(--paper); }
+.mega .mega__link:hover::before { background: var(--paper); }
 
 .mega__icon {
   flex: none;
@@ -777,7 +897,7 @@ p, h1, h2, h3 { margin: 0; }
 /* Karta začíná na stejné lince jako odkazy vedle a vyplní sloupec až dolů:
    obrázek si vezme, co po titulku a popisku zbyde. Díky tomu už výšku panelu
    neurčuje ona, ale sloupce s odkazy, a nic nikde nepřečnívá. */
-.site-nav .mega__case {
+.mega .mega__case {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -824,7 +944,7 @@ p, h1, h2, h3 { margin: 0; }
   transform: rotate(-45deg);
   transition: transform var(--t-fast) var(--ease);
 }
-.site-nav .mega__case:hover .mega__caseArrow { transform: rotate(-45deg) translateX(3px); }
+.mega .mega__case:hover .mega__caseArrow { transform: rotate(-45deg) translateX(3px); }
 .mega__caseDesc {
   display: block;
   margin-top: 1px;
@@ -870,12 +990,18 @@ p, h1, h2, h3 { margin: 0; }
 /* ------------------------------------------------------------------- Hero */
 .hero {
   position: relative;
-  /* +132px over the Figma 1235: --laptop-pitch's max grew from 693 to 800
-     (laptops ~90px taller at full size) plus another 42px so the gap above
-     the laptop row matches the gap above the availability pill, without
-     the extra 42px the bigger mockups sat visibly closer to the copy above
-     than the nav sits above the pill. */
-  height: calc(1367px - var(--hero-tighten));   /* Figma y 109 -> 1344 */
+  /* Výška není pevná. Dřív tu stál rám odvozený z Figmy a art visel na jeho
+     spodní hraně, takže mezeru nad mockupem určovala výška toho rámu -
+     nezávisle na tom, kde končí text nad ním. Rozcházelo se to: nad odznakem
+     56px, nad mockupem 96px, a mezi 1200 a 1214px se rozdíl ještě měnil,
+     protože rám byl konstantní, ale pitch v tom pásmu ještě rostl.
+
+     Teď je to obráceně: hero je vysoké tak, jak vyjde obsah, a pod ním je
+     vyhrazený pruh --deco-h. Mezera nad mockupem je tím součástí toho pruhu
+     a rovná se --hero-gap, tedy přesně mezeře nad odznakem, v každé šířce a
+     bez jediné konstanty navíc. Je to stejné ukotvení, jaké dřív platilo jen
+     pod 1200px; teď platí všude, takže odpadl i celý ten breakpoint. */
+  padding-bottom: var(--deco-h);
   isolation: isolate;
   /* Konec oblouku se nesmí uříznout čárou. V klidu sem žádný mockup nedosáhne,
      ale během přejezdu klesá ten vzdálenější hluboko dolů a u kraje je pořád
@@ -885,23 +1011,24 @@ p, h1, h2, h3 { margin: 0; }
   overflow: hidden;
   -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--laptop-pitch) * 0.15), transparent 100%);
   mask-image: linear-gradient(to bottom, #000 calc(100% - var(--laptop-pitch) * 0.15), transparent 100%);
-  padding-bottom: clamp(30px, 4.667vw, 56px);   /* matches .hero__content's padding-top */
-}
-@media (max-width: 767px) {
-  .hero { padding-bottom: 40px; }
 }
 
-/* centred 1440 design track for the decorative art */
+/* Pruh vyhrazený pro hero art, zaražený na spodní hranu sekce. Sedí přesně
+   do padding-bottom .hero, takže jeho horní hrana lícuje s koncem obsahu -
+   odtud se odvíjí mezera nad mockupem. Šířka je celá sekce: pás uvnitř se
+   centruje na left: 50%, což je střed okna, takže dřívější pevný 1440px pruh
+   nic navíc neřešil. */
 .hero__deco {
   position: absolute;
-  top: 0;
-  left: 50%;
-  width: 1440px;
-  height: calc(1367px - var(--hero-tighten));
-  margin-left: -720px;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--deco-h);
   z-index: 1;
   pointer-events: none;
 }
+
 
 /* -- MacBook mockups (Figma 781:13 / 781:22 / 781:27), as an endless marquee --
    Figma spaces the three bezels at x -233 / 458 / 1151, i.e. a 693px pitch with
@@ -989,6 +1116,10 @@ p, h1, h2, h3 { margin: 0; }
   width: calc(var(--laptop-pitch) * 0.95);
   display: flex;
   align-items: center;
+  /* Značka i text jdou doprostřed pruhu. Odsazení po stranách zůstává jako
+     pojistka pro dlouhý název: než by text přetekl, dojede k okraji a
+     ořízne se elipsou. */
+  justify-content: center;
   gap: 8px;
   padding: 7px 12px;
   /* Stejná vlásková linka jako kolem desky, jen dole a po stranách: rámeček
@@ -1078,25 +1209,31 @@ p, h1, h2, h3 { margin: 0; }
   top:    calc(var(--laptop-pitch) * 0.081);
   width:  calc(var(--laptop-pitch) * 0.95);
   height: calc(var(--laptop-pitch) * 0.679);
-  border: 0;
-  /* Ořez kopíruje desku, na které box leží - jinak by se ruka dole
-     zakulacovala do rohů, které pod ní už ostré jsou. */
+  /* Ta samá vlásková linka jako na desce pod ním, a na stejném místě: box
+     leží na desce přesně, takže se obě linky kryjí a je vidět jedna. Bez ní
+     by rámeček zmizel, protože snímek desku přes okraj přetáhne. Obrázek se
+     sází do vnitřku (border-box), takže linku nepřekryje. */
+  border: 1px solid var(--line-mockup);
+  border-bottom: 0;
+  /* Ořez kopíruje desku, na které box leží - jinak by se snímek dole
+     zakulacoval do rohů, které pod ním už ostré jsou. */
   border-radius: var(--r-chrome) var(--r-chrome) 0 0;
   background: transparent;
   overflow: hidden;
 }
-/* Mockup je čtvercové PNG s průhledným pozadím: ruka s telefonem zabírá svislý
-   pruh uprostřed a předloktí jde až ke spodní hraně obrázku. Drží se proto za
-   spodek desky a je o kus nižší než ona, aby se celá ruka vešla dovnitř
-   a nikde nepřetékala. Šířka se dopočítá sama. */
+/* Snímek projektu vyplňuje celou kartu. Není to vyříznutý mockup na průhledném
+   pozadí, ale plná fotka, takže se sází přes cover: kartu pokryje vždycky celou
+   bez ohledu na to, jaký poměr stran přijde, a přebytek se odřízne symetricky
+   po stranách. Karta má poměr 1.399:1, takže z fotky 3:2 zmizí zhruba 3 %
+   na každé straně - motiv proto patří doprostřed, ne až k okraji. */
 .laptop__bezel > img {
   position: absolute;
-  left: 50%;
-  bottom: 0;              /* ruka stojí přesně na spodní hraně desky */
-  width: auto;
-  height: 100%;           /* tedy na výšku desky, ta je rodičem */
+  inset: 0;
+  width: 100%;
+  height: 100%;
   max-width: none;
-  transform: translateX(-50%);
+  object-fit: cover;
+  object-position: center;
 }
 
 /* -- "Zobrazit projekt" cursor over the mockups --
@@ -1238,7 +1375,7 @@ p, h1, h2, h3 { margin: 0; }
 .hero__content {
   position: relative;
   z-index: 2;
-  padding-top: clamp(30px, 4.667vw, 56px);       /* Figma y 189, tightened */
+  padding-top: var(--hero-gap);                  /* Figma y 189, tightened */
   text-align: center;
 }
 
@@ -1287,10 +1424,26 @@ p, h1, h2, h3 { margin: 0; }
 .availability__tag::before {
   content: "";
   flex: none;
-  width: 7px;
-  height: 7px;
+  /* O 2px větší než plochá tečka: pod 9px se odlesk scvrkne na jeden pixel
+     a z kuličky zbyde zase jen puntík. */
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  background: var(--ok);
+  /* Sklo ve čtyřech vrstvách, shora dolů:
+       1. ostrý odlesk vlevo nahoře, tam kde na kuličku dopadá světlo,
+       2. protisvětlo u spodní hrany - tenký jasný lem, který dělá tloušťku
+          skla; bez něj kulička splývá s podkladem a vypadá jako nálepka,
+       3. vnitřní odraz vpravo dole, ještě v zeleném tónu, ne v bílé,
+       4. tělo s hloubkou: světlá zelená na osvětlené straně, --ok uprostřed,
+          tmavá na odvrácené.
+     Vše přes background, ne box-shadow: ten patří pulzujícímu kroužku níž
+     a přebil by se. Záře kolem jde přes filter, který má volný. */
+  background:
+    radial-gradient(46% 40% at 34% 24%, rgba(255, 255, 255, .98) 0%, rgba(255, 255, 255, 0) 70%),
+    radial-gradient(120% 120% at 50% 132%, rgba(255, 255, 255, .55) 0%, rgba(255, 255, 255, 0) 40%),
+    radial-gradient(64% 64% at 72% 74%, rgba(190, 255, 214, .45) 0%, rgba(255, 255, 255, 0) 60%),
+    radial-gradient(125% 125% at 30% 24%, #5ef09a 0%, var(--ok) 44%, #045c2b 100%);
+  filter: drop-shadow(0 0 2.5px rgba(12, 171, 74, .5));
   /* align-items: center posadí tečku na střed řádkového boxu (10,5 z 21px).
      Optický střed písmen je ale na 12: obrys sahá 5..19, protože descendery
      v "projekty" táhnou těžiště dolů. Tečka pak působí vysoko. 1px dolů ji
@@ -1367,11 +1520,9 @@ p, h1, h2, h3 { margin: 0; }
   color: var(--blue);
   white-space: nowrap;
 }
-/* One icon per perk instead of three identical ticks. Smaller than the old
-   29px check: a line glyph at that size competes with the label.
-   Bolt / shield / message: speed, certainty, the enquiry that arrives. These
-   are inline rather than <use> because the draw-on below has to address each
-   stroke, and CSS cannot reach inside a sprite's shadow tree. */
+/* One icon per perk instead of three identical ticks. Prostorové ikony ze
+   spritu jsou plné tvary, linkové varianty (například na landing page) jedou
+   pořád tahem - proto tu zůstávají vlastnosti pro obojí. */
 .perks__icon {
   flex: none;
   width: clamp(17px, 1.833vw, 22px);
@@ -1381,6 +1532,13 @@ p, h1, h2, h3 { margin: 0; }
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* Prostorová ikona nese vlastní barvy i stínování, tah ani výplň se na ni
+   nevztahují. Je větší než linková, protože stínování potřebuje plochu. */
+.perks__icon--3d {
+  width: clamp(28px, 2.833vw, 34px);
+  height: clamp(28px, 2.833vw, 34px);
 }
 
 /* Each icon draws itself once the row scrolls in. pathLength="1" on every
@@ -1562,24 +1720,6 @@ p, h1, h2, h3 { margin: 0; }
 /* Layout breakpoints: only where the structure itself has to change.   */
 /* ===================================================================== */
 
-/* Below the design width the hero art no longer has a fixed frame to sit in,
-   so it is re-anchored under the copy: the hero grows with its text and the
-   art occupies the reserved strip at the bottom. */
-@media (max-width: 1199.98px) {
-  .hero {
-    height: auto;
-    padding-bottom: var(--deco-h);
-  }
-  .hero__deco {
-    top: auto;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: var(--deco-h);
-    margin-left: 0;
-  }
-}
-
 /* Inline nav folds into a drawer. */
 @media (max-width: 900px) {
   .nav-toggle { display: grid; }
@@ -1641,11 +1781,22 @@ p, h1, h2, h3 { margin: 0; }
     color: var(--ink);
   }
 
+  /* V šuplíku je panel zpátky ve své .nav-item (přesouvá site.js) a chová se
+     jako accordion. Musí tedy spadnout všechno, čím je nad 900px připíchnutý
+     pod lištu - poloha, šířka, vrstva i sklo. */
   .mega {
     position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    z-index: auto;
     display: grid;
     grid-template-rows: 0fr;
     width: auto;
+    margin-inline: 0;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     transform: none;
     border: 0;
     border-radius: 0;
@@ -1671,8 +1822,8 @@ p, h1, h2, h3 { margin: 0; }
   .mega__steps, .mega__facts { padding: 0; }
   .mega__steps li, .mega__facts li { padding: 11px 2px; }
 
-  .site-nav .mega__link { padding: 11px 2px; }
-  .site-nav .mega__link:hover::before { background: none; }
+  .mega .mega__link { padding: 11px 2px; }
+  .mega .mega__link:hover::before { background: none; }
 }
 
 /* One-column card at phone widths, capped so it keeps the Figma proportions. */
@@ -3120,3 +3271,4 @@ body.audit-open { overflow: hidden; }
   z-index: 5;
   height: 0;
 }
+
