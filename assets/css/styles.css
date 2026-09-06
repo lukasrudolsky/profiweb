@@ -54,6 +54,7 @@
   --line-soft:    #dcdfe2;  /* today's ring when the day is unavailable */
   --line-hover:   #cfd3d6;  /* neutral control, hovered */
   --line-blue:    #cfe3f3;  /* tinted control, resting */
+  --line-mockup:  #b8b8b6;  /* rámeček kolem mockupu v heru (deska + popisek) */
 
   /* -- status ------------------------------------------------------ */
   --danger:       #d64545;
@@ -72,6 +73,10 @@
   --r-lg:   11px;
   --r-xl:   13px;
   --r-2xl:  22px;
+  /* Zaoblení "chromu" webu: lišta hlavičky, tlačítka a deska mockupu
+     v karuselu. Bylo dvakrát zapsané natvrdo, teď to drží jedno místo,
+     aby se ty prvky nerozešly. */
+  --r-chrome: 16px;
   --r-pill: 999px;
 
   /* -- elevation --------------------------------------------------- */
@@ -80,6 +85,8 @@
   --shadow-dialog: 0 40px 90px -30px rgba(23, 54, 78, .38),
                    0 4px 14px rgba(23, 54, 78, .06);
   --ring:          0 0 0 3px rgba(55, 147, 209, .16);
+
+
 
   /* -- motion ------------------------------------------------------
      Three speeds, not eight: fast for colour/hover, base for most state
@@ -111,10 +118,18 @@
 
   /* Kruh, po kterém mockupy jedou. Poloměr je násobek pitche, takže se celý
      oblouk zmenšuje s nimi, a krok je úhel mezi dvěma sousedy. Tětiva mezi
-     nimi (2R * sin(krok/2) = 1.13 pitche) je o kus širší než plát laptopu
-     (1.11 pitche), takže se sousedi nepřekrývají. */
-  --wheel-r: calc(var(--laptop-pitch) * 3.6);
-  --wheel-step: 20deg;
+     nimi (2R * sin(krok/2) = 1.24 pitche) je o kus širší než deska pod
+     mockupem (0.95 pitche), takže se sousedi nepřekrývají.
+
+     Obě čísla patří k sobě a hýbat se s nimi musí zároveň: tětiva je
+     rozestup sousedů a ten má zůstat, jak je. Menší krok při větším
+     poloměru tedy rozestup nezmění, jen zploští oblouk - soused se míň
+     naklání a míň klesá. Z 20deg/3.6 na 14deg/5.1 je to náklon 14 místo 20
+     stupňů a pokles 0.15 místo 0.22 pitche, přitom tětiva drží (1.250 ->
+     1.243 pitche). Vrchol oblouku zůstává na místě sám: pás visí na
+     bottom: 0.63 pitche - R, takže se R z výšky vrcholu vykrátí. */
+  --wheel-r: calc(var(--laptop-pitch) * 5.1);
+  --wheel-step: 14deg;
 
   /* Room the hero art needs under the copy once it is re-anchored (< 1200px):
      the plate is 587/693 of the pitch, plus breathing space. */
@@ -187,7 +202,7 @@ p, h1, h2, h3 { margin: 0; }
   justify-content: center;
   height: clamp(50px, 5vw, 60px);
   padding-inline: clamp(22px, 2.583vw, 31px);
-  border-radius: 16px;   /* matches .site-header's rounding, not a full pill */
+  border-radius: var(--r-chrome);   /* stejné zaoblení jako lišta, ne plná pilulka */
   /* <button> does not inherit the page font, without this the UA's Arial wins
      on every button-flavoured .btn while the <a> ones stay on Inter. */
   font-family: inherit;
@@ -407,7 +422,18 @@ p, h1, h2, h3 { margin: 0; }
      by hranami nelícoval a jeho sloupce by se rozešly s logem nad nimi.
      Přesně tenhle 1px rozdíl se tu už jednou řešil. Inset box-shadow
      geometrii nemění, ten je bezpečný. */
-  border-radius: 16px;
+  border-radius: var(--r-chrome);
+
+  /* Intro: lišta sjede shora. `both` ji drží nad okrajem obrazovky ještě
+     před rozběhnutím, takže nikde neproblikne na svém místě. Posun je
+     o vlastní výšku plus těch 24 px, o která je lišta odsazená od kraje,
+     aby vyjela opravdu z obrazu. Sticky pozicování transform neruší. */
+  animation: header-intro .72s cubic-bezier(.2, .8, .3, 1) .1s both;
+}
+
+@keyframes header-intro {
+  from { transform: translateY(calc(-100% - 24px)); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
 .site-header__inner {
   display: flex;
@@ -422,7 +448,7 @@ p, h1, h2, h3 { margin: 0; }
    box-shadow here as well, in favour of the drawer's own; the bar has no
    shadow of its own any more, so there is nothing left to clear. */
 .site-header.is-nav-open {
-  border-radius: 16px 16px 0 0;
+  border-radius: var(--r-chrome) var(--r-chrome) 0 0;
 }
 
 /* Invisible hit-area behind the open mega panel: a click on it is a click
@@ -608,29 +634,63 @@ p, h1, h2, h3 { margin: 0; }
   margin-inline: auto;
   text-align: left;
 }
-.mega__col { padding: 0 0 22px; }
-.mega__col + .mega__col { border-left: 1px solid var(--line-header); }
+/* Řádky obou sloupců s odkazy musí lícovat napříč panelem. Samy od sebe
+   nelícují: popisky se lámou různě, takže jedna položka je dvouřádková a
+   vedlejší třířádková, a od druhého řádku dolů se sloupce rozejdou. Mřížka
+   se stejně vysokými řádky to srovná - sloupce jsou díky roztažení panelu
+   stejně vysoké, takže třetina výšky vychází v obou stejně. Platí to, dokud
+   mají oba sloupce stejný počet položek; teď mají všechny panely tři a tři. */
+.mega__col {
+  position: relative;
+  display: grid;
+  grid-auto-rows: 1fr;
+  padding: 0 0 22px;
+}
 
-/* columns stagger in behind the panel, clearing from a blur as they land */
+/* Podklad, který přejíždí mezi položkami sloupce. Jeden na sloupec, polohu
+   i výšku mu dává site.js podle položky pod kurzorem. position: relative na
+   sloupci výš je pro něj podstatné: sloupec je sice při zavřeném panelu
+   posunutý transformem (a ten by mu obalový blok udělal taky), jenže po
+   otevření se transform vynuluje a podklad by se začal měřit od panelu. */
+.mega__hl {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 0;
+  z-index: -1;
+  border-radius: var(--r-md);
+  background: var(--paper);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--t-base) var(--ease),
+              height var(--t-base) var(--ease),
+              opacity var(--t-fast) ease;
+}
+.mega__hl.is-on { opacity: 1; }
+/* S přejíždějícím podkladem se jednotlivé položky nepodbarvují, jinak by se
+   pod kurzorem kreslily dva podklady přes sebe. */
+.mega__col.has-hl .mega__link:hover::before { background: transparent; }
+
+/* Obsah panelu se zaostřuje ve dvou fázích: nejdřív sjede samotný panel,
+   teprve pak se sloupce vynoří z rozostření a doskočí na místo, sloupec po
+   sloupci. Zpoždění je tu podstatné - panel má silný ease-out a je dokořán
+   zhruba po 0,16 s, takže bez něj by rozostření odeznělo dřív, než je vůbec
+   co vidět, a z celé fáze by zbylo jen probliknutí. */
 .mega__col {
   opacity: 0;
-  filter: blur(4px);
-  transform: translateY(7px);
+  filter: blur(12px);
+  transform: translateY(12px);
   transition: opacity var(--t-mega) ease, filter var(--t-mega) ease, transform var(--t-mega) ease;
 }
-.mega.is-open .mega__col { opacity: 1; filter: blur(0); transform: none; }
-.mega.is-open .mega__col:nth-child(2) { transition-delay: .05s; }
-.mega.is-open .mega__col:nth-child(3) { transition-delay: .1s; }
-
-.mega__label {
-  padding: 36px 24px 14px;
-  font-size: 12px;
-  line-height: 1.4;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--text-mute);
-  border-bottom: 1px solid var(--line-header);
+.mega.is-open .mega__col {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+  transition-delay: .14s;
 }
+.mega.is-open .mega__col:nth-child(2) { transition-delay: .2s; }
+.mega.is-open .mega__col:nth-child(3) { transition-delay: .26s; }
+
 /* The 24px side padding is the gutter around each column's inner divider, and
    it now runs on the outer edges too. It used to be zeroed there so the panel's
    first and last columns lined up pixel-for-pixel with the logo and button in
@@ -641,23 +701,51 @@ p, h1, h2, h3 { margin: 0; }
 
 /* .site-nav a sets nowrap + a border for the drawer; both must be undone here,
    and it out-specifies a lone class, hence the .site-nav prefix. */
+/* Ikona se váže na titulek, ne na celý blok textu: u dvouřádkového popisku
+   by ji svislé vystředění stáhlo mezi řádky a řada by se rozházela. Proto
+   zarovnání k hornímu okraji a záporný posun, který ji optiky posadí na
+   účaří titulku - objekt má těžiště výš než jeho box, protože si dole nese
+   kontaktní stín. */
 .site-nav .mega__link {
   display: flex;
-  align-items: center;
-  gap: 13px;
-  padding: 16px 24px;
+  align-items: flex-start;
+  /* Řádky mřížky drží rozteč, ale položka sama se roztahovat nemá: karta pod
+     kurzorem má obepnout text, ne kus prázdna pod ním. */
+  align-self: start;
+  gap: 15px;
+  padding: 15px 24px 17px;
   white-space: normal;
-  border-bottom: 1px solid var(--line-header);
+}
+
+/* Karta obepíná položku: svisle přesně její výšku, vodorovně je o kousek
+   vsazená, aby stála volně ve sloupci a sousední karty se nedotýkaly. */
+.site-nav .mega__link { position: relative; }
+.site-nav .mega__link::before {
+  content: "";
+  position: absolute;
+  inset: 0 8px;
+  z-index: -1;
+  border-radius: var(--r-md);
+  background: transparent;
   transition: background-color var(--t-fast) ease;
 }
-.site-nav .mega__link:last-child { border-bottom: 0; }
-.site-nav .mega__link:hover { background: var(--paper); }
+.site-nav .mega__link:hover::before { background: var(--paper); }
 
 .mega__icon {
   flex: none;
   width: 19px;
   height: 19px;
   color: var(--ink);
+}
+
+/* Prostorová ikona stojí sama, bez podkladu: objekt si nese stínování v sobě.
+   Je větší než linková, protože stěny a odlesky potřebují plochu, aby se daly
+   přečíst, a měkký stín pod ní ji posazuje na panel. */
+.mega__icon--3d {
+  width: 32px;
+  height: 32px;
+  margin-top: -4px;   /* posadí objekt na účaří titulku */
+  /* kontaktní stín si nese každý objekt sám ve své kresbě */
 }
 .mega__text { display: block; min-width: 0; }
 .mega__title {
@@ -678,23 +766,32 @@ p, h1, h2, h3 { margin: 0; }
 
 .mega__col--media { display: flex; flex-direction: column; }
 
-/* -- third column, "Ukázka práce" --
-   This replaced a four-up gallery in which two of the four tiles were
-   prism-wash-blue.jpg and prism-wash-dark.jpg: decorative background
-   gradients, not work. Under a label promising samples they read as filler,
-   and the odd crops left the column ragged. One real screenshot, shown
-   properly. */
+/* -- třetí sloupec, "Z blogu" --
+   Dřív tu byla ukázka práce se snímkem webu. Teď je to upoutávka na článek:
+   obrázek, titulek se šipkou ven a dvě věty. Abstraktní gradient tu na rozdíl
+   od ukázky práce nevadí - pod slibem vzorků působil jako výplň, nad článkem
+   je to běžná ilustrace.
+
+   Poměr 16/9 zůstává: sloupec je nejvyšší věc v panelu a každý pixel navíc
+   je prázdné místo pod oběma sloupci odkazů vedle. */
+/* Karta začíná na stejné lince jako odkazy vedle a vyplní sloupec až dolů:
+   obrázek si vezme, co po titulku a popisku zbyde. Díky tomu už výšku panelu
+   neurčuje ona, ale sloupce s odkazy, a nic nikde nepřečnívá. */
 .site-nav .mega__case {
-  display: block;
-  padding: 16px 24px 0 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 0 24px;
   white-space: normal;
 }
 .mega__shot {
   display: block;
   overflow: hidden;
-  /* 16/9 rather than 16/10: the shot is the tallest thing in the panel, and
-     every pixel it adds is empty space under the two link columns. */
-  aspect-ratio: 16 / 9;
+  /* Bez pevného poměru: výšku dává zbytek sloupce, takže se obrázek natáhne
+     přesně po spodní hranu a nikde nezůstane hluché místo. */
+  flex: 1 1 0;
+  min-height: 0;
   border: 1px solid var(--line-header);
   border-radius: 7px;
   background: var(--surface);
@@ -703,18 +800,31 @@ p, h1, h2, h3 { margin: 0; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;   /* a full-page shot reads from its header */
+  object-position: center;   /* ilustrace, ne snímek stránky: řeže se od středu */
   transition: transform var(--t-slow) var(--ease);
 }
 .mega__case:hover .mega__shot img { transform: scale(1.03); }
 .mega__caption { display: block; padding-top: 12px; }
 .mega__caseTitle {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 15px;
   line-height: 1.5;
   letter-spacing: -0.01em;
   color: var(--ink);
 }
+
+/* Šipka ven z webu: stejný tvar ze spritu jako jinde, jen otočený o 45°.
+   Na hoveru vyjede po své úhlopříčce, tedy doprava nahoru. */
+.mega__caseArrow {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  transform: rotate(-45deg);
+  transition: transform var(--t-fast) var(--ease);
+}
+.site-nav .mega__case:hover .mega__caseArrow { transform: rotate(-45deg) translateX(3px); }
 .mega__caseDesc {
   display: block;
   margin-top: 1px;
@@ -756,45 +866,6 @@ p, h1, h2, h3 { margin: 0; }
   background: var(--blue-tint);
   border-radius: 50%;
 }
-
-/* -- panel footer --
-   The columns used to just stop, leaving the panel open at the bottom with
-   no way out of it. Spans the full grid so the column rules end above it. */
-.mega__foot {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 15px 0;
-  border-top: 1px solid var(--line-header);
-  opacity: 0;
-  transform: translateY(7px);
-  transition: opacity var(--t-slow) ease, transform var(--t-slow) ease;
-}
-.mega.is-open .mega__foot { opacity: 1; transform: none; transition-delay: .15s; }
-.mega__footText {
-  font-size: 14px;
-  line-height: 1.5;
-  letter-spacing: -0.01em;
-  color: var(--text-body);
-}
-.site-nav .mega__footLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  margin-left: auto;
-  font-size: 15px;
-  letter-spacing: -0.01em;
-  color: var(--blue);
-}
-.mega__footArrow {
-  width: 17px;
-  height: 17px;
-  fill: none;
-  stroke: currentColor;
-  transition: transform var(--t-fast) var(--ease);
-}
-.site-nav .mega__footLink:hover .mega__footArrow { transform: translateX(3px); }
 
 /* ------------------------------------------------------------------- Hero */
 .hero {
@@ -897,6 +968,56 @@ p, h1, h2, h3 { margin: 0; }
    .is-active na něj site.js dál nasazuje, takže je po ruce, až bude na co ji
    navěsit (odkaz na projekt, popisek). */
 
+/* Popisek pod mockupem: co je to za projekt. Tmavý pruh nalepený zespoda
+   na desku - žádná mezera a přesně její šířka, takže deska a popisek čtou
+   jako jeden díl, ne jako plovoucí štítek. Proto se i rozměry berou od
+   desky: stejné left (-0.09 pitche) a width (0.95), top přesně na její
+   spodní hraně (0.081 + 0.679 = 0.76). Box .laptop končí o kus níž, ale
+   nic tady nic neořezává, takže může přetéct.
+
+   Zaoblené jsou jen spodní rohy, horní zůstávají ostré: nahoře pruh na
+   desku dosedá a rádius by tam vykousl proužek pozadí.
+
+   Nese ho každá jednotka, i ta odkloněná: pruh se naklání s mockupem, ke
+   kterému patří, takže je pořád jasné, který popisek je čí. Žádné
+   přepínání podle .is-active tedy není - a se všemi viditelnými jsou
+   jednotky ve švu smyčky zase k nerozeznání. */
+.laptop__tag {
+  position: absolute;
+  left:  calc(var(--laptop-pitch) * -0.09);
+  top:   calc(var(--laptop-pitch) * 0.76);
+  width: calc(var(--laptop-pitch) * 0.95);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  /* Stejná vlásková linka jako kolem desky, jen dole a po stranách: rámeček
+     tak obchází celý díl - desku i popisek pod ní - jedním tahem. Nahoře
+     žádná není, tam na sebe oba kusy dosedají a linka by dělala šev. */
+  border: 1px solid var(--line-mockup);
+  border-top: 0;
+  border-radius: 0 0 var(--r-chrome) var(--r-chrome);
+  /* Stejná barva jako rámeček kolem dokola, a schválně přes ten samý token:
+     pruh a linka mají držet pohromadě, i kdyby se odstín měnil. Plná
+     výplň - průsvit s rozostřením, který tu byl dřív, by pod sebou stejně
+     neměl co ukázat. */
+  background: var(--line-mockup);
+  color: rgba(255, 255, 255, 0.94);
+  font: 500 12px/1 var(--font);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Mockup se chytá za desku; pruh nesmí tažení překážet. */
+  pointer-events: none;
+}
+.laptop__tag-mark {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  background: var(--blue);
+}
 /* Neviditelný návrat pásu na začátek smyčky: otočení musí přeskočit bez
    animace, jinak by se oblouk viditelně vracel. site.js třídu nasadí,
    vynutí překreslení a hned ji sundá, takže další krok se zase animuje. */
@@ -924,7 +1045,7 @@ p, h1, h2, h3 { margin: 0; }
 /* Deska pod mockupem. Kreslí se v CSS, protože původní PNG mělo v sobě
    kromě šedé desky i tablet s ukázkovým dashboardem, a ten by teď zpod
    telefonu prosvítal. Rozměry jsou odměřené z toho obrázku, takže deska
-   zůstala tam a taková, jaká byla; stín po ní přebírá --shadow-pop. */
+   zůstala tam a taková, jaká byla. */
 .laptop::before {
   content: "";
   position: absolute;
@@ -932,9 +1053,15 @@ p, h1, h2, h3 { margin: 0; }
   top:    calc(var(--laptop-pitch) * 0.081);
   width:  calc(var(--laptop-pitch) * 0.95);
   height: calc(var(--laptop-pitch) * 0.679);
-  border-radius: calc(var(--laptop-pitch) * 0.03);
+  /* Vlásková linka kolem desky. Dole žádná není - tam deska dosedá na
+     popisek a linka by mezi nimi dělala šev. Výška se tím nemění,
+     box-sizing je border-box. */
+  border: 1px solid var(--line-mockup);
+  border-bottom: 0;
+  /* Dole ostré rohy: zespoda na desku dosedá popisek (.laptop__tag) přes
+     celou šířku a zaoblení by mezi nimi nechalo prosvítat pozadí. */
+  border-radius: var(--r-chrome) var(--r-chrome) 0 0;
   background: var(--surface-2);
-  box-shadow: var(--shadow-pop);
 }
 
 /* Na desce už nestojí displej se snímkem webu, ale mockup telefonu v ruce.
@@ -952,7 +1079,9 @@ p, h1, h2, h3 { margin: 0; }
   width:  calc(var(--laptop-pitch) * 0.95);
   height: calc(var(--laptop-pitch) * 0.679);
   border: 0;
-  border-radius: calc(var(--laptop-pitch) * 0.03);
+  /* Ořez kopíruje desku, na které box leží - jinak by se ruka dole
+     zakulacovala do rohů, které pod ní už ostré jsou. */
+  border-radius: var(--r-chrome) var(--r-chrome) 0 0;
   background: transparent;
   overflow: hidden;
 }
@@ -963,9 +1092,9 @@ p, h1, h2, h3 { margin: 0; }
 .laptop__bezel > img {
   position: absolute;
   left: 50%;
-  bottom: calc(var(--laptop-pitch) * 0.015);
+  bottom: 0;              /* ruka stojí přesně na spodní hraně desky */
   width: auto;
-  height: calc(var(--laptop-pitch) * 0.62);
+  height: 100%;           /* tedy na výšku desky, ta je rodičem */
   max-width: none;
   transform: translateX(-50%);
 }
@@ -1089,6 +1218,8 @@ p, h1, h2, h3 { margin: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Lišta je rovnou na svém místě, nikam nesjíždí. */
+  .site-header { animation: none; }
   /* Oblouk zůstane stát, jak je: site.js v tomhle režimu nepřepíná,
      tady padá i samotný přejezd. */
   .laptop-band { transition: none; }
@@ -1509,7 +1640,6 @@ p, h1, h2, h3 { margin: 0; }
     padding: 15px 2px;
     color: var(--ink);
   }
-  .nav-item__sign { order: 2; }
 
   .mega {
     position: static;
@@ -1534,28 +1664,15 @@ p, h1, h2, h3 { margin: 0; }
   }
   .mega.is-open .mega__inner { opacity: 1; transition-delay: .08s; }
 
-  .mega__col { padding: 0; transform: none; opacity: 1; transition: none; }
-  .mega__col + .mega__col { border-left: 0; }
+  .mega__col { padding: 0; transform: none; opacity: 1; filter: none; transition: none; }
   /* The steps and the facts are content and stay; only the screenshot goes,
      since a 1.5MB full-page render inside a drawer earns nothing here. */
   .mega__col--case { display: none; }
   .mega__steps, .mega__facts { padding: 0; }
   .mega__steps li, .mega__facts li { padding: 11px 2px; }
 
-  .mega__label { padding: 14px 2px 8px; border-bottom: 0; }
-  .site-nav .mega__link { padding: 11px 2px; border-bottom: 0; }
-  .site-nav .mega__link:hover { background: none; }
-
-  .mega__foot {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 9px;
-    padding: 14px 2px 4px;
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-  .site-nav .mega__footLink { margin-left: 0; }
+  .site-nav .mega__link { padding: 11px 2px; }
+  .site-nav .mega__link:hover::before { background: none; }
 }
 
 /* One-column card at phone widths, capped so it keeps the Figma proportions. */
@@ -1580,6 +1697,7 @@ p, h1, h2, h3 { margin: 0; }
   .mega,
   .mega__inner,
   .mega__col,
+  .mega__hl,
   .nav-item__sign { transition: none; }
 }
 

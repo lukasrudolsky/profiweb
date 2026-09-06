@@ -44,9 +44,10 @@
 
 /* =====================================================================
    Mega menu - the panels that drop out of Služby / Řešení / Proč my.
-   Click to toggle; only one open at a time. Above 900px each panel is an
-   overlay under the header, below it flows inline as an accordion, but the
-   state machine is identical either way.
+   Above 900px s myší se panel vytáhne přejetím po té které položce, klik ho
+   sklapne; jinde (dotyk, klávesnice, úzké okno) toggluje klik sám. Vždycky
+   je venku nejvýš jeden. Nad 900px je panel overlay pod lištou, pod tím se
+   sype inline jako accordion v šuplíku - stavový automat je stejný.
    ===================================================================== */
 (function () {
   'use strict';
@@ -67,6 +68,12 @@
     trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
     panel.classList.toggle('is-open', open);
     header.classList.toggle('has-mega-open', open);
+  }
+
+  function currentOpen() {
+    return triggers.filter(function (t) {
+      return t.getAttribute('aria-expanded') === 'true';
+    })[0] || null;
   }
 
   function closeAll(except) {
@@ -95,6 +102,55 @@
     }
   });
 
+  /* Na širokém displeji stačí najet: panel vytáhne ta položka, pod kterou
+     je myš, a nic jiného. Klik zůstává - je to pořád jediná cesta pro dotyk
+     a pro klávesnici, a otevřený panel jím jde zase sklapnout.
+
+     Panel je v DOM potomek svého .nav-item, takže cesta z tlačítka dolů do
+     panelu žádné mouseleave nevyvolá a menu pod myší nezmizí. Otevírá se s
+     malým zpožděním, aby přejezd lištou k tlačítku "Začít projekt" cestou
+     nevytahoval panely, které nikdo nechtěl; zavírá s delším, aby drobné
+     vyjetí mimo hned nesklaplo, co si člověk zrovna prohlíží. Když už je
+     nějaký panel venku, přepíná se mezi položkami rovnou - čekat podruhé
+     by jen blikalo. */
+  var hoverable = window.matchMedia(
+    '(hover: hover) and (pointer: fine) and (min-width: 901px)');
+  var openTimer = null, closeTimer = null;
+
+  function clearTimers() {
+    clearTimeout(openTimer);
+    clearTimeout(closeTimer);
+    openTimer = closeTimer = null;
+  }
+  function openOnly(trigger) {
+    closeAll(trigger);
+    setOpen(trigger, true);
+  }
+
+  triggers.forEach(function (trigger) {
+    var item = trigger.closest('.nav-item');
+    if (!item) return;
+
+    item.addEventListener('mouseenter', function () {
+      if (!hoverable.matches) return;
+      clearTimers();
+      if (trigger.getAttribute('aria-expanded') === 'true') return;
+      if (currentOpen()) { openOnly(trigger); return; }
+      openTimer = setTimeout(function () { openOnly(trigger); }, 110);
+    });
+
+    item.addEventListener('mouseleave', function () {
+      if (!hoverable.matches) return;
+      clearTimers();
+      closeTimer = setTimeout(function () { closeAll(null); }, 160);
+    });
+  });
+
+  /* Zúžení okna do šuplíku nesmí nechat viset rozjeté odpočítávání. */
+  var onHoverChange = function () { clearTimers(); };
+  if (hoverable.addEventListener) hoverable.addEventListener('change', onHoverChange);
+  else hoverable.addListener(onHoverChange);
+
   /* Clicking anywhere outside the header closes whatever is open. */
   document.addEventListener('click', function (e) {
     if (!e.target.closest('.site-header')) closeAll(null);
@@ -102,7 +158,7 @@
 
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
-    var open = triggers.filter(function (t) { return t.getAttribute('aria-expanded') === 'true'; })[0];
+    var open = currentOpen();
     if (open) { setOpen(open, false); open.focus(); }
   });
 
@@ -123,6 +179,57 @@
   if (wide.addEventListener) wide.addEventListener('change', onChange);
   else wide.addListener(onChange);
 })();
+
+/* =====================================================================
+   Mega menu - podklad, který přejíždí mezi položkami.
+
+   Bez skriptu se pod kurzorem podbarvuje každá položka zvlášť, takže při
+   přejetí jedna zhasne a druhá se rozsvítí. Tady místo toho vznikne jeden
+   podklad na sloupec, který se mezi položkami posouvá, takže přejezd je
+   plynulý. Sloupci se přidá třída has-hl a ta zároveň vypne podbarvování
+   jednotlivých položek, aby se nekreslily dva podklady přes sebe. Když
+   skript neproběhne, zůstane původní chování.
+   ===================================================================== */
+(function () {
+  'use strict';
+
+  var cols = [].slice.call(document.querySelectorAll('.mega__col'));
+  if (!cols.length) return;
+
+  cols.forEach(function (col) {
+    var links = [].slice.call(col.querySelectorAll('.mega__link'));
+    if (links.length < 2) return;   /* sloupec s ukázkou nemá co přejíždět */
+
+    var hl = document.createElement('span');
+    hl.className = 'mega__hl';
+    hl.setAttribute('aria-hidden', 'true');
+    col.insertBefore(hl, col.firstChild);
+    col.classList.add('has-hl');
+
+    function place(link, animate) {
+      /* Při prvním najetí se podklad jen objeví na místě. Bez toho by
+         přiletěl od horního okraje sloupce, kde stojí ve výchozí pozici. */
+      if (!animate) hl.style.transition = 'none';
+      hl.style.transform = 'translateY(' + link.offsetTop + 'px)';
+      hl.style.height = link.offsetHeight + 'px';
+      if (!animate) {
+        void hl.offsetWidth;        /* reflow, další přejezd se má animovat */
+        hl.style.transition = '';
+      }
+    }
+
+    links.forEach(function (link) {
+      link.addEventListener('mouseenter', function () {
+        place(link, hl.classList.contains('is-on'));
+        hl.classList.add('is-on');
+      });
+    });
+
+    /* Opuštění sloupce podklad zhasne; jinak by zůstal viset pod poslední
+       položkou, na které kurzor byl. */
+    col.addEventListener('mouseleave', function () { hl.classList.remove('is-on'); });
+  });
+}());
 
 /* =====================================================================
    Button label swap - on hover each character rolls up while a duplicate
